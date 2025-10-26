@@ -1,0 +1,59 @@
+/* Peach-Pink theme (cute) */
+:root[data-theme="peach"] {
+    /* Colors */
+    --primary-color: #ff9a9e;
+    --secondary-color: #fad0c4;
+    --background-color: #fff5f5;
+    --card-background: #ffffff;
+    --text-color: #5a4a4a;
+    --text-light: #9a8a8a;
+    --border-color: #ffe0e0;
+    --input-background: #ffffff;
+    --button-text: #ffffff;
+    --success-color: #ffa5a5;
+    --success-hover: #ff8a8a;
+    --success-bg: #fff0f5;
+    --error-bg: #ffe5e5;
+    --error-color: #ff6b6b;
+    --info-bg: #fff0f5;
+    --info-color: #ff9a9e;
+
+    /* Alternate backgrounds */
+    --alt-background: #fff8f8;
+    --hover-background: #ffebeb;
+    --hover-bg: #ffebeb;
+
+    /* Shadows */
+    --shadow: 0 2px 12px rgba(255, 154, 158, 0.2);
+    --shadow-hover: 0 4px 16px rgba(255, 154, 158, 0.3);
+
+    /* Spacing */
+    --border-radius: 16px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography */
+    --font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-size-xs: 11px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 48px;
+    --font-size-xxl: 64px;
+
+    /* Trash type colors (peach theme) */
+    --trash-general: #ffccd5;
+    --trash-paper: #ffd4a3;
+    --trash-plastic: #ffe4b5;
+    --trash-food: #ffc9de;
+    --trash-glass: #ffd9e8;
+    --trash-metal: #ffb3ba;
+
+    /* Scrollbar colors */
+    --scrollbar-thumb: rgba(255, 154, 158, 0.3);
+    --scrollbar-thumb-hover: rgba(255, 154, 158, 0.5);
+}
+

@@ -1,0 +1,59 @@
+/* Dark theme */
+:root[data-theme="dark"] {
+    /* Colors */
+    --primary-color: #4da6ff;
+    --secondary-color: #66b3ff;
+    --background-color: #1a1a1a;
+    --card-background: #2d2d2d;
+    --text-color: #e0e0e0;
+    --text-light: #a0a0a0;
+    --border-color: #404040;
+    --input-background: #3a3a3a;
+    --button-text: #ffffff;
+    --success-color: #66bb6a;
+    --success-hover: #81c784;
+    --success-bg: #1f3a1f;
+    --error-bg: #4a1f1f;
+    --error-color: #ff6b6b;
+    --info-bg: #1e3a5f;
+    --info-color: #64b5f6;
+
+    /* Alternate backgrounds */
+    --alt-background: #252525;
+    --hover-background: #3a3a3a;
+    --hover-bg: #3a3a3a;
+
+    /* Shadows */
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.4);
+
+    /* Spacing */
+    --border-radius: 8px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-xs: 11px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 48px;
+    --font-size-xxl: 64px;
+
+    /* Trash type colors (dark theme) */
+    --trash-general: #9e9e9e;
+    --trash-paper: #64b5f6;
+    --trash-plastic: #81c784;
+    --trash-food: #aed581;
+    --trash-glass: #4dd0e1;
+    --trash-metal: #bdbdbd;
+
+    /* Scrollbar colors */
+    --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+}
+
