@@ -193,10 +193,10 @@ class GeocodingAPI {
                             errorMessage = 'Location permission denied - please enable in browser settings';
                             break;
                         case error.POSITION_UNAVAILABLE:
-                            errorMessage = 'Location information unavailable';
+                            errorMessage = 'Location unavailable - check that Location Services are enabled in System Preferences/Settings';
                             break;
                         case error.TIMEOUT:
-                            errorMessage = 'Location request timeout';
+                            errorMessage = 'Location request timeout - please try again';
                             break;
                     }
 

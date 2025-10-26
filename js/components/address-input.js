@@ -102,6 +102,8 @@ class AddressInput extends HTMLElement {
                     font-size: var(--font-size-md);
                     background-color: var(--input-background);
                     color: var(--text-color);
+                    font-family: var(--font-family, sans-serif);
+                    transition: border-color 0.2s;
                     width: 100%;
                 }
 
@@ -113,6 +115,7 @@ class AddressInput extends HTMLElement {
                 .input-wrapper {
                     position: relative;
                     flex: 1;
+                    width: 100%;
                 }
 
                 .typing-indicator {
@@ -138,11 +141,16 @@ class AddressInput extends HTMLElement {
                     cursor: pointer;
                     font-size: var(--font-size-md);
                     transition: background-color 0.2s;
-                    flex: 1;
+                    font-family: var(--font-family, sans-serif);
+                    white-space: nowrap;
                 }
 
                 button:hover {
                     background-color: var(--secondary-color);
+                }
+
+                button:active {
+                    transform: scale(0.98);
                 }
 
                 button:disabled {
@@ -151,19 +159,35 @@ class AddressInput extends HTMLElement {
                 }
 
                 .location-btn {
-                    background-color: var(--success-color);
                     display: flex;
                     align-items: center;
-                    justify-content: center;
                     gap: var(--spacing-xs);
+                    background-color: var(--card-background);
+                    color: var(--text-color);
+                    border: 1px solid var(--border-color);
                 }
 
                 .location-btn:hover {
-                    background-color: var(--success-hover);
+                    background-color: var(--hover-bg, #f5f5f5);
                 }
 
                 .location-text {
                     display: none;
+                }
+
+                /* Mobile: stack buttons vertically */
+                @media (max-width: 767px) {
+                    .button-row {
+                        flex-direction: column;
+                    }
+
+                    button {
+                        width: 100%;
+                    }
+
+                    .location-text {
+                        display: inline;
+                    }
                 }
 
                 /* Desktop layout */
@@ -171,6 +195,7 @@ class AddressInput extends HTMLElement {
                     .location-text {
                         display: inline;
                     }
+
                     .input-group {
                         flex-direction: row;
                         align-items: stretch;
@@ -191,7 +216,6 @@ class AddressInput extends HTMLElement {
 
                     .location-btn {
                         min-width: auto;
-                        padding: var(--spacing-sm);
                     }
                 }
 

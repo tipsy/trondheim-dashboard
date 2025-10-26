@@ -77,15 +77,17 @@ class BusWidget extends BaseWidget {
 
     updateStopSelector() {
         const selectorContainer = this.shadowRoot.querySelector('.stop-selector-container');
-        const selector = this.shadowRoot.getElementById('stop-selector');
+        const selector = this.shadowRoot.querySelector('custom-select');
         if (!selector || !selectorContainer) return;
 
         if (this.availableStops.length > 0) {
-            selector.innerHTML = this.availableStops.map(stop => `
-                <option value="${stop.id}" ${stop.id === this.selectedStopId ? 'selected' : ''}>
-                    ${stop.name} (${Math.round(stop.distance)}m)
-                </option>
-            `).join('');
+            const options = this.availableStops.map(stop => ({
+                value: stop.id,
+                label: `${stop.name} (${Math.round(stop.distance)}m)`
+            }));
+
+            selector.setOptions(options);
+            selector.setAttribute('selected', this.selectedStopId);
             selectorContainer.style.display = 'block';
         } else {
             selectorContainer.style.display = 'none';
@@ -145,24 +147,9 @@ class BusWidget extends BaseWidget {
                         max-width: 200px;
                     }
                 }
-
-                select {
-                    width: 100%;
-                    padding: var(--spacing-sm) var(--spacing-md);
-                    border: 1px solid var(--border-color);
-                    border-radius: var(--border-radius);
-                    font-size: var(--font-size-sm);
-                    background-color: var(--input-background);
-                    color: var(--text-color);
-                }
-
-                select:focus {
-                    outline: none;
-                    border-color: var(--primary-color);
-                }
             </style>
             <div class="stop-selector-container" style="display: none;">
-                <select id="stop-selector"></select>
+                <custom-select id="stop-selector"></custom-select>
             </div>
         `;
     }
@@ -176,10 +163,10 @@ class BusWidget extends BaseWidget {
     }
 
     attachEventListeners() {
-        const selector = this.shadowRoot.getElementById('stop-selector');
+        const selector = this.shadowRoot.querySelector('custom-select');
         if (selector) {
             selector.addEventListener('change', async (e) => {
-                this.selectedStopId = e.target.value;
+                this.selectedStopId = e.detail.value;
                 localStorage.setItem('trondheim-dashboard-bus-stop', this.selectedStopId);
                 await this.loadDepartures();
             });

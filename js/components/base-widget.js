@@ -253,13 +253,13 @@ class BaseWidget extends HTMLElement {
     showLoading(isLoading) {
         const content = this.shadowRoot.getElementById('content');
         if (isLoading) {
-            content.innerHTML = '<div class="loading-container"><div class="loading"></div></div>';
+            content.innerHTML = '<div class="loading-container"><loading-spinner size="large"></loading-spinner></div>';
         }
     }
 
     showError(message) {
         const content = this.shadowRoot.getElementById('content');
-        content.innerHTML = `<div class="error">${message}</div>`;
+        content.innerHTML = `<error-message message="${message}"></error-message>`;
     }
 
     showPlaceholder() {

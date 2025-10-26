@@ -82,17 +82,18 @@ class TrondheimDashboard extends HTMLElement {
                     }
 
                     .address-section {
-                        flex-direction: row;
+                        display: grid;
+                        grid-template-columns: 3fr 1fr;
+                        gap: var(--spacing-md, 16px);
                         align-items: flex-start;
                     }
 
                     .address-section address-input {
-                        flex: 1;
+                        width: 100%;
                     }
 
                     .address-section theme-selector {
-                        flex-shrink: 0;
-                        width: 200px;
+                        width: 100%;
                     }
 
                     .widgets-grid {

@@ -13,9 +13,9 @@ class ThemeSelector extends HTMLElement {
     loadSavedTheme() {
         const savedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'light';
         this.setTheme(savedTheme);
-        const select = this.shadowRoot.getElementById('theme-select');
+        const select = this.shadowRoot.querySelector('custom-select');
         if (select) {
-            select.value = savedTheme;
+            select.setAttribute('selected', savedTheme);
         }
     }
 
@@ -56,34 +56,6 @@ class ThemeSelector extends HTMLElement {
                     gap: var(--spacing-xs);
                 }
 
-                .selector-group {
-                    display: flex;
-                    gap: var(--spacing-sm);
-                    align-items: center;
-                }
-
-                label {
-                    color: var(--text-color);
-                    font-size: var(--font-size-md);
-                    white-space: nowrap;
-                }
-
-                select {
-                    flex: 1;
-                    padding: var(--spacing-sm) var(--spacing-md);
-                    border: 1px solid var(--border-color);
-                    border-radius: var(--border-radius);
-                    background-color: var(--input-background);
-                    color: var(--text-color);
-                    font-size: var(--font-size-md);
-                    cursor: pointer;
-                }
-
-                select:focus {
-                    outline: none;
-                    border-color: var(--primary-color);
-                }
-
                 svg {
                     flex-shrink: 0;
                 }
@@ -94,21 +66,23 @@ class ThemeSelector extends HTMLElement {
                     ${themeIcon}
                     Theme
                 </h2>
-                <div class="selector-group">
-                    <select id="theme-select">
-                        <option value="light">Light</option>
-                        <option value="dark">Dark</option>
-                        <option value="peach">Peach Pink 🌸</option>
-                    </select>
-                </div>
+                <custom-select id="theme-select"></custom-select>
             </div>
         `;
     }
 
     attachEventListeners() {
-        const select = this.shadowRoot.getElementById('theme-select');
+        const select = this.shadowRoot.querySelector('custom-select');
+
+        // Set options
+        select.setOptions([
+            { value: 'light', label: 'Light' },
+            { value: 'dark', label: 'Dark' },
+            { value: 'peach', label: 'Peach Pink 🌸' }
+        ]);
+
         select.addEventListener('change', (e) => {
-            this.setTheme(e.target.value);
+            this.setTheme(e.detail.value);
         });
     }
 }
