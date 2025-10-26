@@ -68,7 +68,7 @@ class GeocodingAPI {
             }
 
             if (!data || data.length === 0) {
-                throw new Error('Address not found');
+                throw new Error('No results found. Try a different address or use "Use Location" button.');
             }
 
             // Transform results to consistent format
@@ -81,10 +81,60 @@ class GeocodingAPI {
             }));
         } catch (error) {
             console.error('Error geocoding address:', error);
-            if (error.message.includes('timeout') || error.message.includes('network')) {
-                throw new Error('Network error - please check your internet connection');
+
+            // Handle specific error types with user-friendly messages
+            if (error.name === 'AbortError' || error.message.includes('timeout')) {
+                throw new Error('Request timed out. Please check your internet connection and try again.');
             }
-            throw error;
+
+            if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+                throw new Error('Network error. Please check your internet connection.');
+            }
+
+            if (error.message.includes('No results found')) {
+                throw error; // Pass through our custom message
+            }
+
+            // For API errors, provide helpful message
+            if (error.message.includes('Geocoding API returned')) {
+                throw new Error('Geocoding service is temporarily unavailable. Please try again later.');
+            }
+
+            // Generic fallback
+            throw new Error('Could not find address. Please try a different search term.');
+        }
+    }
+
+    /**
+     * Reverse geocoding - get address from coordinates
+     */
+    static async reverseGeocode(lat, lon) {
+        try {
+            const response = await this.fetchWithTimeout(
+                `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+                {
+                    headers: {
+                        'User-Agent': 'TrondheimDashboard/1.0'
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(`Reverse geocoding API returned ${response.status}`);
+            }
+
+            const data = await response.json();
+
+            if (data && data.display_name) {
+                return data.display_name;
+            }
+
+            // Fallback to coordinates if no address found
+            return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
+        } catch (error) {
+            console.error('Error reverse geocoding:', error);
+            // Return coordinates as fallback
+            return `${lat.toFixed(4)}, ${lon.toFixed(4)}`;
         }
     }
 

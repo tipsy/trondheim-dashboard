@@ -2,11 +2,22 @@ class TrondheimDashboard extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.refreshInterval = null;
+        this.currentLocation = null;
     }
 
     connectedCallback() {
         this.render();
         this.attachEventListeners();
+        this.startAutoRefresh();
+    }
+
+    disconnectedCallback() {
+        // Clean up interval when component is removed
+        if (this.refreshInterval) {
+            clearInterval(this.refreshInterval);
+            this.refreshInterval = null;
+        }
     }
 
     render() {
@@ -15,66 +26,87 @@ class TrondheimDashboard extends HTMLElement {
                 :host {
                     display: flex;
                     flex-direction: column;
-                    height: 100vh;
-                    overflow: hidden;
+                    min-height: 100vh;
                 }
 
                 .dashboard-content {
                     display: flex;
                     flex-direction: column;
                     flex: 1;
-                    min-height: 0;
-                    overflow: hidden;
-                    padding: var(--spacing-md, 16px);
-                    gap: var(--spacing-md, 16px);
+                    padding: var(--spacing-sm, 8px);
+                    gap: var(--spacing-sm, 8px);
+                }
+
+                /* Larger padding on desktop */
+                @media (min-width: 768px) {
+                    .dashboard-content {
+                        padding: var(--spacing-md, 16px);
+                        gap: var(--spacing-md, 16px);
+                    }
                 }
 
                 .address-section {
                     flex-shrink: 0;
                     display: flex;
+                    flex-direction: column;
                     gap: var(--spacing-md, 16px);
-                    align-items: flex-start;
                 }
 
                 .address-section address-input {
-                    flex: 1;
+                    width: 100%;
                 }
 
                 .address-section theme-selector {
-                    flex-shrink: 0;
-                    width: 200px;
+                    width: 100%;
                 }
 
                 .widgets-grid {
                     display: grid;
-                    grid-template-columns: 1fr 2fr 1fr;
+                    grid-template-columns: 1fr;
                     gap: var(--spacing-md, 16px);
-                    flex: 1;
-                    min-height: 0;
                 }
 
-                .widgets-grid > * {
-                    height: 100%;
-                    overflow: hidden;
-                }
+                /* Desktop layout */
+                @media (min-width: 1025px) {
+                    :host {
+                        height: 100vh;
+                        overflow: hidden;
+                    }
 
-                @media (max-width: 1024px) {
+                    .dashboard-content {
+                        overflow: hidden;
+                    }
+
+                    .address-section {
+                        flex-direction: row;
+                        align-items: flex-start;
+                    }
+
+                    .address-section address-input {
+                        flex: 1;
+                    }
+
+                    .address-section theme-selector {
+                        flex-shrink: 0;
+                        width: 200px;
+                    }
+
                     .widgets-grid {
-                        grid-template-columns: 1fr;
-                        overflow-y: auto;
+                        grid-template-columns: 1fr 2fr 1fr;
+                        flex: 1;
+                        min-height: 0;
                     }
 
                     .widgets-grid > * {
-                        height: auto;
-                        overflow-y: visible;
+                        height: 100%;
+                        overflow: hidden;
                     }
+                }
 
-                    h1 {
-                        font-size: 24px;
-                    }
-
-                    .subtitle {
-                        font-size: 12px;
+                /* Tablet layout */
+                @media (min-width: 768px) and (max-width: 1024px) {
+                    .widgets-grid {
+                        grid-template-columns: 1fr 1fr;
                     }
                 }
 
@@ -162,23 +194,46 @@ class TrondheimDashboard extends HTMLElement {
 
     attachEventListeners() {
         const addressInput = this.shadowRoot.getElementById('address-input');
-        const busWidget = this.shadowRoot.getElementById('bus-widget');
-        const weatherWidget = this.shadowRoot.getElementById('weather-widget');
-        const trashWidget = this.shadowRoot.getElementById('trash-widget');
 
         // Listen for location updates from address input
         addressInput.addEventListener('location-updated', (event) => {
             const { lat, lon, address } = event.detail;
-            
+
+            // Store current location for auto-refresh
+            this.currentLocation = { lat, lon, address };
+
             // Update all widgets with the new location
-            busWidget.updateLocation(lat, lon);
-            weatherWidget.updateLocation(lat, lon);
-            
-            // Trash widget needs the address string
-            if (address) {
-                trashWidget.updateAddress(address);
-            }
+            this.updateAllWidgets(lat, lon, address);
         });
+    }
+
+    updateAllWidgets(lat, lon, address) {
+        const busWidget = this.shadowRoot.getElementById('bus-widget');
+        const weatherWidget = this.shadowRoot.getElementById('weather-widget');
+        const trashWidget = this.shadowRoot.getElementById('trash-widget');
+
+        if (busWidget) {
+            busWidget.updateLocation(lat, lon);
+        }
+
+        if (weatherWidget) {
+            weatherWidget.updateLocation(lat, lon);
+        }
+
+        // Trash widget needs the address string
+        if (trashWidget && address) {
+            trashWidget.updateAddress(address);
+        }
+    }
+
+    startAutoRefresh() {
+        // Refresh all widgets every 5 minutes (300000 ms)
+        this.refreshInterval = setInterval(() => {
+            if (this.currentLocation) {
+                const { lat, lon, address } = this.currentLocation;
+                this.updateAllWidgets(lat, lon, address);
+            }
+        }, 300000); // 5 minutes
     }
 }
 

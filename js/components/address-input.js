@@ -9,7 +9,11 @@ class AddressInput extends HTMLElement {
     connectedCallback() {
         this.render();
         this.attachEventListeners();
-        this.loadSavedAddress();
+
+        // Delay loading saved address to ensure parent listeners are attached
+        setTimeout(() => {
+            this.loadSavedAddress();
+        }, 100);
     }
 
     disconnectedCallback() {
@@ -21,19 +25,30 @@ class AddressInput extends HTMLElement {
     }
 
     loadSavedAddress() {
-        const savedAddress = localStorage.getItem('trondheim-dashboard-address');
-        if (savedAddress) {
-            const input = this.shadowRoot.getElementById('address-input');
-            if (input) {
-                input.value = savedAddress;
-                // Auto-search the saved address
-                this.handleSearch();
+
+        const savedData = localStorage.getItem('trondheim-dashboard-location');
+
+        if (savedData) {
+            try {
+                const { address, lat, lon } = JSON.parse(savedData);
+
+                const input = this.shadowRoot.getElementById('address-input');
+                if (input && address && lat && lon) {
+                    input.value = address;
+                    // Directly update location without searching
+                    this.updateLocation(lat, lon, address);
+                }
+            } catch (error) {
+                console.error('Error loading saved address:', error);
+                // Clear invalid data
+                localStorage.removeItem('trondheim-dashboard-location');
             }
         }
     }
 
-    saveAddress(address) {
-        localStorage.setItem('trondheim-dashboard-address', address);
+    saveLocation(address, lat, lon) {
+        const data = { address, lat, lon };
+        localStorage.setItem('trondheim-dashboard-location', JSON.stringify(data));
     }
 
     render() {
@@ -60,6 +75,17 @@ class AddressInput extends HTMLElement {
                 }
 
                 .input-group {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--spacing-sm);
+                }
+
+                .input-row {
+                    display: flex;
+                    gap: var(--spacing-sm);
+                }
+
+                .button-row {
                     display: flex;
                     gap: var(--spacing-sm);
                 }
@@ -107,6 +133,7 @@ class AddressInput extends HTMLElement {
                     cursor: pointer;
                     font-size: var(--font-size-md);
                     transition: background-color 0.2s;
+                    flex: 1;
                 }
 
                 button:hover {
@@ -123,10 +150,44 @@ class AddressInput extends HTMLElement {
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    gap: var(--spacing-xs);
                 }
 
                 .location-btn:hover {
                     background-color: var(--success-hover);
+                }
+
+                .location-text {
+                    display: none;
+                }
+
+                /* Desktop layout */
+                @media (min-width: 768px) {
+                    .location-text {
+                        display: inline;
+                    }
+                    .input-group {
+                        flex-direction: row;
+                        align-items: stretch;
+                    }
+
+                    .input-row {
+                        flex: 1;
+                    }
+
+                    .button-row {
+                        flex-shrink: 0;
+                    }
+
+                    button {
+                        flex: 0 0 auto;
+                        min-width: 100px;
+                    }
+
+                    .location-btn {
+                        min-width: auto;
+                        padding: var(--spacing-sm);
+                    }
                 }
 
                 .current-location {
@@ -148,9 +209,25 @@ class AddressInput extends HTMLElement {
                     border: 1px solid var(--border-color);
                     border-radius: var(--border-radius);
                     background-color: var(--card-background);
-                    max-height: 200px;
+                    max-height: 300px;
                     overflow-y: auto;
                     display: none;
+                    box-shadow: var(--shadow);
+                }
+
+                /* Mobile: larger touch targets */
+                @media (max-width: 767px) {
+                    .suggestions {
+                        max-height: 400px;
+                    }
+
+                    .suggestion-item {
+                        padding: var(--spacing-md);
+                        min-height: 60px;
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                    }
                 }
 
                 .suggestions.visible {
@@ -186,11 +263,18 @@ class AddressInput extends HTMLElement {
 
                 .error {
                     color: var(--error-color);
-                    padding: var(--spacing-sm);
+                    padding: var(--spacing-md);
                     background-color: var(--error-bg);
                     border-radius: var(--border-radius);
                     margin-top: var(--spacing-sm);
                     font-size: var(--font-size-sm);
+                    border: 1px solid var(--error-color);
+                    line-height: 1.5;
+                    display: none;
+                }
+
+                .error:not([style*="display: none"]) {
+                    display: block;
                 }
 
                 .loading {
@@ -217,24 +301,29 @@ class AddressInput extends HTMLElement {
                     Your Address
                 </h2>
                 <div class="input-group">
-                    <div class="input-wrapper">
-                        <input
-                            type="text"
-                            id="address-input"
-                            placeholder="Start typing an address..."
-                            aria-label="Address"
-                            autocomplete="off"
-                        />
-                        <span id="typing-indicator" class="typing-indicator">...</span>
+                    <div class="input-row">
+                        <div class="input-wrapper">
+                            <input
+                                type="text"
+                                id="address-input"
+                                placeholder="Start typing an address..."
+                                aria-label="Address"
+                                autocomplete="off"
+                            />
+                            <span id="typing-indicator" class="typing-indicator">...</span>
+                        </div>
                     </div>
-                    <button id="search-btn">Search</button>
-                    <button id="location-btn" class="location-btn" title="Use my location">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <circle cx="12" cy="12" r="3"/>
-                            <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
-                        </svg>
-                    </button>
+                    <div class="button-row">
+                        <button id="search-btn">Search</button>
+                        <button id="location-btn" class="location-btn" title="Use my location">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
+                            </svg>
+                            <span class="location-text">Use Location</span>
+                        </button>
+                    </div>
                 </div>
                 <div id="suggestions" class="suggestions"></div>
                 <div id="current-location" class="current-location"></div>
@@ -287,13 +376,17 @@ class AddressInput extends HTMLElement {
 
         const trimmedValue = value.trim();
 
-        // Hide suggestions if input is too short
+        // Hide suggestions and errors if input is too short
         if (trimmedValue.length < 3) {
             this.hideSuggestions();
             this.hideCurrentLocation();
             this.hideTypingIndicator();
+            this.hideError();
             return;
         }
+
+        // Hide error when user starts typing
+        this.hideError();
 
         // Show typing indicator
         this.showTypingIndicator();
@@ -349,7 +442,7 @@ class AddressInput extends HTMLElement {
 
             if (locations.length === 1) {
                 // Only one result, use it directly
-                this.selectLocation(locations[0], address);
+                this.selectLocation(locations[0]);
             } else {
                 // Multiple results, show suggestions
                 this.showSuggestions(locations, address);
@@ -361,9 +454,19 @@ class AddressInput extends HTMLElement {
         }
     }
 
-    selectLocation(location, originalAddress) {
-        this.saveAddress(originalAddress);
-        this.updateLocation(location.lat, location.lon, originalAddress);
+    selectLocation(location) {
+        // Always use the location's display name
+        const addressToSave = location.displayName;
+
+        // Update the input field with the selected address
+        const input = this.shadowRoot.getElementById('address-input');
+        if (input) {
+            input.value = addressToSave;
+        }
+
+        // Save address with coordinates
+        this.saveLocation(addressToSave, location.lat, location.lon);
+        this.updateLocation(location.lat, location.lon, addressToSave);
         this.hideSuggestions();
         this.hideCurrentLocation(); // Don't show the selected message
     }
@@ -388,7 +491,7 @@ class AddressInput extends HTMLElement {
         // Add click handlers to suggestions
         suggestionsDiv.querySelectorAll('.suggestion-item').forEach((item, index) => {
             item.addEventListener('click', () => {
-                this.selectLocation(locations[index], originalAddress);
+                this.selectLocation(locations[index]);
             });
         });
 
@@ -408,7 +511,19 @@ class AddressInput extends HTMLElement {
 
         try {
             const location = await GeocodingAPI.getCurrentLocation();
-            this.updateLocation(location.lat, location.lon, null);
+
+            // Get address from coordinates via reverse geocoding
+            const address = await GeocodingAPI.reverseGeocode(location.lat, location.lon);
+
+            // Update input field
+            const input = this.shadowRoot.getElementById('address-input');
+            if (input) {
+                input.value = address;
+            }
+
+            // Save location with coordinates
+            this.saveLocation(address, location.lat, location.lon);
+            this.updateLocation(location.lat, location.lon, address);
             this.hideCurrentLocation(); // Don't show the selected message
         } catch (error) {
             this.showError(error.message || 'Could not get your location. Check browser settings.');

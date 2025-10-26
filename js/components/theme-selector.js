@@ -41,7 +41,6 @@ class ThemeSelector extends HTMLElement {
                     border-radius: var(--border-radius);
                     padding: var(--spacing-md);
                     box-shadow: var(--shadow);
-                    height: 100%;
                     box-sizing: border-box;
                 }
 

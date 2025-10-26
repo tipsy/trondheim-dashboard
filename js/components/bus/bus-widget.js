@@ -137,7 +137,13 @@ class BusWidget extends BaseWidget {
                 .stop-selector-container {
                     flex: 1;
                     min-width: 0;
-                    max-width: 200px;
+                }
+
+                /* Desktop: limit width */
+                @media (min-width: 1025px) {
+                    .stop-selector-container {
+                        max-width: 200px;
+                    }
                 }
 
                 select {

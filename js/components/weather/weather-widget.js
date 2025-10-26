@@ -240,9 +240,23 @@ class WeatherWidget extends BaseWidget {
 
             .hourly-container {
                 display: grid;
-                grid-template-columns: repeat(8, 1fr);
+                grid-template-columns: repeat(4, 1fr);
                 gap: var(--spacing-sm);
                 padding: var(--spacing-sm) 0;
+            }
+
+            /* Tablet: 6 columns */
+            @media (min-width: 768px) and (max-width: 1024px) {
+                .hourly-container {
+                    grid-template-columns: repeat(6, 1fr);
+                }
+            }
+
+            /* Desktop: 8 columns */
+            @media (min-width: 1025px) {
+                .hourly-container {
+                    grid-template-columns: repeat(8, 1fr);
+                }
             }
         `;
         this.shadowRoot.appendChild(style);

@@ -44,9 +44,38 @@ class BaseWidget extends HTMLElement {
                     background-color: var(--card-background);
                     border-radius: var(--border-radius);
                     box-shadow: var(--shadow);
-                    height: 100%;
                     display: flex;
                     flex-direction: column;
+                }
+
+                /* Desktop: fixed height with scrolling */
+                @media (min-width: 1025px) {
+                    .widget-container {
+                        height: 100%;
+                    }
+
+                    #content {
+                        flex: 1;
+                        min-height: 0;
+                        overflow-y: auto;
+                    }
+                }
+
+                /* Mobile/Tablet: natural height, no scrolling */
+                @media (max-width: 1024px) {
+                    .widget-container {
+                        height: auto;
+                    }
+
+                    #content {
+                        overflow-y: visible;
+                        overflow-x: visible;
+                        min-height: auto;
+                    }
+
+                    .widget-header.scrolled {
+                        border-bottom-color: transparent;
+                    }
                 }
 
                 .widget-header {
@@ -77,9 +106,6 @@ class BaseWidget extends HTMLElement {
                 }
 
                 #content {
-                    flex: 1;
-                    min-height: 0;
-                    overflow-y: auto;
                     padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
                 }
 
@@ -181,9 +207,20 @@ class BaseWidget extends HTMLElement {
         const header = this.shadowRoot.querySelector('.widget-header');
 
         if (content && header) {
+            // Only enable scroll listener on desktop (> 1024px)
+            const isDesktop = () => window.matchMedia('(min-width: 1025px)').matches;
+
+            if (!isDesktop()) {
+                // On mobile, don't set up scroll listener
+                return;
+            }
+
             let scrollTimeout;
 
             content.addEventListener('scroll', () => {
+                // Only apply scroll effects on desktop
+                if (!isDesktop()) return;
+
                 // Update header border
                 if (content.scrollTop > 0) {
                     header.classList.add('scrolled');
