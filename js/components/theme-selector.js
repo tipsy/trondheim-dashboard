@@ -32,6 +32,10 @@ class ThemeSelector extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>
+                * {
+                    box-sizing: border-box;
+                }
+
                 :host {
                     display: block;
                 }
@@ -41,7 +45,6 @@ class ThemeSelector extends HTMLElement {
                     border-radius: var(--border-radius);
                     padding: var(--spacing-md);
                     box-shadow: var(--shadow);
-                    box-sizing: border-box;
                 }
 
                 h2 {

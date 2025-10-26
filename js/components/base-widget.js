@@ -36,6 +36,10 @@ class BaseWidget extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
             <style>
+                * {
+                    box-sizing: border-box;
+                }
+
                 :host {
                     display: block;
                 }

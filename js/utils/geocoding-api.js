@@ -26,15 +26,43 @@ class GeocodingAPI {
     }
 
     /**
+     * Check if address is in Trøndelag county
+     */
+    static isInTrondelag(displayName) {
+        const lowerName = displayName.toLowerCase();
+        return lowerName.includes('trøndelag') ||
+               lowerName.includes('trondelag') ||
+               lowerName.includes('trondheim');
+    }
+
+    /**
+     * Check if result has a street number (is a specific address)
+     */
+    static hasStreetNumber(result) {
+        // Check if the address has a house number in the address object
+        if (result.address && result.address.house_number) {
+            return true;
+        }
+
+        // Also check the display name for patterns like "Street 123"
+        // Match patterns like "1C," or "123," at the start of the display name
+        const displayName = result.display_name;
+        const hasNumberPattern = /^\d+[A-Za-z]?,\s/.test(displayName);
+
+        return hasNumberPattern;
+    }
+
+    /**
      * Geocoding utility using Nominatim (OpenStreetMap)
      * Returns multiple results for better address matching
+     * Filters to only show addresses in Trøndelag with street numbers
      */
-    static async geocodeAddress(address, limit = 5) {
+    static async geocodeAddress(address, limit = 20) {
         try {
-            // Try with Trondheim context first
-            let encodedAddress = encodeURIComponent(`${address}, Trondheim, Norway`);
-            let response = await this.fetchWithTimeout(
-                `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=${limit}&countrycodes=no`,
+            // Request more results since we'll filter them
+            const encodedAddress = encodeURIComponent(`${address}, Trøndelag, Norway`);
+            const response = await this.fetchWithTimeout(
+                `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=${limit}&countrycodes=no&addressdetails=1`,
                 {
                     headers: {
                         'User-Agent': 'TrondheimDashboard/1.0'
@@ -46,38 +74,33 @@ class GeocodingAPI {
                 throw new Error(`Geocoding API returned ${response.status}`);
             }
 
-            let data = await response.json();
-
-            // If no results with Trondheim context, try without it
-            if (!data || data.length === 0) {
-                encodedAddress = encodeURIComponent(`${address}, Norway`);
-                response = await this.fetchWithTimeout(
-                    `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=${limit}&countrycodes=no`,
-                    {
-                        headers: {
-                            'User-Agent': 'TrondheimDashboard/1.0'
-                        }
-                    }
-                );
-
-                if (!response.ok) {
-                    throw new Error(`Geocoding API returned ${response.status}`);
-                }
-
-                data = await response.json();
-            }
+            const data = await response.json();
 
             if (!data || data.length === 0) {
                 throw new Error('No results found. Try a different address or use "Use Location" button.');
             }
 
-            // Transform results to consistent format
-            return data.map(result => ({
+            // Filter results to only include:
+            // 1. Addresses in Trøndelag
+            // 2. Addresses with street numbers (specific addresses)
+            const filteredResults = data.filter(result => {
+                const inTrondelag = this.isInTrondelag(result.display_name);
+                const hasNumber = this.hasStreetNumber(result);
+                return inTrondelag && hasNumber;
+            });
+
+            if (filteredResults.length === 0) {
+                throw new Error('No specific addresses found in Trøndelag. Please include a street number.');
+            }
+
+            // Transform results to consistent format and limit to 5
+            return filteredResults.slice(0, 5).map(result => ({
                 lat: parseFloat(result.lat),
                 lon: parseFloat(result.lon),
                 displayName: result.display_name,
                 type: result.type,
-                importance: result.importance
+                importance: result.importance,
+                address: result.address
             }));
         } catch (error) {
             console.error('Error geocoding address:', error);
@@ -91,7 +114,7 @@ class GeocodingAPI {
                 throw new Error('Network error. Please check your internet connection.');
             }
 
-            if (error.message.includes('No results found')) {
+            if (error.message.includes('No results found') || error.message.includes('No specific addresses')) {
                 throw error; // Pass through our custom message
             }
 

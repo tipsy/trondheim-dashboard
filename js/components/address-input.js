@@ -54,6 +54,10 @@ class AddressInput extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
             <style>
+                * {
+                    box-sizing: border-box;
+                }
+
                 :host {
                     display: block;
                 }
@@ -98,6 +102,7 @@ class AddressInput extends HTMLElement {
                     font-size: var(--font-size-md);
                     background-color: var(--input-background);
                     color: var(--text-color);
+                    width: 100%;
                 }
 
                 input:focus {
