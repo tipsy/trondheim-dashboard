@@ -32,10 +32,8 @@ class WeatherHour extends HTMLElement {
 
     formatTime(isoString) {
         const date = new Date(isoString);
-        return date.toLocaleTimeString('en-US', { 
-            hour: '2-digit', 
-            hour12: false 
-        });
+        const hours = date.getHours().toString().padStart(2, '0');
+        return `${hours}:00`;
     }
 
     getWeatherIcon(symbolCode) {

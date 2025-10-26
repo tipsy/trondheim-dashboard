@@ -2,12 +2,22 @@ class AddressInput extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        this.searchTimeout = null;
+        this.debounceDelay = 500; // milliseconds
     }
 
     connectedCallback() {
         this.render();
         this.attachEventListeners();
         this.loadSavedAddress();
+    }
+
+    disconnectedCallback() {
+        // Clean up
+        this.cancelDebounce();
+        if (this.clickOutsideHandler) {
+            document.removeEventListener('click', this.clickOutsideHandler);
+        }
     }
 
     loadSavedAddress() {
@@ -69,6 +79,25 @@ class AddressInput extends HTMLElement {
                     border-color: var(--primary-color);
                 }
 
+                .input-wrapper {
+                    position: relative;
+                    flex: 1;
+                }
+
+                .typing-indicator {
+                    position: absolute;
+                    right: 12px;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    font-size: var(--font-size-xs);
+                    color: var(--text-light);
+                    display: none;
+                }
+
+                .typing-indicator.visible {
+                    display: block;
+                }
+
                 button {
                     padding: var(--spacing-sm) var(--spacing-md);
                     background-color: var(--primary-color);
@@ -101,7 +130,58 @@ class AddressInput extends HTMLElement {
                 }
 
                 .current-location {
+                    margin-top: var(--spacing-sm);
+                    padding: var(--spacing-sm);
+                    background-color: var(--success-bg, #e8f5e9);
+                    color: var(--success-color, #2e7d32);
+                    border-radius: var(--border-radius);
+                    font-size: var(--font-size-sm);
                     display: none;
+                }
+
+                .current-location.visible {
+                    display: block;
+                }
+
+                .suggestions {
+                    margin-top: var(--spacing-sm);
+                    border: 1px solid var(--border-color);
+                    border-radius: var(--border-radius);
+                    background-color: var(--card-background);
+                    max-height: 200px;
+                    overflow-y: auto;
+                    display: none;
+                }
+
+                .suggestions.visible {
+                    display: block;
+                }
+
+                .suggestion-item {
+                    padding: var(--spacing-sm) var(--spacing-md);
+                    cursor: pointer;
+                    border-bottom: 1px solid var(--border-color);
+                    transition: background-color 0.2s;
+                }
+
+                .suggestion-item:last-child {
+                    border-bottom: none;
+                }
+
+                .suggestion-item:hover {
+                    background-color: var(--hover-bg, #f5f5f5);
+                }
+
+                .suggestion-item .address-name {
+                    font-weight: 500;
+                    color: var(--text-color);
+                    font-size: var(--font-size-md);
+                }
+
+                .suggestion-item .address-details {
+                    font-size: var(--font-size-sm);
+                    color: var(--text-light, #666);
+                    margin-top: 2px;
                 }
 
                 .error {
@@ -137,12 +217,16 @@ class AddressInput extends HTMLElement {
                     Your Address
                 </h2>
                 <div class="input-group">
-                    <input
-                        type="text"
-                        id="address-input"
-                        placeholder="Enter address in Trondheim..."
-                        aria-label="Address"
-                    />
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="address-input"
+                            placeholder="Start typing an address..."
+                            aria-label="Address"
+                            autocomplete="off"
+                        />
+                        <span id="typing-indicator" class="typing-indicator">...</span>
+                    </div>
                     <button id="search-btn">Search</button>
                     <button id="location-btn" class="location-btn" title="Use my location">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -152,6 +236,7 @@ class AddressInput extends HTMLElement {
                         </svg>
                     </button>
                 </div>
+                <div id="suggestions" class="suggestions"></div>
                 <div id="current-location" class="current-location"></div>
                 <div id="error-message" class="error" style="display: none;"></div>
             </div>
@@ -163,20 +248,90 @@ class AddressInput extends HTMLElement {
         const searchBtn = this.shadowRoot.getElementById('search-btn');
         const locationBtn = this.shadowRoot.getElementById('location-btn');
 
-        searchBtn.addEventListener('click', () => this.handleAddressSearch());
-        input.addEventListener('keypress', (e) => {
+        // Debounced search on input
+        input.addEventListener('input', (e) => {
+            this.handleInputChange(e.target.value);
+        });
+
+        // Keyboard shortcuts
+        input.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
-                this.handleAddressSearch();
+                this.cancelDebounce();
+                this.handleAddressSearch(true); // Disable input for manual search
+            } else if (e.key === 'Escape') {
+                this.hideSuggestions();
+                this.cancelDebounce();
             }
         });
+
+        // Manual search button
+        searchBtn.addEventListener('click', () => {
+            this.cancelDebounce();
+            this.handleAddressSearch(true); // Disable input for manual search
+        });
+
         locationBtn.addEventListener('click', () => this.handleCurrentLocation());
+
+        // Close suggestions when clicking outside
+        this.clickOutsideHandler = (e) => {
+            if (!this.contains(e.target)) {
+                this.hideSuggestions();
+            }
+        };
+        document.addEventListener('click', this.clickOutsideHandler);
+    }
+
+    handleInputChange(value) {
+        // Clear any existing timeout
+        this.cancelDebounce();
+
+        const trimmedValue = value.trim();
+
+        // Hide suggestions if input is too short
+        if (trimmedValue.length < 3) {
+            this.hideSuggestions();
+            this.hideCurrentLocation();
+            this.hideTypingIndicator();
+            return;
+        }
+
+        // Show typing indicator
+        this.showTypingIndicator();
+
+        // Set new timeout for debounced search
+        this.searchTimeout = setTimeout(() => {
+            this.hideTypingIndicator();
+            this.handleAddressSearch();
+        }, this.debounceDelay);
+    }
+
+    cancelDebounce() {
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+            this.searchTimeout = null;
+        }
+        this.hideTypingIndicator();
+    }
+
+    showTypingIndicator() {
+        const indicator = this.shadowRoot.getElementById('typing-indicator');
+        if (indicator) {
+            indicator.classList.add('visible');
+        }
+    }
+
+    hideTypingIndicator() {
+        const indicator = this.shadowRoot.getElementById('typing-indicator');
+        if (indicator) {
+            indicator.classList.remove('visible');
+        }
     }
 
     handleSearch() {
         this.handleAddressSearch();
     }
 
-    async handleAddressSearch() {
+    async handleAddressSearch(disableInput = false) {
         const input = this.shadowRoot.getElementById('address-input');
         const address = input.value.trim();
 
@@ -185,33 +340,80 @@ class AddressInput extends HTMLElement {
             return;
         }
 
-        this.showLoading(true);
+        this.showLoading(true, disableInput);
         this.hideError();
+        this.hideSuggestions();
 
         try {
-            const location = await GeocodingAPI.geocodeAddress(address);
-            this.saveAddress(address);
-            this.updateLocation(location.lat, location.lon, address);
-            this.showCurrentLocation(address);
+            const locations = await GeocodingAPI.geocodeAddress(address);
+
+            if (locations.length === 1) {
+                // Only one result, use it directly
+                this.selectLocation(locations[0], address);
+            } else {
+                // Multiple results, show suggestions
+                this.showSuggestions(locations, address);
+            }
         } catch (error) {
-            this.showError('Could not find address. Please try again.');
+            this.showError(error.message || 'Could not find address. Please try again.');
         } finally {
-            this.showLoading(false);
+            this.showLoading(false, disableInput);
         }
     }
 
+    selectLocation(location, originalAddress) {
+        this.saveAddress(originalAddress);
+        this.updateLocation(location.lat, location.lon, originalAddress);
+        this.hideSuggestions();
+        this.hideCurrentLocation(); // Don't show the selected message
+    }
+
+    showSuggestions(locations, originalAddress) {
+        const suggestionsDiv = this.shadowRoot.getElementById('suggestions');
+
+        suggestionsDiv.innerHTML = locations.map((loc, index) => {
+            // Extract main address and details
+            const parts = loc.displayName.split(',');
+            const mainAddress = parts.slice(0, 2).join(',');
+            const details = parts.slice(2).join(',');
+
+            return `
+                <div class="suggestion-item" data-index="${index}">
+                    <div class="address-name">${mainAddress}</div>
+                    <div class="address-details">${details}</div>
+                </div>
+            `;
+        }).join('');
+
+        // Add click handlers to suggestions
+        suggestionsDiv.querySelectorAll('.suggestion-item').forEach((item, index) => {
+            item.addEventListener('click', () => {
+                this.selectLocation(locations[index], originalAddress);
+            });
+        });
+
+        suggestionsDiv.classList.add('visible');
+    }
+
+    hideSuggestions() {
+        const suggestionsDiv = this.shadowRoot.getElementById('suggestions');
+        suggestionsDiv.classList.remove('visible');
+        suggestionsDiv.innerHTML = '';
+    }
+
     async handleCurrentLocation() {
-        this.showLoading(true);
+        this.showLoading(true, true); // Disable input for location search
         this.hideError();
+        this.hideSuggestions();
 
         try {
             const location = await GeocodingAPI.getCurrentLocation();
             this.updateLocation(location.lat, location.lon, null);
-            this.showCurrentLocation('Your current location');
+            this.hideCurrentLocation(); // Don't show the selected message
         } catch (error) {
-            this.showError('Could not get your location. Check browser settings.');
+            this.showError(error.message || 'Could not get your location. Check browser settings.');
         } finally {
-            this.showLoading(false);
+            this.showLoading(false, true);
         }
     }
 
@@ -226,13 +428,20 @@ class AddressInput extends HTMLElement {
 
     showCurrentLocation(text) {
         const locationDiv = this.shadowRoot.getElementById('current-location');
-        locationDiv.textContent = `Selected: ${text}`;
+        locationDiv.textContent = `✓ Selected: ${text}`;
+        locationDiv.classList.add('visible');
+    }
+
+    hideCurrentLocation() {
+        const locationDiv = this.shadowRoot.getElementById('current-location');
+        locationDiv.classList.remove('visible');
     }
 
     showError(message) {
         const errorDiv = this.shadowRoot.getElementById('error-message');
         errorDiv.textContent = message;
         errorDiv.style.display = 'block';
+        this.hideCurrentLocation();
     }
 
     hideError() {
@@ -240,17 +449,24 @@ class AddressInput extends HTMLElement {
         errorDiv.style.display = 'none';
     }
 
-    showLoading(isLoading) {
+    showLoading(isLoading, disableInput = false) {
         const searchBtn = this.shadowRoot.getElementById('search-btn');
         const locationBtn = this.shadowRoot.getElementById('location-btn');
+        const input = this.shadowRoot.getElementById('address-input');
 
         if (isLoading) {
             searchBtn.disabled = true;
             locationBtn.disabled = true;
+            // Only disable input if explicitly requested (manual search)
+            if (disableInput) {
+                input.disabled = true;
+            }
             searchBtn.innerHTML = '<span class="loading"></span>';
+            this.hideTypingIndicator();
         } else {
             searchBtn.disabled = false;
             locationBtn.disabled = false;
+            input.disabled = false;
             searchBtn.textContent = 'Search';
         }
     }

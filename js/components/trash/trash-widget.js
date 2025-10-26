@@ -15,6 +15,20 @@ class TrashWidget extends BaseWidget {
         await this.loadTrashSchedule();
     }
 
+    normalizeAddress(address) {
+        // Extract just the street and number from the address (remove postal code)
+        // e.g., "Persaunvegen 1C, 7045" -> "Persaunvegen 1C"
+        let addressParts = address.split(',')[0].trim();
+
+        // Normalize: ensure there's a space before the letter suffix
+        // Handle both uppercase and lowercase (e.g., "1c" or "1C" -> "1 C")
+        addressParts = addressParts.replace(/(\d+)([A-Za-z])\s*$/i, (match, num, letter) => {
+            return `${num} ${letter.toUpperCase()}`;
+        });
+
+        return addressParts;
+    }
+
     async loadTrashSchedule() {
         if (!this.address) return;
 
@@ -22,23 +36,34 @@ class TrashWidget extends BaseWidget {
         this.hideError();
 
         try {
-            // Extract just the street and number from the address (remove postal code)
-            // e.g., "Persaunvegen 1C, 7045" -> "Persaunvegen 1C"
-            let addressParts = this.address.split(',')[0].trim();
+            const normalizedAddress = this.normalizeAddress(this.address);
 
-            // Ensure there's a space before the letter suffix (e.g., "Persaunvegen 1C" -> "Persaunvegen 1 C")
-            // The API requires this format
-            addressParts = addressParts.replace(/(\d+)([A-Z])\s*$/, '$1 $2');
+            console.log('Trash API: Original address:', this.address);
+            console.log('Trash API: Normalized address:', normalizedAddress);
 
-            console.log('Trash API: Searching for address:', addressParts);
-
-            // First, search for the address to get the address ID
-            const searchResults = await TrashAPI.searchTrashAddress(addressParts);
+            // Try to search with the normalized address
+            let searchResults = await TrashAPI.searchTrashAddress(normalizedAddress);
 
             console.log('Trash API: Search results:', searchResults);
 
+            // If no results, try without the space before the letter
             if (!searchResults || searchResults.length === 0) {
-                this.showError('Address not found in trash collection database');
+                const addressWithoutSpace = normalizedAddress.replace(/(\d+)\s+([A-Z])$/, '$1$2');
+                console.log('Trash API: Trying without space:', addressWithoutSpace);
+                searchResults = await TrashAPI.searchTrashAddress(addressWithoutSpace);
+            }
+
+            // If still no results, try with lowercase letter
+            if (!searchResults || searchResults.length === 0) {
+                const addressLowerLetter = normalizedAddress.replace(/(\d+)\s+([A-Z])$/, (match, num, letter) => {
+                    return `${num} ${letter.toLowerCase()}`;
+                });
+                console.log('Trash API: Trying with lowercase letter:', addressLowerLetter);
+                searchResults = await TrashAPI.searchTrashAddress(addressLowerLetter);
+            }
+
+            if (!searchResults || searchResults.length === 0) {
+                this.showError('Address not found in trash collection database. Try entering just the street name and number (e.g., "Persaunvegen 1C")');
                 return;
             }
 
