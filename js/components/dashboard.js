@@ -79,26 +79,35 @@ class TrondheimDashboard extends HTMLElement {
 
                     .dashboard-content {
                         overflow: hidden;
+                        display: grid;
+                        grid-template-columns: 1fr 2fr 1fr;
+                        grid-template-rows: auto 1fr;
+                        gap: var(--spacing-md, 16px);
                     }
 
                     .address-section {
+                        grid-column: 1 / -1;
                         display: grid;
-                        grid-template-columns: 3fr 1fr;
+                        grid-template-columns: subgrid;
                         gap: var(--spacing-md, 16px);
                         align-items: flex-start;
                     }
 
                     .address-section address-input {
+                        grid-column: 1 / 3;
                         width: 100%;
                     }
 
                     .address-section theme-selector {
+                        grid-column: 3;
                         width: 100%;
                     }
 
                     .widgets-grid {
-                        grid-template-columns: 1fr 2fr 1fr;
-                        flex: 1;
+                        grid-column: 1 / -1;
+                        display: grid;
+                        grid-template-columns: subgrid;
+                        gap: var(--spacing-md, 16px);
                         min-height: 0;
                     }
 

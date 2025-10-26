@@ -106,16 +106,17 @@ class WeatherHour extends HTMLElement {
                 }
 
                 .hour-time {
-                    font-size: var(--font-size-xs);
+                    font-size: var(--font-size-sm);
                     color: var(--text-light);
                 }
 
                 .hour-icon {
+                    display: inline-flex;
                     font-size: 24px;
                 }
 
                 .hour-temp {
-                    font-size: var(--font-size-sm);
+                    font-size: var(--font-size-lg);
                     font-weight: bold;
                     color: var(--text-color);
                 }
