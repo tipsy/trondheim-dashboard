@@ -94,13 +94,14 @@ class BaseWidget extends HTMLElement {
                 #content::-webkit-scrollbar-thumb {
                     background: transparent;
                     border-radius: 2px;
+                    transition: background 0.3s ease;
                 }
 
-                #content:hover::-webkit-scrollbar-thumb {
+                #content.scrolling::-webkit-scrollbar-thumb {
                     background: var(--scrollbar-thumb);
                 }
 
-                #content::-webkit-scrollbar-thumb:hover {
+                #content.scrolling::-webkit-scrollbar-thumb:hover {
                     background: var(--scrollbar-thumb-hover);
                 }
 
@@ -180,12 +181,24 @@ class BaseWidget extends HTMLElement {
         const header = this.shadowRoot.querySelector('.widget-header');
 
         if (content && header) {
+            let scrollTimeout;
+
             content.addEventListener('scroll', () => {
+                // Update header border
                 if (content.scrollTop > 0) {
                     header.classList.add('scrolled');
                 } else {
                     header.classList.remove('scrolled');
                 }
+
+                // Show scrollbar while scrolling
+                content.classList.add('scrolling');
+
+                // Hide scrollbar after scrolling stops
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(() => {
+                    content.classList.remove('scrolling');
+                }, 200); // Hide after .2s of no scrolling
             });
         }
     }
