@@ -16,17 +16,16 @@ class TrashWidget extends BaseWidget {
     }
 
     normalizeAddress(address) {
-        // Extract just the street and number from the address (remove postal code)
-        // e.g., "Persaunvegen 1C, 7045" -> "Persaunvegen 1C"
-        let addressParts = address.split(',')[0].trim();
-
-        // Normalize: ensure there's a space before the letter suffix
-        // Handle both uppercase and lowercase (e.g., "1c" or "1C" -> "1 C")
-        addressParts = addressParts.replace(/(\d+)([A-Za-z])\s*$/i, (match, num, letter) => {
-            return `${num} ${letter.toUpperCase()}`;
-        });
-
-        return addressParts;
+        // addresses are given as 1C, Persaunvegen, Dalen, Lerkehaug, Østbyen, Trondheim, Trøndelag, 7045, Norway
+        // we care about 1C and Persaunvegen, but in reverse order
+        const parts = address.split(',');
+        let number = parts[0].trim();
+        // if the number includes a letter, we have to insert a space
+        if (number.match(/[A-Z]/)) {
+            number = number.replace(/(\d+)([A-Z])/, '$1 $2');
+        }
+        const street = parts[1].trim();
+        return (street + ' ' + number).toUpperCase();
     }
 
     async loadTrashSchedule() {
