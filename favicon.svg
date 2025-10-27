@@ -1,23 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Trondheim coat of arms inspired favicon -->
-  <!-- Shield background -->
-  <path d="M50 5 L90 20 L90 60 Q90 80 50 95 Q10 80 10 60 L10 20 Z" fill="#003087" stroke="#FFD700" stroke-width="2"/>
-  
-  <!-- St. Olav figure (simplified) -->
-  <!-- Crown -->
-  <path d="M45 20 L55 20 L55 18 L53 18 L53 16 L52 16 L52 14 L48 14 L48 16 L47 16 L47 18 L45 18 Z" fill="#FFD700"/>
-  
-  <!-- Head -->
-  <circle cx="50" cy="28" r="6" fill="#FFC0A0"/>
-  
-  <!-- Body/Robe -->
-  <path d="M44 34 L56 34 L58 55 L54 55 L54 70 L46 70 L46 55 L42 55 Z" fill="#C0C0C0"/>
-  
-  <!-- Cross/Axe (St. Olav's attribute) -->
-  <rect x="48" y="40" width="4" height="25" fill="#8B4513"/>
-  <rect x="43" y="42" width="14" height="3" fill="#8B4513"/>
-  
-  <!-- Halo -->
-  <circle cx="50" cy="28" r="8" fill="none" stroke="#FFD700" stroke-width="1"/>
-</svg>
+  <!-- Trondheim Nyperose (Dog Rose) - City Flower -->
+  <!-- Yellow Nyperose flower -->
+  <!-- Five petals arranged in a circle -->
+  <g transform="translate(50, 50)">
+    <circle cx="0" cy="0" r="50" fill="#C8102E"/>
+    <!-- Petal 1 (top) -->
+    <ellipse cx="0" cy="-20" rx="10" ry="14" fill="#FFD700" transform="rotate(0)"/>
 
+    <!-- Petal 2 (top-right) -->
+    <ellipse cx="0" cy="-20" rx="10" ry="14" fill="#FFD700" transform="rotate(72)"/>
+
+    <!-- Petal 3 (bottom-right) -->
+    <ellipse cx="0" cy="-20" rx="10" ry="14" fill="#FFD700" transform="rotate(144)"/>
+
+    <!-- Petal 4 (bottom-left) -->
+    <ellipse cx="0" cy="-20" rx="10" ry="14" fill="#FFD700" transform="rotate(216)"/>
+
+    <!-- Petal 5 (top-left) -->
+    <ellipse cx="0" cy="-20" rx="10" ry="14" fill="#FFD700" transform="rotate(288)"/>
+
+    <!-- Center of flower (stamens) -->
+    <circle cx="0" cy="0" r="8" fill="#FFA500"/>
+
+    <!-- Inner detail -->
+    <circle cx="0" cy="0" r="5" fill="#FF8C00"/>
+
+    <!-- Small dots for stamen detail -->
+    <circle cx="0" cy="-3" r="1.5" fill="#FFD700"/>
+    <circle cx="2.5" cy="-1.5" r="1.5" fill="#FFD700"/>
+    <circle cx="2.5" cy="1.5" r="1.5" fill="#FFD700"/>
+    <circle cx="0" cy="3" r="1.5" fill="#FFD700"/>
+    <circle cx="-2.5" cy="1.5" r="1.5" fill="#FFD700"/>
+    <circle cx="-2.5" cy="-1.5" r="1.5" fill="#FFD700"/>
+  </g>
+</svg>

@@ -38,6 +38,8 @@ class AddressInput extends HTMLElement {
                     input.value = address;
                     // Directly update location without searching
                     this.updateLocation(lat, lon, address);
+                    // Show clear button since we have text
+                    this.updateClearButton();
                 }
             } catch (error) {
                 console.error('Error loading saved address:', error);
@@ -125,7 +127,7 @@ class AddressInput extends HTMLElement {
                     font-size: var(--font-size-lg);
                     display: flex;
                     align-items: center;
-                    gap: var(--spacing-xs);
+                    gap: var(--spacing-sm);
                 }
 
                 h2 svg {
@@ -135,7 +137,7 @@ class AddressInput extends HTMLElement {
                 .input-group {
                     display: flex;
                     flex-direction: column;
-                    gap: var(--spacing-sm);
+                    gap: var(--spacing-md);
                 }
 
                 .input-row {
@@ -145,12 +147,12 @@ class AddressInput extends HTMLElement {
 
                 .button-row {
                     display: flex;
-                    gap: var(--spacing-sm);
+                    gap: var(--spacing-md);
                 }
 
                 input {
                     flex: 1;
-                    padding: var(--spacing-sm) var(--spacing-md);
+                    padding: var(--spacing-sm) 40px var(--spacing-sm) var(--spacing-md);
                     border: 1px solid var(--border-color);
                     border-radius: var(--border-radius);
                     font-size: var(--font-size-md);
@@ -172,17 +174,38 @@ class AddressInput extends HTMLElement {
                     width: 100%;
                 }
 
-                .typing-indicator {
+                .clear-btn {
                     position: absolute;
-                    right: 12px;
+                    right: 8px;
                     top: 50%;
                     transform: translateY(-50%);
-                    font-size: var(--font-size-xs);
-                    color: var(--text-light);
+                    background: none;
+                    border: none;
+                    padding: 6px;
+                    cursor: pointer;
+                    color: var(--text-light, #999);
                     display: none;
+                    align-items: center;
+                    justify-content: center;
+                    border-radius: 50%;
+                    transition: all 0.2s;
+                    width: 28px;
+                    height: 28px;
+                    z-index: 10;
                 }
 
-                .typing-indicator.visible {
+                .clear-btn:hover {
+                    background-color: var(--hover-bg, #f5f5f5);
+                    color: var(--text-color);
+                }
+
+                .clear-btn:active {
+                    transform: translateY(-50%) scale(0.95);
+                }
+
+                .clear-btn svg {
+                    width: 16px;
+                    height: 16px;
                     display: block;
                 }
 
@@ -265,7 +288,6 @@ class AddressInput extends HTMLElement {
 
                     button {
                         flex: 0 0 auto;
-                        min-width: 100px;
                     }
 
                     .location-btn {
@@ -323,10 +345,18 @@ class AddressInput extends HTMLElement {
                     border: 1px solid var(--error-color);
                     line-height: 1.5;
                     display: none;
+                    text-align: center;
                 }
 
                 .error:not([style*="display: none"]) {
-                    display: block;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: var(--spacing-xs);
+                }
+
+                .error svg {
+                    flex-shrink: 0;
                 }
 
                 .loading {
@@ -359,7 +389,12 @@ class AddressInput extends HTMLElement {
                                 aria-label="Address"
                                 autocomplete="off"
                             />
-                            <span id="typing-indicator" class="typing-indicator">...</span>
+                            <button id="clear-btn" class="clear-btn" title="Clear">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     <div class="button-row">
@@ -377,13 +412,28 @@ class AddressInput extends HTMLElement {
         `;
     }
 
+    updateClearButton() {
+        const input = this.shadowRoot.getElementById('address-input');
+        const clearBtn = this.shadowRoot.getElementById('clear-btn');
+
+        if (input && clearBtn) {
+            if (input.value.trim()) {
+                clearBtn.style.display = 'flex';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+        }
+    }
+
     attachEventListeners() {
         const input = this.shadowRoot.getElementById('address-input');
         const searchBtn = this.shadowRoot.getElementById('search-btn');
         const locationBtn = this.shadowRoot.getElementById('location-btn');
+        const clearBtn = this.shadowRoot.getElementById('clear-btn');
 
         // Debounced search on input
         input.addEventListener('input', (e) => {
+            this.updateClearButton();
             this.handleInputChange(e.target.value);
         });
 
@@ -405,6 +455,15 @@ class AddressInput extends HTMLElement {
         });
 
         locationBtn.addEventListener('click', () => this.handleCurrentLocation());
+
+        // Clear button
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            this.updateClearButton();
+            this.hideSuggestions();
+            this.cancelDebounce();
+            input.focus();
+        });
 
         // Close suggestions when clicking outside
         this.clickOutsideHandler = (e) => {
@@ -430,7 +489,6 @@ class AddressInput extends HTMLElement {
         if (trimmedValue.length < 3) {
             this.hideSuggestions();
             this.hideCurrentLocation();
-            this.hideTypingIndicator();
             this.hideError();
             return;
         }
@@ -438,12 +496,8 @@ class AddressInput extends HTMLElement {
         // Hide error when user starts typing
         this.hideError();
 
-        // Show typing indicator
-        this.showTypingIndicator();
-
         // Set new timeout for debounced search
         this.searchTimeout = setTimeout(() => {
-            this.hideTypingIndicator();
             this.handleAddressSearch();
         }, this.debounceDelay);
     }
@@ -452,21 +506,6 @@ class AddressInput extends HTMLElement {
         if (this.searchTimeout) {
             clearTimeout(this.searchTimeout);
             this.searchTimeout = null;
-        }
-        this.hideTypingIndicator();
-    }
-
-    showTypingIndicator() {
-        const indicator = this.shadowRoot.getElementById('typing-indicator');
-        if (indicator) {
-            indicator.classList.add('visible');
-        }
-    }
-
-    hideTypingIndicator() {
-        const indicator = this.shadowRoot.getElementById('typing-indicator');
-        if (indicator) {
-            indicator.classList.remove('visible');
         }
     }
 
@@ -631,8 +670,11 @@ class AddressInput extends HTMLElement {
 
     showError(message) {
         const errorDiv = this.shadowRoot.getElementById('error-message');
-        errorDiv.textContent = message;
-        errorDiv.style.display = 'block';
+        errorDiv.innerHTML = `
+            ${IconLibrary.getIcon('warning', 18)}
+            <span>${message}</span>
+        `;
+        errorDiv.style.display = 'flex';
         this.hideCurrentLocation();
     }
 
@@ -654,7 +696,6 @@ class AddressInput extends HTMLElement {
                 input.disabled = true;
             }
             searchBtn.innerHTML = '<span class="loading"></span>';
-            this.hideTypingIndicator();
         } else {
             searchBtn.disabled = false;
             locationBtn.disabled = false;

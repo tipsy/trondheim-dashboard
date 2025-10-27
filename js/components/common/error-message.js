@@ -27,7 +27,7 @@ class ErrorMessage extends HTMLElement {
                 bg: 'var(--error-bg, #ffebee)',
                 color: 'var(--error-color, #d32f2f)',
                 border: 'var(--error-color, #d32f2f)',
-                icon: IconLibrary.getIcon('error', 24)
+                icon: IconLibrary.getIcon('warning', 24)
             },
             warning: {
                 bg: '#fff3e0',
@@ -64,8 +64,10 @@ class ErrorMessage extends HTMLElement {
                     line-height: 1.5;
                     font-size: var(--font-size-sm, 14px);
                     display: flex;
-                    align-items: flex-start;
+                    align-items: center;
+                    justify-content: center;
                     gap: var(--spacing-sm, 8px);
+                    text-align: center;
                 }
 
                 .error-icon {
@@ -73,7 +75,6 @@ class ErrorMessage extends HTMLElement {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    margin-top: 2px;
                 }
 
                 .error-icon svg {
