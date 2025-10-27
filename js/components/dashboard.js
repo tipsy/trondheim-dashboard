@@ -275,12 +275,8 @@ class TrondheimDashboard extends HTMLElement {
             if (addressInput) {
                 // Wait a bit for the address input to be fully initialized
                 setTimeout(() => {
-                    const input = addressInput.shadowRoot.getElementById('address-input');
-                    if (input) {
-                        input.value = decodeURIComponent(address);
-                        // Trigger search
-                        addressInput.handleAddressSearch(true);
-                    }
+                    // Use loadFromURL which checks for saved coordinates first
+                    addressInput.loadFromURL(decodeURIComponent(address));
                 }, 200);
             }
         }
@@ -288,6 +284,7 @@ class TrondheimDashboard extends HTMLElement {
 
     attachEventListeners() {
         const addressInput = this.shadowRoot.getElementById('address-input');
+        const themeSelector = this.shadowRoot.querySelector('theme-selector');
 
         // Listen for location updates from address input
         addressInput.addEventListener('location-updated', (event) => {
@@ -298,7 +295,43 @@ class TrondheimDashboard extends HTMLElement {
 
             // Update all widgets with the new location
             this.updateAllWidgets(lat, lon, address);
+
+            // Update URL with address
+            this.updateURL({ address });
         });
+
+        // Listen for theme changes
+        if (themeSelector) {
+            themeSelector.addEventListener('theme-changed', (event) => {
+                const { theme } = event.detail;
+                // Update URL with theme
+                this.updateURL({ theme });
+            });
+        }
+    }
+
+    updateURL(params) {
+        const url = new URL(window.location);
+
+        // Update or add parameters
+        if (params.address !== undefined) {
+            if (params.address) {
+                url.searchParams.set('address', encodeURIComponent(params.address));
+            } else {
+                url.searchParams.delete('address');
+            }
+        }
+
+        if (params.theme !== undefined) {
+            if (params.theme) {
+                url.searchParams.set('theme', params.theme);
+            } else {
+                url.searchParams.delete('theme');
+            }
+        }
+
+        // Update URL without reloading the page
+        window.history.pushState({}, '', url);
     }
 
     updateAllWidgets(lat, lon, address) {

@@ -22,6 +22,13 @@ class ThemeSelector extends HTMLElement {
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('trondheim-dashboard-theme', theme);
+
+        // Dispatch event for dashboard to update URL
+        this.dispatchEvent(new CustomEvent('theme-changed', {
+            detail: { theme },
+            bubbles: true,
+            composed: true
+        }));
     }
 
     render() {

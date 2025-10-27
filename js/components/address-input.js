@@ -52,6 +52,36 @@ class AddressInput extends HTMLElement {
         localStorage.setItem('trondheim-dashboard-location', JSON.stringify(data));
     }
 
+    // Load address from URL parameter - check if we have saved coordinates first
+    loadFromURL(address) {
+        const savedData = localStorage.getItem('trondheim-dashboard-location');
+
+        // Check if we have saved coordinates for this exact address
+        if (savedData) {
+            try {
+                const { address: savedAddress, lat, lon } = JSON.parse(savedData);
+                if (savedAddress === address && lat && lon) {
+                    // We have the coordinates, use them directly
+                    const input = this.shadowRoot.getElementById('address-input');
+                    if (input) {
+                        input.value = address;
+                    }
+                    this.updateLocation(lat, lon, address);
+                    return;
+                }
+            } catch (error) {
+                console.error('Error loading saved address:', error);
+            }
+        }
+
+        // No saved coordinates, need to search
+        const input = this.shadowRoot.getElementById('address-input');
+        if (input) {
+            input.value = address;
+        }
+        this.handleAddressSearch(true);
+    }
+
     render() {
         this.shadowRoot.innerHTML = `
             <style>
