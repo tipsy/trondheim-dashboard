@@ -1,0 +1,61 @@
+/* Midnight Blue theme - Elegant dark blue */
+:root[data-theme="midnight-blue"] {
+    /* Colors */
+    --primary-color: #5dade2;
+    --secondary-color: #85c1e9;
+    --heading-color: #5dade2;
+    --background-color: #0d1b2a;
+    --card-background: #1b263b;
+    --text-color: #e0e6ed;
+    --text-alt: #e0e6ed;
+    --text-light: #8b9bb3;
+    --border-color: #2d3e57;
+    --input-background: #253447;
+    --button-text: #ffffff;
+    --success-color: #52b788;
+    --success-hover: #74c69d;
+    --success-bg: #1a3a2e;
+    --error-bg: #3d1e1e;
+    --error-color: #ef476f;
+    --info-bg: #1e3a5f;
+    --info-color: #5dade2;
+
+    /* Alternate backgrounds */
+    --alt-background: #162032;
+    --hover-background: #253447;
+    --hover-bg: #253447;
+
+    /* Shadows */
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.5);
+
+    /* Spacing */
+    --border-radius: 8px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-xs: 11px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 48px;
+    --font-size-xxl: 64px;
+
+    /* Trash type colors */
+    --trash-general: #8b9bb3;
+    --trash-paper: #5dade2;
+    --trash-plastic: #52b788;
+    --trash-food: #95d5b2;
+    --trash-glass: #48cae4;
+    --trash-metal: #a8b5c7;
+
+    /* Scrollbar colors */
+    --scrollbar-thumb: rgba(93, 173, 226, 0.3);
+    --scrollbar-thumb-hover: rgba(93, 173, 226, 0.5);
+}
+

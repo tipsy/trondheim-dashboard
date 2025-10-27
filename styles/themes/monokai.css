@@ -1,0 +1,96 @@
+/* Monokai theme - Vibrant colorful programmer theme */
+:root[data-theme="monokai"] {
+    /* Base Colors - Authentic Monokai palette */
+    --primary-color: #66d9ef;
+    --secondary-color: #a6e22e;
+    --heading-color: #f92672;
+    --background-color: #282923;
+    --card-background: #3b3a32;
+    --text-color: #f8f8f2;
+    --text-alt: #fd971f;
+    --text-light: #a6e22e;
+    --border-color: #49483e;
+    --input-background: #3b3a32;
+    --button-text: #282923;
+    --success-color: #a6e22e;
+    --success-hover: #b8f040;
+    --success-bg: #2d3a1f;
+    --error-bg: #3d1f1f;
+    --error-color: #f92672;
+    --info-bg: #1f2d3d;
+    --info-color: #66d9ef;
+
+    /* Alternate backgrounds */
+    --alt-background: #2f2e27;
+    --hover-background: #49483e;
+    --hover-bg: #49483e;
+
+    /* Shadows */
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.6);
+
+    /* Spacing */
+    --border-radius: 4px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography - Monospace for that code editor feel */
+    --font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', 'Monaco', 'Courier New', monospace;
+    --font-size-xs: 11px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 48px;
+    --font-size-xxl: 64px;
+
+    /* Trash type colors - Using Monokai accent colors */
+    --trash-general: #75715e;
+    --trash-paper: #66d9ef;
+    --trash-plastic: #a6e22e;
+    --trash-food: #e6db74;
+    --trash-glass: #ae81ff;
+    --trash-metal: #fd971f;
+
+    /* Scrollbar colors */
+    --scrollbar-thumb: rgba(102, 217, 239, 0.3);
+    --scrollbar-thumb-hover: rgba(102, 217, 239, 0.5);
+}
+
+/* ============================================
+   MONOKAI SPECIAL COLORFUL OVERRIDES
+   Using CSS custom properties that pierce Shadow DOM
+   ============================================ */
+
+/* Weather hour labels - Green for muted text */
+:root[data-theme="monokai"] weather-hour {
+    --text-light: #a6e22e; /* Green for time labels */
+}
+
+/* Bus rows - Pink for line numbers, Cyan for text */
+:root[data-theme="monokai"] bus-row {
+    --primary-color: #f92672; /* Pink for line number background */
+    --text-color: #66d9ef; /* Cyan for destination */
+}
+
+/* Trash rows - Green for text */
+:root[data-theme="monokai"] trash-row {
+    --text-color: #a6e22e; /* Green for trash type */
+}
+
+/* Detail items (used in weather) - Cyan labels, Green values */
+:root[data-theme="monokai"] detail-item {
+    --text-light: #66d9ef; /* Cyan for labels */
+    --text-color: #a6e22e; /* Green for values */
+}
+
+/* Links - Cyan */
+:root[data-theme="monokai"] a {
+    color: #66d9ef;
+}
+
+:root[data-theme="monokai"] a:hover {
+    color: #ae81ff; /* Purple on hover */
+}

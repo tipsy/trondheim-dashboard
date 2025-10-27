@@ -109,7 +109,7 @@ class WeatherHour extends HTMLElement {
                 .hour-temp {
                     font-size: var(--font-size-lg);
                     font-weight: bold;
-                    color: var(--text-color);
+                    color: var(--text-alt, var(--text-color));
                 }
             </style>
 

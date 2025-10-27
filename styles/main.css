@@ -1,10 +1,14 @@
-/* Import cute font */
+/* Import fonts */
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap');
 
 /* Import theme files */
 @import url('themes/light.css');
 @import url('themes/dark.css');
 @import url('themes/peach.css');
+@import url('themes/midnight-blue.css');
+@import url('themes/solarized.css');
+@import url('themes/monokai.css');
 
 * {
     margin: 0;

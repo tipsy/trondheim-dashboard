@@ -3,9 +3,11 @@
     /* Colors */
     --primary-color: #0066cc;
     --secondary-color: #004d99;
+    --heading-color: #333333;
     --background-color: #f5f5f5;
     --card-background: #ffffff;
     --text-color: #333333;
+    --text-alt: #333333;
     --text-light: #666666;
     --border-color: #e0e0e0;
     --input-background: #ffffff;

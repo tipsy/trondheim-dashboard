@@ -98,7 +98,7 @@ class WeatherCurrent extends HTMLElement {
                 .current-temp {
                     font-size: var(--font-size-xxl, 64px);
                     font-weight: bold;
-                    color: var(--text-color, #333333);
+                    color: var(--text-color);
                 }
 
                 .weather-details {

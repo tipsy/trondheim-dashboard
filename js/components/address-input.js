@@ -121,11 +121,15 @@ class AddressInput extends HTMLElement {
 
                 h2 {
                     margin: 0 0 var(--spacing-sm) 0;
-                    color: var(--text-color);
+                    color: var(--heading-color, var(--text-color));
                     font-size: var(--font-size-lg);
                     display: flex;
                     align-items: center;
                     gap: var(--spacing-xs);
+                }
+
+                h2 svg {
+                    stroke: var(--heading-color, var(--primary-color));
                 }
 
                 .input-group {

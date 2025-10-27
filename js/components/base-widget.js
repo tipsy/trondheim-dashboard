@@ -99,12 +99,16 @@ class BaseWidget extends HTMLElement {
 
                 h3 {
                     margin: 0;
-                    color: var(--text-color);
+                    color: var(--heading-color, var(--text-color));
                     font-size: var(--font-size-lg);
                     display: flex;
                     align-items: center;
                     gap: var(--spacing-xs);
                     white-space: nowrap;
+                }
+
+                h3 svg {
+                    stroke: var(--heading-color, var(--primary-color));
                 }
 
                 #content {

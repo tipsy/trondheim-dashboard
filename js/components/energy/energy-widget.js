@@ -75,7 +75,7 @@ class EnergyWidget extends BaseWidget {
                 .current-price-value {
                     font-size: 40px;
                     font-weight: bold;
-                    color: var(--primary-color);
+                    color: var(--text-color);
                     line-height: 1;
                 }
 
