@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Trondheim coat of arms inspired favicon -->
+  <!-- Shield background -->
+  <path d="M50 5 L90 20 L90 60 Q90 80 50 95 Q10 80 10 60 L10 20 Z" fill="#003087" stroke="#FFD700" stroke-width="2"/>
+  
+  <!-- St. Olav figure (simplified) -->
+  <!-- Crown -->
+  <path d="M45 20 L55 20 L55 18 L53 18 L53 16 L52 16 L52 14 L48 14 L48 16 L47 16 L47 18 L45 18 Z" fill="#FFD700"/>
+  
+  <!-- Head -->
+  <circle cx="50" cy="28" r="6" fill="#FFC0A0"/>
+  
+  <!-- Body/Robe -->
+  <path d="M44 34 L56 34 L58 55 L54 55 L54 70 L46 70 L46 55 L42 55 Z" fill="#C0C0C0"/>
+  
+  <!-- Cross/Axe (St. Olav's attribute) -->
+  <rect x="48" y="40" width="4" height="25" fill="#8B4513"/>
+  <rect x="43" y="42" width="14" height="3" fill="#8B4513"/>
+  
+  <!-- Halo -->
+  <circle cx="50" cy="28" r="8" fill="none" stroke="#FFD700" stroke-width="1"/>
+</svg>
+

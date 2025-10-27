@@ -19,8 +19,23 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+}
+
+/* Desktop: prevent body scrolling, widgets handle their own scroll */
+@media (min-width: 1025px) {
+    body {
+        height: 100vh;
+        overflow: hidden;
+    }
+}
+
+/* Mobile/Tablet: allow natural scrolling */
+@media (max-width: 1024px) {
+    body {
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
 }
 
 h1, h2, h3, h4, h5, h6 {

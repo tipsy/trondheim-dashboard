@@ -9,6 +9,7 @@ class TrondheimDashboard extends HTMLElement {
     connectedCallback() {
         this.render();
         this.attachEventListeners();
+        this.loadURLParameters();
         this.startAutoRefresh();
     }
 
@@ -244,6 +245,45 @@ class TrondheimDashboard extends HTMLElement {
                 </div>
             </div>
         `;
+    }
+
+    loadURLParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // Handle theme parameter
+        const theme = urlParams.get('theme');
+        if (theme) {
+            const themeSelector = this.shadowRoot.querySelector('theme-selector');
+            if (themeSelector) {
+                // Set theme directly
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('trondheim-dashboard-theme', theme);
+                // Update the selector to reflect the theme
+                setTimeout(() => {
+                    const select = themeSelector.shadowRoot.querySelector('custom-select');
+                    if (select) {
+                        select.setAttribute('selected', theme);
+                    }
+                }, 100);
+            }
+        }
+
+        // Handle address parameter
+        const address = urlParams.get('address');
+        if (address) {
+            const addressInput = this.shadowRoot.getElementById('address-input');
+            if (addressInput) {
+                // Wait a bit for the address input to be fully initialized
+                setTimeout(() => {
+                    const input = addressInput.shadowRoot.getElementById('address-input');
+                    if (input) {
+                        input.value = decodeURIComponent(address);
+                        // Trigger search
+                        addressInput.handleAddressSearch(true);
+                    }
+                }, 200);
+            }
+        }
     }
 
     attachEventListeners() {

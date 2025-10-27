@@ -14,15 +14,31 @@ class CustomSelect extends HTMLElement {
         this.attachEventListeners();
     }
 
+    disconnectedCallback() {
+        // Clean up event listeners
+        const select = this.shadowRoot.getElementById('select');
+        if (select && this.changeHandler) {
+            select.removeEventListener('change', this.changeHandler);
+        }
+    }
+
     attributeChangedCallback(name, oldValue, newValue) {
         if (oldValue !== newValue) {
             this.render();
+            // Re-attach listeners after render
+            if (this.isConnected) {
+                this.attachEventListeners();
+            }
         }
     }
 
     setOptions(options) {
         this.options = options;
         this.render();
+        // Re-attach listeners after render
+        if (this.isConnected) {
+            this.attachEventListeners();
+        }
     }
 
     render() {
@@ -88,21 +104,27 @@ class CustomSelect extends HTMLElement {
                 </select>
             </div>
         `;
-
-        this.attachEventListeners();
     }
 
     attachEventListeners() {
         const select = this.shadowRoot.getElementById('select');
         if (select) {
-            select.addEventListener('change', (e) => {
+            // Remove old listener if it exists
+            if (this.changeHandler) {
+                select.removeEventListener('change', this.changeHandler);
+            }
+
+            // Create and store the handler
+            this.changeHandler = (e) => {
                 this.setAttribute('selected', e.target.value);
                 this.dispatchEvent(new CustomEvent('change', {
                     bubbles: true,
                     composed: true,
                     detail: { value: e.target.value }
                 }));
-            });
+            };
+
+            select.addEventListener('change', this.changeHandler);
         }
     }
 

@@ -4,6 +4,7 @@ class AddressInput extends HTMLElement {
         this.attachShadow({ mode: 'open' });
         this.searchTimeout = null;
         this.debounceDelay = 500; // milliseconds
+        this.isSearching = false; // Prevent multiple simultaneous searches
     }
 
     connectedCallback() {
@@ -392,8 +393,13 @@ class AddressInput extends HTMLElement {
 
         // Close suggestions when clicking outside
         this.clickOutsideHandler = (e) => {
-            if (!this.contains(e.target)) {
-                this.hideSuggestions();
+            try {
+                if (!this.contains(e.target)) {
+                    this.hideSuggestions();
+                }
+            } catch (error) {
+                // Silently handle any errors in click handler
+                console.error('Error in click outside handler:', error);
             }
         };
         document.addEventListener('click', this.clickOutsideHandler);
@@ -454,6 +460,12 @@ class AddressInput extends HTMLElement {
     }
 
     async handleAddressSearch(disableInput = false) {
+        // Prevent multiple simultaneous searches
+        if (this.isSearching) {
+            console.log('Search already in progress, skipping...');
+            return;
+        }
+
         const input = this.shadowRoot.getElementById('address-input');
         const address = input.value.trim();
 
@@ -462,6 +474,7 @@ class AddressInput extends HTMLElement {
             return;
         }
 
+        this.isSearching = true;
         this.showLoading(true, disableInput);
         this.hideError();
         this.hideSuggestions();
@@ -469,17 +482,15 @@ class AddressInput extends HTMLElement {
         try {
             const locations = await GeocodingAPI.geocodeAddress(address);
 
-            if (locations.length === 1) {
-                // Only one result, use it directly
-                this.selectLocation(locations[0]);
-            } else {
-                // Multiple results, show suggestions
-                this.showSuggestions(locations, address);
-            }
+            // Always show suggestions, even for single result
+            // This gives user a chance to review before selecting
+            this.showSuggestions(locations, address);
         } catch (error) {
+            console.error('Address search error:', error);
             this.showError(error.message || 'Could not find address. Please try again.');
         } finally {
             this.showLoading(false, disableInput);
+            this.isSearching = false;
         }
     }
 
@@ -530,10 +541,18 @@ class AddressInput extends HTMLElement {
     hideSuggestions() {
         const suggestionsDiv = this.shadowRoot.getElementById('suggestions');
         suggestionsDiv.classList.remove('visible');
+        // Clear innerHTML will automatically remove event listeners
         suggestionsDiv.innerHTML = '';
     }
 
     async handleCurrentLocation() {
+        // Prevent multiple simultaneous location requests
+        if (this.isSearching) {
+            console.log('Location request already in progress, skipping...');
+            return;
+        }
+
+        this.isSearching = true;
         this.showLoading(true, true); // Disable input for location search
         this.hideError();
         this.hideSuggestions();
@@ -555,9 +574,11 @@ class AddressInput extends HTMLElement {
             this.updateLocation(location.lat, location.lon, address);
             this.hideCurrentLocation(); // Don't show the selected message
         } catch (error) {
+            console.error('Current location error:', error);
             this.showError(error.message || 'Could not get your location. Check browser settings.');
         } finally {
             this.showLoading(false, true);
+            this.isSearching = false;
         }
     }
 

@@ -2,6 +2,10 @@
 // Using Nominatim (OpenStreetMap) for geocoding
 
 class GeocodingAPI {
+    // Rate limiting: track last request time
+    static lastRequestTime = 0;
+    static minRequestInterval = 1000; // Minimum 1 second between requests
+
     /**
      * Fetch with timeout to prevent hanging on slow connections
      */
@@ -59,6 +63,15 @@ class GeocodingAPI {
      */
     static async geocodeAddress(address, limit = 20) {
         try {
+            // Rate limiting: ensure minimum time between requests
+            const now = Date.now();
+            const timeSinceLastRequest = now - this.lastRequestTime;
+            if (timeSinceLastRequest < this.minRequestInterval) {
+                const waitTime = this.minRequestInterval - timeSinceLastRequest;
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+            }
+            this.lastRequestTime = Date.now();
+
             // Request more results since we'll filter them
             const encodedAddress = encodeURIComponent(`${address}, Trøndelag, Norway`);
             const response = await this.fetchWithTimeout(
