@@ -299,45 +299,14 @@ class AddressInput extends HTMLElement {
                     .suggestions {
                         max-height: 400px;
                     }
-
-                    .suggestion-item {
-                        padding: var(--spacing-md);
-                        min-height: 60px;
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                    }
                 }
 
                 .suggestions.visible {
                     display: block;
                 }
 
-                .suggestion-item {
-                    padding: var(--spacing-sm) var(--spacing-md);
-                    cursor: pointer;
-                    border-bottom: 1px solid var(--border-color);
-                    transition: background-color 0.2s;
-                }
-
-                .suggestion-item:last-child {
+                address-suggestion-item:last-child {
                     border-bottom: none;
-                }
-
-                .suggestion-item:hover {
-                    background-color: var(--hover-bg, #f5f5f5);
-                }
-
-                .suggestion-item .address-name {
-                    font-weight: 500;
-                    color: var(--text-color);
-                    font-size: var(--font-size-md);
-                }
-
-                .suggestion-item .address-details {
-                    font-size: var(--font-size-sm);
-                    color: var(--text-light, #666);
-                    margin-top: 2px;
                 }
 
                 .error {
@@ -373,10 +342,7 @@ class AddressInput extends HTMLElement {
 
             <div class="address-container">
                 <h2>
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/>
-                        <circle cx="12" cy="10" r="3"/>
-                    </svg>
+                    ${IconLibrary.getIcon('location')}
                     Your Address
                 </h2>
                 <div class="input-group">
@@ -395,11 +361,7 @@ class AddressInput extends HTMLElement {
                     <div class="button-row">
                         <button id="search-btn">Search</button>
                         <button id="location-btn" class="location-btn" title="Use my location">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/>
-                                <circle cx="12" cy="12" r="3"/>
-                                <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
-                            </svg>
+                            ${IconLibrary.getIcon('location-crosshair', 16)}
                             <span class="location-text">Use Location</span>
                         </button>
                     </div>
@@ -579,25 +541,21 @@ class AddressInput extends HTMLElement {
     showSuggestions(locations, originalAddress) {
         const suggestionsDiv = this.shadowRoot.getElementById('suggestions');
 
-        suggestionsDiv.innerHTML = locations.map((loc, index) => {
-            // Extract main address and details
-            const parts = loc.displayName.split(',');
-            const mainAddress = parts.slice(0, 2).join(',');
-            const details = parts.slice(2).join(',');
+        // Clear previous suggestions
+        suggestionsDiv.innerHTML = '';
 
-            return `
-                <div class="suggestion-item" data-index="${index}">
-                    <div class="address-name">${mainAddress}</div>
-                    <div class="address-details">${details}</div>
-                </div>
-            `;
-        }).join('');
+        // Create suggestion item components
+        locations.forEach((loc, index) => {
+            const suggestionItem = document.createElement('address-suggestion-item');
+            suggestionItem.setAttribute('display-name', loc.displayName);
+            suggestionItem.setAttribute('index', index.toString());
 
-        // Add click handlers to suggestions
-        suggestionsDiv.querySelectorAll('.suggestion-item').forEach((item, index) => {
-            item.addEventListener('click', () => {
-                this.selectLocation(locations[index]);
+            // Listen for selection
+            suggestionItem.addEventListener('select', (e) => {
+                this.selectLocation(locations[e.detail.index]);
             });
+
+            suggestionsDiv.appendChild(suggestionItem);
         });
 
         suggestionsDiv.classList.add('visible');

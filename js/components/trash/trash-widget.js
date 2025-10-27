@@ -133,14 +133,7 @@ class TrashWidget extends BaseWidget {
     }
 
     formatDate(date) {
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        const dayName = days[date.getDay()];
-        const day = date.getDate();
-        const month = months[date.getMonth()];
-
-        return `${dayName}, ${month} ${day}`;
+        return DateFormatter.formatLongDate(date);
     }
 
     getTrashClass(type) {
@@ -162,9 +155,7 @@ class TrashWidget extends BaseWidget {
     }
 
     getIcon() {
-        return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-        </svg>`;
+        return IconLibrary.getIcon('trash');
     }
 
     getPlaceholderText() {

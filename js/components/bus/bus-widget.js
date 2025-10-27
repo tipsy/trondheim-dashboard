@@ -125,12 +125,7 @@ class BusWidget extends BaseWidget {
     }
 
     getIcon() {
-        return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="6" width="18" height="12" rx="2"/>
-            <path d="M3 10h18M8 14h.01M16 14h.01"/>
-            <circle cx="8" cy="18" r="1"/>
-            <circle cx="16" cy="18" r="1"/>
-        </svg>`;
+        return IconLibrary.getIcon('bus');
     }
 
     getHeaderContent() {

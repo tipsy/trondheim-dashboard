@@ -1,33 +1,7 @@
 // Geocoding API utilities for Trondheim Dashboard
 // Using Nominatim (OpenStreetMap) for geocoding
 
-class GeocodingAPI {
-    // Rate limiting: track last request time
-    static lastRequestTime = 0;
-    static minRequestInterval = 1000; // Minimum 1 second between requests
-
-    /**
-     * Fetch with timeout to prevent hanging on slow connections
-     */
-    static async fetchWithTimeout(url, options = {}, timeout = 10000) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), timeout);
-
-        try {
-            const response = await fetch(url, {
-                ...options,
-                signal: controller.signal
-            });
-            clearTimeout(timeoutId);
-            return response;
-        } catch (error) {
-            clearTimeout(timeoutId);
-            if (error.name === 'AbortError') {
-                throw new Error('Request timeout - please check your internet connection');
-            }
-            throw error;
-        }
-    }
+class GeocodingAPI extends APIBase {
 
     /**
      * Check if address is in Trøndelag county
@@ -63,15 +37,6 @@ class GeocodingAPI {
      */
     static async geocodeAddress(address, limit = 20) {
         try {
-            // Rate limiting: ensure minimum time between requests
-            const now = Date.now();
-            const timeSinceLastRequest = now - this.lastRequestTime;
-            if (timeSinceLastRequest < this.minRequestInterval) {
-                const waitTime = this.minRequestInterval - timeSinceLastRequest;
-                await new Promise(resolve => setTimeout(resolve, waitTime));
-            }
-            this.lastRequestTime = Date.now();
-
             // Only add region if not already present in the address
             let searchAddress = address;
             const lowerAddress = address.toLowerCase();
@@ -84,7 +49,8 @@ class GeocodingAPI {
 
             // Request more results since we'll filter them
             const encodedAddress = encodeURIComponent(searchAddress);
-            const response = await this.fetchWithTimeout(
+            const data = await this.fetchJSON(
+                'geocoding',
                 `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=${limit}&countrycodes=no&addressdetails=1`,
                 {
                     headers: {
@@ -92,12 +58,6 @@ class GeocodingAPI {
                     }
                 }
             );
-
-            if (!response.ok) {
-                throw new Error(`Geocoding API returned ${response.status}`);
-            }
-
-            const data = await response.json();
 
             if (!data || data.length === 0) {
                 throw new Error('No results found. Try a different address or use "Use Location" button.');
@@ -126,28 +86,13 @@ class GeocodingAPI {
                 address: result.address
             }));
         } catch (error) {
-            console.error('Error geocoding address:', error);
-
-            // Handle specific error types with user-friendly messages
-            if (error.name === 'AbortError' || error.message.includes('timeout')) {
-                throw new Error('Request timed out. Please check your internet connection and try again.');
-            }
-
-            if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
-                throw new Error('Network error. Please check your internet connection.');
-            }
-
+            // Pass through our custom messages
             if (error.message.includes('No results found') || error.message.includes('No specific addresses')) {
-                throw error; // Pass through our custom message
+                throw error;
             }
 
-            // For API errors, provide helpful message
-            if (error.message.includes('Geocoding API returned')) {
-                throw new Error('Geocoding service is temporarily unavailable. Please try again later.');
-            }
-
-            // Generic fallback
-            throw new Error('Could not find address. Please try a different search term.');
+            // Use base class error handling for other errors
+            throw this.handleError(error, 'Could not find address. Please try a different search term.');
         }
     }
 
@@ -156,7 +101,8 @@ class GeocodingAPI {
      */
     static async reverseGeocode(lat, lon) {
         try {
-            const response = await this.fetchWithTimeout(
+            const data = await this.fetchJSON(
+                'reverse-geocoding',
                 `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
                 {
                     headers: {
@@ -164,12 +110,6 @@ class GeocodingAPI {
                     }
                 }
             );
-
-            if (!response.ok) {
-                throw new Error(`Reverse geocoding API returned ${response.status}`);
-            }
-
-            const data = await response.json();
 
             if (data && data.display_name) {
                 return data.display_name;

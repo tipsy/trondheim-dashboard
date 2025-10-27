@@ -1,7 +1,7 @@
 // Bus API utilities for Trondheim Dashboard
 // Using EnTur API which ATB (Trondheim public transport) is part of
 
-class BusAPI {
+class BusAPI extends APIBase {
     static async getClosestBusStops(lat, lon, radius = 500) {
         try {
             const query = `
@@ -30,21 +30,13 @@ class BusAPI {
                 }
             `;
 
-            const response = await fetch('https://api.entur.io/journey-planner/v3/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ET-Client-Name': 'trondheim-dashboard'
-                },
-                body: JSON.stringify({ query })
-            });
-
-            const data = await response.json();
-
-            if (data.errors) {
-                console.error('GraphQL errors:', data.errors);
-                throw new Error('GraphQL query failed');
-            }
+            const data = await this.fetchGraphQL(
+                'bus-stops',
+                'https://api.entur.io/journey-planner/v3/graphql',
+                query,
+                {},
+                { 'ET-Client-Name': 'trondheim-dashboard' }
+            );
 
             // Transform the response to match expected format
             const stops = data.data?.nearest?.edges?.map(edge => ({
@@ -57,8 +49,7 @@ class BusAPI {
 
             return stops;
         } catch (error) {
-            console.error('Error fetching bus stops:', error);
-            throw error;
+            throw this.handleError(error, 'Failed to fetch bus stops');
         }
     }
 
@@ -86,26 +77,17 @@ class BusAPI {
                 }
             `;
 
-            const response = await fetch('https://api.entur.io/journey-planner/v3/graphql', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ET-Client-Name': 'trondheim-dashboard'
-                },
-                body: JSON.stringify({ query })
-            });
-
-            const data = await response.json();
-
-            if (data.errors) {
-                console.error('GraphQL errors:', data.errors);
-                throw new Error('GraphQL query failed');
-            }
+            const data = await this.fetchGraphQL(
+                'bus-departures',
+                'https://api.entur.io/journey-planner/v3/graphql',
+                query,
+                {},
+                { 'ET-Client-Name': 'trondheim-dashboard' }
+            );
 
             return data.data?.stopPlace || null;
         } catch (error) {
-            console.error('Error fetching bus departures:', error);
-            throw error;
+            throw this.handleError(error, 'Failed to fetch bus departures');
         }
     }
 }

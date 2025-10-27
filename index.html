@@ -10,6 +10,11 @@
 <body>
     <trondheim-dashboard></trondheim-dashboard>
 
+    <!-- Utility Libraries (load first - no dependencies) -->
+    <script src="js/utils/icon-library.js"></script>
+    <script src="js/utils/date-formatter.js"></script>
+    <script src="js/utils/api-base.js"></script>
+
     <!-- API Utilities -->
     <script src="js/utils/bus-api.js"></script>
     <script src="js/utils/weather-api.js"></script>
@@ -17,12 +22,13 @@
     <script src="js/utils/energy-api.js"></script>
     <script src="js/utils/geocoding-api.js"></script>
 
-    <!-- Common Components (load first - no dependencies) -->
+    <!-- Common Components -->
     <script src="js/components/common/loading-spinner.js"></script>
     <script src="js/components/common/error-message.js"></script>
     <script src="js/components/common/icon-button.js"></script>
     <script src="js/components/common/detail-item.js"></script>
     <script src="js/components/common/custom-select.js"></script>
+    <script src="js/components/common/address-suggestion-item.js"></script>
 
     <!-- Sub-components -->
     <script src="js/components/bus/bus-row.js"></script>

@@ -208,38 +208,23 @@ class TrondheimDashboard extends HTMLElement {
             <div class="footer">
                 <div class="data-sources">
                     <span class="data-source">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="6" width="18" height="12" rx="2"/>
-                            <path d="M3 10h18M8 14h.01M16 14h.01"/>
-                            <circle cx="8" cy="18" r="1"/>
-                            <circle cx="16" cy="18" r="1"/>
-                        </svg>
+                        ${IconLibrary.getIcon('bus', 16)}
                         <a href="https://entur.no" target="_blank">Entur/ATB</a>
                     </span>
                     <span class="data-source">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="5"/>
-                            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                        </svg>
+                        ${IconLibrary.getIcon('sun', 16)}
                         <a href="https://yr.no" target="_blank">YR/MET</a>
                     </span>
                     <span class="data-source">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 6h18M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                        </svg>
+                        ${IconLibrary.getIcon('trash', 16)}
                         <a href="https://trv.no" target="_blank">TRV</a>
                     </span>
                     <span class="data-source">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                        </svg>
+                        ${IconLibrary.getIcon('energy', 16)}
                         <a href="https://www.hvakosterstrommen.no" target="_blank">hvakosterstrommen.no</a>
                     </span>
                     <span class="data-source">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="5"/>
-                            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-                        </svg>
+                        ${IconLibrary.getIcon('sun', 16)}
                         <a href="https://sunrise-sunset.org" target="_blank">sunrise-sunset.org</a>
                     </span>
                 </div>

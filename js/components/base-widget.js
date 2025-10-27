@@ -18,9 +18,7 @@ class BaseWidget extends HTMLElement {
 
     // Override this method to provide the widget icon SVG
     getIcon() {
-        return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="18" height="18" rx="2"/>
-        </svg>`;
+        return IconLibrary.getIcon('widget');
     }
 
     // Override this method to provide additional header content (e.g., selectors)

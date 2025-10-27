@@ -1,27 +1,20 @@
 // Energy Price API utilities for Trondheim Dashboard
 // Using hvakosterstrommen.no API
 
-class EnergyAPI {
+class EnergyAPI extends APIBase {
     static async getEnergyPrices(priceArea = 'NO3') {
         try {
             const today = new Date();
             const year = today.getFullYear();
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
-            
+
             const url = `https://www.hvakosterstrommen.no/api/v1/prices/${year}/${month}-${day}_${priceArea}.json`;
-            
-            const response = await fetch(url);
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch energy prices');
-            }
-
-            const data = await response.json();
+            const data = await this.fetchJSON('energy-prices', url);
             return data;
         } catch (error) {
-            console.error('Error fetching energy prices:', error);
-            throw error;
+            throw this.handleError(error, 'Failed to fetch energy prices');
         }
     }
 

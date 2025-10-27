@@ -46,23 +46,13 @@ class WeatherWidget extends BaseWidget {
         const windSpeed = currentData.data.instant.details.wind_speed;
 
         // Format sunrise/sunset times
-        const formatTime = (date) => {
-            return date.toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            });
-        };
-
-        const sunriseTime = sunData ? formatTime(sunData.sunrise) : '--:--';
-        const sunsetTime = sunData ? formatTime(sunData.sunset) : '--:--';
+        const sunriseTime = sunData ? DateFormatter.formatTime24(sunData.sunrise) : '--:--';
+        const sunsetTime = sunData ? DateFormatter.formatTime24(sunData.sunset) : '--:--';
 
         // Calculate daylight duration
         let daylightHours = '';
         if (sunData && sunData.dayLength) {
-            const hours = Math.floor(sunData.dayLength / 3600);
-            const minutes = Math.floor((sunData.dayLength % 3600) / 60);
-            daylightHours = `${hours}h ${minutes}m`;
+            daylightHours = DateFormatter.formatDuration(sunData.dayLength);
         }
 
         // Split next 24 hours into 3 groups of 8 hours each
@@ -80,11 +70,7 @@ class WeatherWidget extends BaseWidget {
         const formatGroupLabel = (groupData) => {
             if (groupData.length === 0) return '';
             const firstHour = new Date(groupData[0].time);
-            const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-            const dayName = dayNames[firstHour.getDay()];
-            const date = firstHour.getDate();
-            const month = firstHour.getMonth() + 1;
-            return `${dayName} ${month}/${date}`;
+            return DateFormatter.formatDayWithNumericDate(firstHour);
         };
 
         content.innerHTML = `
@@ -126,10 +112,7 @@ class WeatherWidget extends BaseWidget {
     }
 
     getIcon() {
-        return `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="5"/>
-            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
-        </svg>`;
+        return IconLibrary.getIcon('weather');
     }
 
     getPlaceholderText() {

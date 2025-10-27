@@ -1,10 +1,11 @@
 // Weather API utilities for Trondheim Dashboard
 // Using MET Norway Locationforecast API
 
-class WeatherAPI {
+class WeatherAPI extends APIBase {
     static async getWeatherForecast(lat, lon) {
         try {
-            const response = await fetch(
+            const data = await this.fetchJSON(
+                'weather',
                 `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`,
                 {
                     headers: {
@@ -12,16 +13,9 @@ class WeatherAPI {
                     }
                 }
             );
-
-            if (!response.ok) {
-                throw new Error('Failed to fetch weather data');
-            }
-
-            const data = await response.json();
             return data;
         } catch (error) {
-            console.error('Error fetching weather:', error);
-            throw error;
+            throw this.handleError(error, 'Failed to fetch weather data');
         }
     }
 
@@ -30,15 +24,11 @@ class WeatherAPI {
             const today = new Date();
             const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD format
 
-            const response = await fetch(
+            const data = await this.fetchJSON(
+                'sunrise-sunset',
                 `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dateStr}&formatted=0`
             );
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch sunrise/sunset data');
-            }
-
-            const data = await response.json();
             if (data.status !== 'OK') {
                 throw new Error('Invalid sunrise/sunset response');
             }
@@ -49,8 +39,7 @@ class WeatherAPI {
                 dayLength: data.results.day_length
             };
         } catch (error) {
-            console.error('Error fetching sunrise/sunset:', error);
-            throw error;
+            throw this.handleError(error, 'Failed to fetch sunrise/sunset data');
         }
     }
 }
