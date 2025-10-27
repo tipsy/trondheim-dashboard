@@ -95,7 +95,7 @@ class TrondheimDashboard extends HTMLElement {
                     .address-section {
                         grid-column: 1 / -1;
                         display: grid;
-                        grid-template-columns: subgrid;
+                        grid-template-columns: 1fr 2fr 1fr;
                         gap: var(--spacing-md, 16px);
                         align-items: flex-start;
                     }
@@ -113,7 +113,7 @@ class TrondheimDashboard extends HTMLElement {
                     .widgets-grid {
                         grid-column: 1 / -1;
                         display: grid;
-                        grid-template-columns: subgrid;
+                        grid-template-columns: 1fr 2fr 1fr;
                         gap: var(--spacing-md, 16px);
                         min-height: 0;
                     }
