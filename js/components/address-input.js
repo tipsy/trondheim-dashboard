@@ -53,7 +53,7 @@ class AddressInput extends HTMLElement {
     }
 
     // Load address from URL parameter - check if we have saved coordinates first
-    loadFromURL(address) {
+    async loadFromURL(address) {
         const savedData = localStorage.getItem('trondheim-dashboard-location');
 
         // Check if we have saved coordinates for this exact address
@@ -74,12 +74,31 @@ class AddressInput extends HTMLElement {
             }
         }
 
-        // No saved coordinates, need to search
+        // No saved coordinates, need to geocode and auto-select first result
         const input = this.shadowRoot.getElementById('address-input');
         if (input) {
             input.value = address;
         }
-        this.handleAddressSearch(true);
+
+        this.showLoading(true, false);
+        this.hideError();
+
+        try {
+            const locations = await GeocodingAPI.geocodeAddress(address);
+
+            if (locations && locations.length > 0) {
+                // Auto-select the first result when loading from URL
+                const firstLocation = locations[0];
+                this.selectLocation(firstLocation);
+            } else {
+                this.showError('Could not find address from URL. Please search again.');
+            }
+        } catch (error) {
+            console.error('Error loading address from URL:', error);
+            this.showError(error.message || 'Could not find address from URL. Please search again.');
+        } finally {
+            this.showLoading(false, false);
+        }
     }
 
     render() {
@@ -502,6 +521,22 @@ class AddressInput extends HTMLElement {
         if (!address) {
             this.showError('Please enter an address');
             return;
+        }
+
+        // Check if we already have saved coordinates for this exact address
+        const savedData = localStorage.getItem('trondheim-dashboard-location');
+        if (savedData) {
+            try {
+                const { address: savedAddress, lat, lon } = JSON.parse(savedData);
+                if (savedAddress === address && lat && lon) {
+                    // We already have this address selected, just reload it
+                    this.updateLocation(lat, lon, address);
+                    this.hideSuggestions();
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking saved address:', error);
+            }
         }
 
         this.isSearching = true;

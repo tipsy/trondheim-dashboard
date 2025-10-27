@@ -72,8 +72,18 @@ class GeocodingAPI {
             }
             this.lastRequestTime = Date.now();
 
+            // Only add region if not already present in the address
+            let searchAddress = address;
+            const lowerAddress = address.toLowerCase();
+            if (!lowerAddress.includes('trøndelag') &&
+                !lowerAddress.includes('trondelag') &&
+                !lowerAddress.includes('norway') &&
+                !lowerAddress.includes('norge')) {
+                searchAddress = `${address}, Trøndelag, Norway`;
+            }
+
             // Request more results since we'll filter them
-            const encodedAddress = encodeURIComponent(`${address}, Trøndelag, Norway`);
+            const encodedAddress = encodeURIComponent(searchAddress);
             const response = await this.fetchWithTimeout(
                 `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=${limit}&countrycodes=no&addressdetails=1`,
                 {
