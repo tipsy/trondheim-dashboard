@@ -70,6 +70,12 @@ class TrondheimDashboard extends HTMLElement {
                     gap: var(--spacing-md, 16px);
                 }
 
+                .right-column {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--spacing-md, 16px);
+                }
+
                 /* Desktop layout */
                 @media (min-width: 1025px) {
                     :host {
@@ -113,6 +119,24 @@ class TrondheimDashboard extends HTMLElement {
 
                     .widgets-grid > * {
                         height: 100%;
+                        overflow: hidden;
+                    }
+
+                    .right-column {
+                        height: 100%;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
+
+                    .right-column > energy-widget {
+                        flex: 0 0 auto;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
+
+                    .right-column > trash-widget {
+                        flex: 1;
+                        min-height: 0;
                         overflow: hidden;
                     }
                 }
@@ -173,7 +197,10 @@ class TrondheimDashboard extends HTMLElement {
                 <div class="widgets-grid">
                     <bus-widget id="bus-widget"></bus-widget>
                     <weather-widget id="weather-widget"></weather-widget>
-                    <trash-widget id="trash-widget"></trash-widget>
+                    <div class="right-column">
+                        <energy-widget id="energy-widget"></energy-widget>
+                        <trash-widget id="trash-widget"></trash-widget>
+                    </div>
                 </div>
             </div>
 
@@ -201,6 +228,19 @@ class TrondheimDashboard extends HTMLElement {
                         </svg>
                         <a href="https://trv.no" target="_blank">TRV</a>
                     </span>
+                    <span class="data-source">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                        <a href="https://www.hvakosterstrommen.no" target="_blank">hvakosterstrommen.no</a>
+                    </span>
+                    <span class="data-source">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="5"/>
+                            <path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                        <a href="https://sunrise-sunset.org" target="_blank">sunrise-sunset.org</a>
+                    </span>
                 </div>
             </div>
         `;
@@ -224,6 +264,7 @@ class TrondheimDashboard extends HTMLElement {
     updateAllWidgets(lat, lon, address) {
         const busWidget = this.shadowRoot.getElementById('bus-widget');
         const weatherWidget = this.shadowRoot.getElementById('weather-widget');
+        const energyWidget = this.shadowRoot.getElementById('energy-widget');
         const trashWidget = this.shadowRoot.getElementById('trash-widget');
 
         if (busWidget) {
@@ -232,6 +273,10 @@ class TrondheimDashboard extends HTMLElement {
 
         if (weatherWidget) {
             weatherWidget.updateLocation(lat, lon);
+        }
+
+        if (energyWidget) {
+            energyWidget.updateLocation(lat, lon);
         }
 
         // Trash widget needs the address string

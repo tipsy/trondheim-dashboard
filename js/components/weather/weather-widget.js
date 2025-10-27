@@ -16,11 +16,11 @@ class WeatherWidget extends BaseWidget {
         this.hideError();
 
         try {
-            const weatherData = await WeatherAPI.getWeatherForecast(
-                this.location.lat,
-                this.location.lon
-            );
-            this.renderWeather(weatherData);
+            const [weatherData, sunData] = await Promise.all([
+                WeatherAPI.getWeatherForecast(this.location.lat, this.location.lon),
+                WeatherAPI.getSunriseSunset(this.location.lat, this.location.lon)
+            ]);
+            this.renderWeather(weatherData, sunData);
         } catch (error) {
             this.showError('Could not load weather data');
         } finally {
@@ -28,7 +28,7 @@ class WeatherWidget extends BaseWidget {
         }
     }
 
-    renderWeather(data) {
+    renderWeather(data, sunData) {
         const content = this.shadowRoot.getElementById('content');
         if (!content) return;
 
@@ -44,6 +44,26 @@ class WeatherWidget extends BaseWidget {
         const currentSymbol = currentData.data.next_1_hours?.summary?.symbol_code || 'clearsky';
         const precipitation = currentData.data.next_1_hours?.details?.precipitation_amount || 0;
         const windSpeed = currentData.data.instant.details.wind_speed;
+
+        // Format sunrise/sunset times
+        const formatTime = (date) => {
+            return date.toLocaleTimeString('en-US', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+        };
+
+        const sunriseTime = sunData ? formatTime(sunData.sunrise) : '--:--';
+        const sunsetTime = sunData ? formatTime(sunData.sunset) : '--:--';
+
+        // Calculate daylight duration
+        let daylightHours = '';
+        if (sunData && sunData.dayLength) {
+            const hours = Math.floor(sunData.dayLength / 3600);
+            const minutes = Math.floor((sunData.dayLength % 3600) / 60);
+            daylightHours = `${hours}h ${minutes}m`;
+        }
 
         // Split next 24 hours into 3 groups of 8 hours each
         const next24Hours = timeseries.slice(1, 25); // Skip current hour, get next 24
@@ -72,7 +92,10 @@ class WeatherWidget extends BaseWidget {
                 temperature="${currentTemp}"
                 symbol-code="${currentSymbol}"
                 precipitation="${precipitation}"
-                wind-speed="${windSpeed}">
+                wind-speed="${windSpeed}"
+                ${sunData ? `sunrise="${sunriseTime}"` : ''}
+                ${sunData ? `sunset="${sunsetTime}"` : ''}
+                ${daylightHours ? `daylight="${daylightHours}"` : ''}>
             </weather-current>
             ${groups.map((groupData, index) => `
                 <div class="hourly-forecast">
