@@ -344,12 +344,10 @@ class TrondheimDashboard extends HTMLElement {
     }
 
     startAutoRefresh() {
-        // Refresh all widgets every 5 minutes (300000 ms)
+        // Reload the entire page every 5 minutes to get new app versions
         this.refreshInterval = setInterval(() => {
-            if (this.currentLocation) {
-                const { lat, lon, address } = this.currentLocation;
-                this.updateAllWidgets(lat, lon, address);
-            }
+            console.log('Auto-refreshing dashboard to get latest version...');
+            location.reload();
         }, 300000); // 5 minutes
     }
 }

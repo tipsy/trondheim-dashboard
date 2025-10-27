@@ -69,10 +69,10 @@ class BusWidget extends BaseWidget {
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
         }
-        // Refresh every 30 seconds
+        // Refresh every 60 seconds (1 minute)
         this.refreshInterval = setInterval(() => {
             this.loadDepartures();
-        }, 30000);
+        }, 60000);
     }
 
     updateStopSelector() {
