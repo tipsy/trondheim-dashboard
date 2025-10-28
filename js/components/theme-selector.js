@@ -11,7 +11,7 @@ class ThemeSelector extends HTMLElement {
     }
 
     loadSavedTheme() {
-        const savedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'light';
+        const savedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'midnight-blue';
         this.setTheme(savedTheme);
         const select = this.shadowRoot.querySelector('custom-select');
         if (select) {
@@ -84,13 +84,13 @@ class ThemeSelector extends HTMLElement {
 
         // Set options
         select.setOptions([
-            { value: 'light', label: 'Light' },
-            { value: 'dark', label: 'Dark' },
-            { value: 'peach', label: 'Peach Pink' },
             { value: 'midnight-blue', label: 'Midnight Blue' },
+            { value: 'peach', label: 'Peach Pink' },
             { value: 'solarized', label: 'Solarized️' },
             { value: 'monokai', label: 'Monokai' },
-            { value: 'cat', label: 'Cat' }
+            { value: 'cat', label: 'Cat' },
+            { value: 'dark', label: 'Dark' },
+            { value: 'light', label: 'Light' },
         ]);
 
         select.addEventListener('change', (e) => {
