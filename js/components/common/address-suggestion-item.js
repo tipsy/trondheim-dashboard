@@ -22,11 +22,11 @@ class AddressSuggestionItem extends HTMLElement {
 
     render() {
         const displayName = this.getAttribute('display-name') || '';
-        
-        // Extract main address and details
-        const parts = displayName.split(',');
-        const mainAddress = parts.slice(0, 2).join(',');
-        const details = parts.slice(2).join(',');
+
+        // For Norwegian format "Street Number, Postcode City"
+        // Just show the whole address as main, no details needed
+        const mainAddress = displayName;
+        const details = ''; // No additional details for clean Norwegian format
 
         this.shadowRoot.innerHTML = `
             <style>

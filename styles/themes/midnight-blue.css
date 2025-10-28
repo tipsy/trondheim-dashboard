@@ -1,5 +1,6 @@
 /* Midnight Blue theme - Elegant dark blue */
 :root[data-theme="midnight-blue"] {
+    --background-image: none;
     /* Colors */
     --primary-color: #5dade2;
     --secondary-color: #85c1e9;

@@ -16,15 +16,15 @@ class TrashWidget extends BaseWidget {
     }
 
     normalizeAddress(address) {
-        // addresses are given as 1C, Persaunvegen, Dalen, Lerkehaug, Østbyen, Trondheim, Trøndelag, 7045, Norway
-        // we care about 1C and Persaunvegen, but in reverse order
-        const parts = address.split(',');
-        let number = parts[0].trim();
-        // if the number includes a letter, we have to insert a space
+        // addresses are given as Persaunvegen 1C, 7045 Trondheim, we care about
+        // Persaunvegen 1C, but we want to add a space between the number and the letter
+        const parts = address.split(',')[0].split(' ');
+        const street = parts[0].trim();
+        let number = parts[1].trim();
         if (number.match(/[A-Z]/)) {
+             // if the number includes a letter, we have to insert a space
             number = number.replace(/(\d+)([A-Z])/, '$1 $2');
         }
-        const street = parts[1].trim();
         return (street + ' ' + number).toUpperCase();
     }
 

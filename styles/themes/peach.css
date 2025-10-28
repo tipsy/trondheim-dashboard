@@ -1,5 +1,6 @@
 /* Peach-Pink theme (cute) */
 :root[data-theme="peach"] {
+    --background-image: none;
     /* Colors */
     --primary-color: #ff9a9e;
     --secondary-color: #fad0c4;

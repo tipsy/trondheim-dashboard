@@ -1,5 +1,6 @@
 /* Dark theme */
 :root[data-theme="dark"] {
+    --background-image: none;
     /* Colors */
     --primary-color: #4da6ff;
     --secondary-color: #66b3ff;
@@ -57,5 +58,6 @@
     /* Scrollbar colors */
     --scrollbar-thumb: rgba(255, 255, 255, 0.2);
     --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
+
 }
 

@@ -80,7 +80,7 @@ class GeocodingAPI extends APIBase {
             return filteredResults.slice(0, 5).map(result => ({
                 lat: parseFloat(result.lat),
                 lon: parseFloat(result.lon),
-                displayName: result.display_name,
+                displayName: this.formatNorwegianAddress(result.display_name, result.address),
                 type: result.type,
                 importance: result.importance,
                 address: result.address
@@ -93,6 +93,65 @@ class GeocodingAPI extends APIBase {
 
             // Use base class error handling for other errors
             throw this.handleError(error, 'Could not find address. Please try a different search term.');
+        }
+    }
+
+    /**
+     * Format address in Norwegian style: "Street Number, Postcode City"
+     * Example: "Persaunvegen 1C, 7045 Trondheim"
+     */
+    static formatNorwegianAddress(displayName, addressDetails) {
+        try {
+            // If we have address details from the API, use them
+            if (addressDetails) {
+                const road = addressDetails.road || '';
+                const houseNumber = addressDetails.house_number || '';
+                const postcode = addressDetails.postcode || '';
+                const city = addressDetails.city || addressDetails.town || addressDetails.municipality || '';
+
+                if (road && houseNumber && postcode && city) {
+                    return `${road} ${houseNumber}, ${postcode} ${city}`;
+                }
+            }
+
+            // Fallback: parse from display_name
+            // Format: "1C, Persaunvegen, Dalen, Lerkehaug, Østbyen, Trondheim, Trøndelag, 7045, Norway"
+            const parts = displayName.split(',').map(p => p.trim());
+
+            // Try to find postcode (5 digits)
+            const postcodeIndex = parts.findIndex(p => /^\d{4,5}$/.test(p));
+
+            if (postcodeIndex >= 0 && parts.length > postcodeIndex + 1) {
+                const postcode = parts[postcodeIndex];
+                // City is usually after postcode, or before it
+                const city = parts[postcodeIndex + 1] || parts[postcodeIndex - 1] || '';
+
+                // Street is usually early in the list
+                // Look for the first part that looks like a street name (not a number)
+                let street = '';
+                let houseNumber = '';
+
+                for (let i = 0; i < Math.min(3, parts.length); i++) {
+                    const part = parts[i];
+                    // If it's just a number or number+letter, it's likely the house number
+                    if (/^[\d]+[A-Za-z]?$/.test(part)) {
+                        houseNumber = part;
+                    } else if (!street && part.length > 2) {
+                        // First non-number part is likely the street
+                        street = part;
+                    }
+                }
+
+                if (street && houseNumber && postcode && city) {
+                    return `${street} ${houseNumber}, ${postcode} ${city}`;
+                }
+            }
+
+            // If parsing failed, return original
+            return displayName;
+        } catch (error) {
+            console.error('Error formatting Norwegian address:', error);
+            return displayName;
         }
     }
 
@@ -112,7 +171,7 @@ class GeocodingAPI extends APIBase {
             );
 
             if (data && data.display_name) {
-                return data.display_name;
+                return this.formatNorwegianAddress(data.display_name, data.address);
             }
 
             // Fallback to coordinates if no address found

@@ -1,5 +1,6 @@
 /* Monokai theme - Vibrant colorful programmer theme */
 :root[data-theme="monokai"] {
+    --background-image: none;
     /* Base Colors - Authentic Monokai palette */
     --primary-color: #66d9ef;
     --secondary-color: #a6e22e;

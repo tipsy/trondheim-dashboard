@@ -1,10 +1,11 @@
 /* Light theme (default) */
 :root, :root[data-theme="light"] {
+    --background-image: url("/img/example-background.jpg");
     /* Colors */
     --primary-color: #0066cc;
     --secondary-color: #004d99;
     --heading-color: #333333;
-    --background-color: #f5f5f5;
+    --background-color: transparent;
     --card-background: #ffffff;
     --text-color: #333333;
     --text-alt: #333333;

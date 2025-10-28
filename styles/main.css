@@ -9,11 +9,21 @@
 @import url('themes/midnight-blue.css');
 @import url('themes/solarized.css');
 @import url('themes/monokai.css');
+@import url('themes/cat.css');
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html {
+    /* Background image support - themes can override this */
+    background-image: var(--background-image, none);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 body {

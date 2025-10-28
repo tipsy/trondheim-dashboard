@@ -55,23 +55,8 @@ class WeatherWidget extends BaseWidget {
             daylightHours = DateFormatter.formatDuration(sunData.dayLength);
         }
 
-        // Split next 24 hours into 3 groups of 8 hours each
-        const next24Hours = timeseries.slice(1, 25); // Skip current hour, get next 24
-
-        const groups = [];
-        for (let i = 0; i < 3; i++) {
-            const groupData = next24Hours.slice(i * 8, (i + 1) * 8);
-            if (groupData.length > 0) {
-                groups.push(groupData);
-            }
-        }
-
-        // Helper function to format group label
-        const formatGroupLabel = (groupData) => {
-            if (groupData.length === 0) return '';
-            const firstHour = new Date(groupData[0].time);
-            return DateFormatter.formatDayWithNumericDate(firstHour);
-        };
+        // Get next 24 hours (skip current hour)
+        const next24Hours = timeseries.slice(1, 25);
 
         content.innerHTML = `
             <weather-current
@@ -83,27 +68,23 @@ class WeatherWidget extends BaseWidget {
                 ${sunData ? `sunset="${sunsetTime}"` : ''}
                 ${daylightHours ? `daylight="${daylightHours}"` : ''}>
             </weather-current>
-            ${groups.map((groupData, index) => `
-                <div class="hourly-forecast">
-                    <h4>${formatGroupLabel(groupData)}</h4>
-                    <div class="hourly-container" id="group-container-${index}"></div>
-                </div>
-            `).join('')}
+            <div class="hourly-forecast">
+                <h4>Next 24h</h4>
+                <div class="hourly-container" id="forecast-container"></div>
+            </div>
         `;
 
-        // Create weather-hour components for each group
-        groups.forEach((groupData, index) => {
-            const container = content.querySelector(`#group-container-${index}`);
-            if (container) {
-                groupData.forEach(hour => {
-                    const weatherHour = document.createElement('weather-hour');
-                    weatherHour.setAttribute('time', hour.time);
-                    weatherHour.setAttribute('temperature', hour.data.instant.details.air_temperature);
-                    weatherHour.setAttribute('symbol-code', hour.data.next_1_hours?.summary?.symbol_code || 'clearsky');
-                    container.appendChild(weatherHour);
-                });
-            }
-        });
+        // Create weather-hour components for all 24 hours
+        const container = content.querySelector('#forecast-container');
+        if (container) {
+            next24Hours.forEach(hour => {
+                const weatherHour = document.createElement('weather-hour');
+                weatherHour.setAttribute('time', hour.time);
+                weatherHour.setAttribute('temperature', hour.data.instant.details.air_temperature);
+                weatherHour.setAttribute('symbol-code', hour.data.next_1_hours?.summary?.symbol_code || 'clearsky');
+                container.appendChild(weatherHour);
+            });
+        }
     }
 
     // Override BaseWidget methods
@@ -125,7 +106,7 @@ class WeatherWidget extends BaseWidget {
         style.textContent = `
             .hourly-container {
                 display: grid;
-                grid-template-columns: repeat(4, 1fr);
+                grid-template-columns: repeat(3, 1fr);
                 gap: var(--spacing-sm);
                 padding: var(--spacing-sm) 0;
             }

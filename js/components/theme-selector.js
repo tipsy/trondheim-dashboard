@@ -89,7 +89,8 @@ class ThemeSelector extends HTMLElement {
             { value: 'peach', label: 'Peach Pink' },
             { value: 'midnight-blue', label: 'Midnight Blue' },
             { value: 'solarized', label: 'Solarized️' },
-            { value: 'monokai', label: 'Monokai' }
+            { value: 'monokai', label: 'Monokai' },
+            { value: 'cat', label: 'Cat' }
         ]);
 
         select.addEventListener('change', (e) => {
