@@ -1,9 +1,10 @@
 // Bus API utilities for Trondheim Dashboard
-// Using EnTur API which ATB (Trondheim public transport) is part of
+// Using EnTur Real-Time SIRI API
 
 class BusAPI extends APIBase {
     static async getClosestBusStops(lat, lon, radius = 500) {
         try {
+            // Still use Journey Planner for geocoding/finding stops
             const query = `
                 {
                     nearest(
@@ -55,20 +56,31 @@ class BusAPI extends APIBase {
 
     static async getBusDepartures(stopPlaceId, numberOfDepartures = 10) {
         try {
+            // Use Journey Planner GraphQL API with real-time data
+            // This includes real-time updates and works with CORS
             const query = `
                 {
                     stopPlace(id: "${stopPlaceId}") {
                         id
                         name
                         estimatedCalls(numberOfDepartures: ${numberOfDepartures}, timeRange: 86400) {
-                            expectedDepartureTime
                             realtime
+                            aimedDepartureTime
+                            expectedDepartureTime
                             destinationDisplay {
                                 frontText
+                                via
+                            }
+                            quay {
+                                publicCode
                             }
                             serviceJourney {
+                                journeyPattern {
+                                    name
+                                }
                                 line {
                                     publicCode
+                                    name
                                     transportMode
                                 }
                             }
@@ -90,5 +102,7 @@ class BusAPI extends APIBase {
             throw this.handleError(error, 'Failed to fetch bus departures');
         }
     }
+
+
 }
 

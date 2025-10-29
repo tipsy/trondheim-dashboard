@@ -110,8 +110,18 @@ class BusWidget extends BaseWidget {
         stopData.estimatedCalls.forEach(call => {
             const busRow = document.createElement('bus-row');
             busRow.setAttribute('line-number', call.serviceJourney.line.publicCode);
-            busRow.setAttribute('destination', call.destinationDisplay.frontText);
-            busRow.setAttribute('departure-time', call.expectedDepartureTime);
+
+            // Try to get the best destination name
+            let destination = call.destinationDisplay.frontText;
+
+            // If frontText looks like a code or is missing, try line name
+            if (!destination || destination.length < 3 || /^\d+$/.test(destination)) {
+                destination = call.serviceJourney.line.name || destination;
+            }
+
+            busRow.setAttribute('destination', destination);
+            busRow.setAttribute('aimed-time', call.aimedDepartureTime);
+            busRow.setAttribute('expected-time', call.expectedDepartureTime);
             if (call.realtime) {
                 busRow.setAttribute('realtime', '');
             }
