@@ -1,10 +1,12 @@
 // Bus API utilities for Trondheim Dashboard
-// Using EnTur Real-Time SIRI API
+// Using EnTur Journey Planner GraphQL API with real-time data
+// Note: We query individual quays (platforms) to separate different directions
 
 class BusAPI extends APIBase {
     static async getClosestBusStops(lat, lon, radius = 500) {
         try {
-            // Still use Journey Planner for geocoding/finding stops
+            // Query for stop places and their quays
+            // We get description and publicCode to help distinguish between different platforms/directions
             const query = `
                 {
                     nearest(
@@ -22,6 +24,12 @@ class BusAPI extends APIBase {
                                         name
                                         latitude
                                         longitude
+                                        quays {
+                                            id
+                                            name
+                                            description
+                                            publicCode
+                                        }
                                     }
                                 }
                                 distance
@@ -39,30 +47,41 @@ class BusAPI extends APIBase {
                 { 'ET-Client-Name': 'trondheim-dashboard' }
             );
 
-            // Transform the response to match expected format
-            const stops = data.data?.nearest?.edges?.map(edge => ({
-                id: edge.node.place.id,
-                name: edge.node.place.name,
-                latitude: edge.node.place.latitude,
-                longitude: edge.node.place.longitude,
-                distance: edge.node.distance
-            })) || [];
+            // Transform the response to return individual quays
+            const quays = [];
+            data.data?.nearest?.edges?.forEach(edge => {
+                const stopPlace = edge.node.place;
+                const distance = edge.node.distance;
 
-            return stops;
+                // Add each quay as a separate entry
+                stopPlace.quays?.forEach(quay => {
+                    quays.push({
+                        id: quay.id,
+                        name: stopPlace.name,
+                        description: quay.description,
+                        publicCode: quay.publicCode,
+                        latitude: stopPlace.latitude,
+                        longitude: stopPlace.longitude,
+                        distance: distance
+                    });
+                });
+            });
+
+            return quays;
         } catch (error) {
             throw this.handleError(error, 'Failed to fetch bus stops');
         }
     }
 
-    static async getBusDepartures(stopPlaceId, numberOfDepartures = 10) {
+    static async getBusDepartures(quayId, numberOfDepartures = 10) {
         try {
-            // Use Journey Planner GraphQL API with real-time data
-            // This includes real-time updates and works with CORS
+            // Query a specific quay to get departures for one direction only
             const query = `
                 {
-                    stopPlace(id: "${stopPlaceId}") {
+                    quay(id: "${quayId}") {
                         id
                         name
+                        description
                         estimatedCalls(numberOfDepartures: ${numberOfDepartures}, timeRange: 86400) {
                             realtime
                             aimedDepartureTime
@@ -97,7 +116,7 @@ class BusAPI extends APIBase {
                 { 'ET-Client-Name': 'trondheim-dashboard' }
             );
 
-            return data.data?.stopPlace || null;
+            return data.data?.quay || null;
         } catch (error) {
             throw this.handleError(error, 'Failed to fetch bus departures');
         }

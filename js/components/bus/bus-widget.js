@@ -25,21 +25,22 @@ class BusWidget extends BaseWidget {
         this.hideError();
 
         try {
-            const stops = await BusAPI.getClosestBusStops(
+            // Get nearby quays (each quay represents one direction at a stop)
+            const quays = await BusAPI.getClosestBusStops(
                 this.location.lat,
                 this.location.lon,
                 1000
             );
 
-            this.availableStops = stops;
+            this.availableStops = quays;
 
-            if (stops.length > 0) {
-                // Try to restore saved bus stop, otherwise use first one
-                const savedStopId = localStorage.getItem('trondheim-dashboard-bus-stop');
-                if (savedStopId && stops.find(s => s.id === savedStopId)) {
-                    this.selectedStopId = savedStopId;
+            if (quays.length > 0) {
+                // Try to restore saved quay, otherwise use first one
+                const savedQuayId = localStorage.getItem('trondheim-dashboard-bus-stop');
+                if (savedQuayId && quays.find(q => q.id === savedQuayId)) {
+                    this.selectedStopId = savedQuayId;
                 } else {
-                    this.selectedStopId = stops[0].id;
+                    this.selectedStopId = quays[0].id;
                 }
                 this.updateStopSelector();
                 await this.loadDepartures();
@@ -81,10 +82,28 @@ class BusWidget extends BaseWidget {
         if (!selector || !selectorContainer) return;
 
         if (this.availableStops.length > 0) {
-            const options = this.availableStops.map(stop => ({
-                value: stop.id,
-                label: `${stop.name} (${Math.round(stop.distance)}m)`
-            }));
+            const options = this.availableStops.map(stop => {
+                // Build label with stop name, platform/direction info, and distance
+                let label = stop.name;
+
+                // Add platform number if available
+                if (stop.publicCode) {
+                    label += ` (Platform ${stop.publicCode})`;
+                }
+
+                // Add description (direction/destination) if available
+                if (stop.description) {
+                    label += ` - ${stop.description}`;
+                }
+
+                // Add distance
+                label += ` - ${Math.round(stop.distance)}m`;
+
+                return {
+                    value: stop.id,
+                    label: label
+                };
+            });
 
             selector.setOptions(options);
             selector.setAttribute('selected', this.selectedStopId);
