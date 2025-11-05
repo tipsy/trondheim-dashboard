@@ -87,9 +87,38 @@ class TrashRow extends HTMLElement {
         return `${dayName}, ${month} ${day}`;
     }
 
+    getDaysUntil(dateString) {
+        const collectionDate = new Date(dateString);
+        const today = new Date();
+
+        // Reset time to midnight for accurate day comparison
+        collectionDate.setHours(0, 0, 0, 0);
+        today.setHours(0, 0, 0, 0);
+
+        const diffTime = collectionDate - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        return diffDays;
+    }
+
+    getCountdownText(daysUntil) {
+        if (daysUntil === 0) return 'Today';
+        if (daysUntil === 1) return '1 day';
+        if (daysUntil < 0) return 'Past';
+        return `${daysUntil} days`;
+    }
+
+    shouldPulse(daysUntil) {
+        // Pulse if collection is today, tomorrow, or in 2 days
+        return daysUntil >= 0 && daysUntil <= 2;
+    }
+
     render() {
         const icon = this.getTrashIcon(this.trashType);
         const formattedDate = this.formatDate(this.collectionDate);
+        const daysUntil = this.getDaysUntil(this.collectionDate);
+        const countdownText = this.getCountdownText(daysUntil);
+        const shouldPulse = this.shouldPulse(daysUntil);
 
         this.shadowRoot.innerHTML = `
             <style>
@@ -153,6 +182,77 @@ class TrashRow extends HTMLElement {
                     font-size: var(--font-size-sm);
                     color: var(--text-light);
                 }
+
+                .countdown-indicator {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    min-width: 60px;
+                    padding: var(--spacing-sm);
+                    background-color: var(--card-background);
+                    border-radius: var(--border-radius);
+                    border: 2px solid var(--border-color);
+                    position: relative;
+                }
+
+                .countdown-indicator.pulse {
+                    border-color: var(--error-color);
+                }
+
+                .countdown-indicator.pulse::before {
+                    content: '';
+                    position: absolute;
+                    top: -2px;
+                    left: -2px;
+                    right: -2px;
+                    bottom: -2px;
+                    border: 2px solid var(--error-color);
+                    background-color: color-mix(in srgb, var(--error-color) 20%, transparent);
+                    border-radius: var(--border-radius);
+                    animation: ripple 2s ease-out infinite;
+                }
+
+                .countdown-days {
+                    font-size: var(--font-size-lg);
+                    font-weight: bold;
+                    color: var(--text-color);
+                    line-height: 1;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .countdown-indicator.pulse .countdown-days {
+                    color: var(--error-color);
+                }
+
+                .countdown-label {
+                    font-size: var(--font-size-xs);
+                    color: var(--text-light);
+                    text-transform: uppercase;
+                    margin-top: 2px;
+                    position: relative;
+                    z-index: 1;
+                }
+
+                .countdown-indicator.pulse .countdown-label {
+                    color: var(--error-color);
+                }
+
+                @keyframes ripple {
+                    0% {
+                        transform: scale(1);
+                        opacity: 1;
+                    }
+                    75% {
+                        transform: scale(1.5);
+                        opacity: 0;
+                    }
+                    100% {
+                        transform: scale(1.5);
+                        opacity: 0;
+                    }
+                }
             </style>
 
             <div class="schedule-item ${this.trashClass}">
@@ -160,6 +260,10 @@ class TrashRow extends HTMLElement {
                 <div class="trash-info">
                     <div class="trash-type">${this.trashType}</div>
                     <div class="trash-date">${formattedDate}</div>
+                </div>
+                <div class="countdown-indicator ${shouldPulse ? 'pulse' : ''}">
+                    <div class="countdown-days">${daysUntil >= 0 ? daysUntil : '-'}</div>
+                    <div class="countdown-label">${countdownText}</div>
                 </div>
             </div>
         `;
