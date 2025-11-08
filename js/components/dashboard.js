@@ -87,7 +87,7 @@ class TrondheimDashboard extends HTMLElement {
                     .dashboard-content {
                         overflow: hidden;
                         display: grid;
-                        grid-template-columns: 1fr 2fr 1fr;
+                        grid-template-columns: 1fr 1fr 1fr 1fr;
                         grid-template-rows: auto 1fr;
                         gap: var(--spacing-md, 16px);
                     }
@@ -113,7 +113,7 @@ class TrondheimDashboard extends HTMLElement {
                     .widgets-grid {
                         grid-column: 1 / -1;
                         display: grid;
-                        grid-template-columns: 1fr 2fr 1fr;
+                        grid-template-columns: 1fr 1fr 1fr 1fr;
                         gap: var(--spacing-md, 16px);
                         min-height: 0;
                     }
@@ -165,6 +165,7 @@ class TrondheimDashboard extends HTMLElement {
                         <energy-widget id="energy-widget"></energy-widget>
                         <trash-widget id="trash-widget"></trash-widget>
                     </div>
+                    <nrk-widget id="nrk-widget"></nrk-widget>
                 </div>
             </div>
         `;
@@ -291,4 +292,3 @@ class TrondheimDashboard extends HTMLElement {
 }
 
 customElements.define('trondheim-dashboard', TrondheimDashboard);
-
