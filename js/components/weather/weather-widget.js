@@ -55,8 +55,65 @@ class WeatherWidget extends BaseWidget {
             daylightHours = DateFormatter.formatDuration(sunData.dayLength);
         }
 
-        // Get next 24 hours (skip current hour)
-        const next24Hours = timeseries.slice(1, 25);
+        // Get next 4 hours for detailed view (skip current hour)
+        const next4Hours = timeseries.slice(1, 5);
+
+        // Get remaining hours for period summary
+        // Use hours 5-24 (next 20 hours after the first 4)
+        const periodHours = timeseries.slice(5, 25);
+
+        // Calculate aggregated data for the period
+        let periodData = null;
+        let periodLabel = 'Rest of day';
+
+        if (periodHours.length > 0) {
+            const temps = periodHours.map(h => h.data.instant.details.air_temperature);
+            const minTemp = Math.min(...temps);
+            const maxTemp = Math.max(...temps);
+
+            // Get most common weather symbol
+            const symbols = periodHours
+                .map(h => h.data.next_1_hours?.summary?.symbol_code)
+                .filter(s => s);
+
+            let mostCommonSymbol = 'clearsky';
+            if (symbols.length > 0) {
+                const symbolCounts = {};
+                symbols.forEach(s => {
+                    symbolCounts[s] = (symbolCounts[s] || 0) + 1;
+                });
+                mostCommonSymbol = Object.keys(symbolCounts).reduce((a, b) =>
+                    symbolCounts[a] > symbolCounts[b] ? a : b
+                );
+            }
+
+            // Sum precipitation
+            const totalPrecipitation = periodHours.reduce((sum, h) => {
+                return sum + (h.data.next_1_hours?.details?.precipitation_amount || 0);
+            }, 0);
+
+            // Determine the label based on time range
+            const firstHour = new Date(periodHours[0].time);
+            const lastHour = new Date(periodHours[periodHours.length - 1].time);
+            const now = new Date();
+
+            // Check if period extends to tomorrow
+            if (firstHour.getDate() !== lastHour.getDate()) {
+                periodLabel = 'Next 20 hours';
+            } else if (firstHour.getDate() === now.getDate()) {
+                periodLabel = `Rest of day (until ${lastHour.getHours()}:00)`;
+            } else {
+                periodLabel = 'Tomorrow';
+            }
+
+            periodData = {
+                minTemp,
+                maxTemp,
+                symbolCode: mostCommonSymbol,
+                precipitation: totalPrecipitation.toFixed(1),
+                label: periodLabel
+            };
+        }
 
         content.innerHTML = `
             <weather-current
@@ -69,21 +126,39 @@ class WeatherWidget extends BaseWidget {
                 ${daylightHours ? `daylight="${daylightHours}"` : ''}>
             </weather-current>
             <div class="hourly-forecast">
-                <h4>Next 24h</h4>
                 <div class="hourly-container" id="forecast-container"></div>
             </div>
+            ${periodData ? `
+                <div class="period-forecast">
+                    <div id="period-container"></div>
+                </div>
+            ` : ''}
         `;
 
-        // Create weather-hour components for all 24 hours
+        // Create weather-hour components for next 4 hours
         const container = content.querySelector('#forecast-container');
         if (container) {
-            next24Hours.forEach(hour => {
+            next4Hours.forEach(hour => {
                 const weatherHour = document.createElement('weather-hour');
                 weatherHour.setAttribute('time', hour.time);
                 weatherHour.setAttribute('temperature', hour.data.instant.details.air_temperature);
                 weatherHour.setAttribute('symbol-code', hour.data.next_1_hours?.summary?.symbol_code || 'clearsky');
                 container.appendChild(weatherHour);
             });
+        }
+
+        // Create weather-period component
+        if (periodData) {
+            const periodContainer = content.querySelector('#period-container');
+            if (periodContainer) {
+                const weatherPeriod = document.createElement('weather-period');
+                weatherPeriod.setAttribute('label', `${periodHours.length} hours`);
+                weatherPeriod.setAttribute('min-temp', periodData.minTemp);
+                weatherPeriod.setAttribute('max-temp', periodData.maxTemp);
+                weatherPeriod.setAttribute('symbol-code', periodData.symbolCode);
+                weatherPeriod.setAttribute('precipitation', periodData.precipitation);
+                periodContainer.appendChild(weatherPeriod);
+            }
         }
     }
 
@@ -104,24 +179,21 @@ class WeatherWidget extends BaseWidget {
         // Add weather-specific styles to the shadow DOM
         const style = document.createElement('style');
         style.textContent = `
+            .hourly-forecast,
+            .period-forecast {
+                margin-top: var(--spacing-md);
+            }
+
             .hourly-container {
                 display: grid;
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
                 gap: var(--spacing-sm);
-                padding: var(--spacing-sm) 0;
             }
 
-            /* Tablet: 6 columns */
-            @media (min-width: 768px) and (max-width: 1024px) {
+            /* Tablet and up: 4 columns for 4 hours */
+            @media (min-width: 768px) {
                 .hourly-container {
-                    grid-template-columns: repeat(6, 1fr);
-                }
-            }
-
-            /* Desktop: 8 columns */
-            @media (min-width: 1025px) {
-                .hourly-container {
-                    grid-template-columns: repeat(8, 1fr);
+                    grid-template-columns: repeat(4, 1fr);
                 }
             }
         `;

@@ -71,6 +71,7 @@ class TrondheimDashboard extends HTMLElement {
                     gap: var(--spacing-md, 16px);
                 }
 
+                .weather-column,
                 .right-column {
                     display: flex;
                     flex-direction: column;
@@ -123,8 +124,21 @@ class TrondheimDashboard extends HTMLElement {
                         overflow: hidden;
                     }
 
+                    .weather-column,
                     .right-column {
                         height: 100%;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
+
+                    .weather-column > weather-right-now {
+                        flex: 0 0 auto;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
+
+                    .weather-column > weather-today {
+                        flex: 1;
                         min-height: 0;
                         overflow: hidden;
                     }
@@ -160,7 +174,10 @@ class TrondheimDashboard extends HTMLElement {
 
                 <div class="widgets-grid">
                     <bus-widget id="bus-widget"></bus-widget>
-                    <weather-widget id="weather-widget"></weather-widget>
+                    <div class="weather-column">
+                        <weather-right-now id="weather-right-now"></weather-right-now>
+                        <weather-today id="weather-today"></weather-today>
+                    </div>
                     <div class="right-column">
                         <energy-widget id="energy-widget"></energy-widget>
                         <trash-widget id="trash-widget"></trash-widget>
@@ -260,7 +277,8 @@ class TrondheimDashboard extends HTMLElement {
 
     updateAllWidgets(lat, lon, address) {
         const busWidget = this.shadowRoot.getElementById('bus-widget');
-        const weatherWidget = this.shadowRoot.getElementById('weather-widget');
+        const weatherRightNow = this.shadowRoot.getElementById('weather-right-now');
+        const weatherToday = this.shadowRoot.getElementById('weather-today');
         const energyWidget = this.shadowRoot.getElementById('energy-widget');
         const trashWidget = this.shadowRoot.getElementById('trash-widget');
 
@@ -268,8 +286,12 @@ class TrondheimDashboard extends HTMLElement {
             busWidget.updateLocation(lat, lon);
         }
 
-        if (weatherWidget) {
-            weatherWidget.updateLocation(lat, lon);
+        if (weatherRightNow) {
+            weatherRightNow.updateLocation(lat, lon);
+        }
+
+        if (weatherToday) {
+            weatherToday.updateLocation(lat, lon);
         }
 
         if (energyWidget) {

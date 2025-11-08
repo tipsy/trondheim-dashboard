@@ -6,7 +6,7 @@ class WeatherAPI extends APIBase {
         try {
             const data = await this.fetchJSON(
                 'weather',
-                `https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=${lat}&lon=${lon}`,
+                `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}`,
                 {
                     headers: {
                         'User-Agent': 'TrondheimDashboard/1.0'
