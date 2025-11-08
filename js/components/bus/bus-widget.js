@@ -154,7 +154,7 @@ class BusWidget extends BaseWidget {
     }
 
     getIcon() {
-        return IconLibrary.getIcon('bus');
+        return `<i class="mdi mdi-bus-clock"></i>`;
     }
 
     getHeaderContent() {

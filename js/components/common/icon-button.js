@@ -19,21 +19,10 @@ class IconButton extends HTMLElement {
 
     getIcon(iconName) {
         const icons = {
-            search: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
-            </svg>`,
-            location: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/>
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M12 2v4m0 12v4M2 12h4m12 0h4"/>
-            </svg>`,
-            close: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M18 6L6 18M6 6l12 12"/>
-            </svg>`,
-            check: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 6L9 17l-5-5"/>
-            </svg>`
+            'search': '<i class="mdi mdi-magnify"></i>',
+            'location': '<i class="mdi mdi-crosshairs-gps"></i>',
+            'close': '<i class="mdi mdi-close"></i>',
+            'check': '<i class="mdi mdi-check"></i>'
         };
         return icons[iconName] || '';
     }
@@ -67,6 +56,7 @@ class IconButton extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>
+                ${IconLibrary.importCss}
                 * {
                     box-sizing: border-box;
                 }

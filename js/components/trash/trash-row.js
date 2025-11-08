@@ -33,46 +33,19 @@ class TrashRow extends HTMLElement {
     getTrashIcon(type) {
         const typeLower = type.toLowerCase();
 
-        // Trash bag icon for restavfall
-        const trashBagIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 6h18M5 6v14a2 2 0 002 2h10a2 2 0 002-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-            <line x1="10" y1="11" x2="10" y2="17"/>
-            <line x1="14" y1="11" x2="14" y2="17"/>
-        </svg>`;
-
-        // Cardboard box icon for papp og papir
-        const cardboardIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
-            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
-            <line x1="12" y1="22.08" x2="12" y2="12"/>
-        </svg>`;
-
-        // Plastic bottle icon for plast-emballasje
-        const plasticBottleIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M9 2h6v2h2a2 2 0 012 2v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2h2V2z"/>
-            <path d="M9 2v2h6V2"/>
-            <line x1="7" y1="10" x2="17" y2="10"/>
-        </svg>`;
-
-        // Food icon for matavfall (utensils)
-        const foodIcon = `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2M7 2v20M21 15V2v0a5 5 0 00-5 5v6c0 1.1.9 2 2 2h3z"/>
-            <line x1="21" y1="15" x2="21" y2="22"/>
-        </svg>`;
-
         // Check for specific Norwegian waste types
-        if (typeLower.includes('matavfall')) return foodIcon;
-        if (typeLower.includes('plast') && typeLower.includes('emballasje')) return plasticBottleIcon;
-        if (typeLower.includes('restavfall')) return trashBagIcon;
-        if (typeLower.includes('papp') || typeLower.includes('papir')) return cardboardIcon;
+        if (typeLower.includes('matavfall')) return '<i class="mdi mdi-food-apple-outline"></i>';
+        if (typeLower.includes('plast') && typeLower.includes('emballasje')) return '<i class="mdi mdi-bottle-soda-classic-outline"></i>';
+        if (typeLower.includes('restavfall')) return '<i class="mdi mdi-trash-can-outline"></i>';
+        if (typeLower.includes('papp') || typeLower.includes('papir')) return '<i class="mdi mdi-package-variant"></i>';
 
         // Fallback to generic checks
-        if (typeLower.includes('mat') || typeLower.includes('food') || typeLower.includes('bio')) return foodIcon;
-        if (typeLower.includes('plast') || typeLower.includes('plastic')) return plasticBottleIcon;
-        if (typeLower.includes('rest') || typeLower.includes('general')) return trashBagIcon;
-        if (typeLower.includes('paper')) return cardboardIcon;
+        if (typeLower.includes('mat') || typeLower.includes('food') || typeLower.includes('bio')) return '<i class="mdi mdi-food-apple-outline"></i>';
+        if (typeLower.includes('plast') || typeLower.includes('plastic')) return '<i class="mdi mdi-bottle-soda-classic-outline"></i>';
+        if (typeLower.includes('rest') || typeLower.includes('general')) return '<i class="mdi mdi-trash-can-outline"></i>';
+        if (typeLower.includes('paper')) return '<i class="mdi mdi-package-variant"></i>';
 
-        return trashBagIcon;
+        return '<i class="mdi mdi-trash-can-outline"></i>';
     }
 
     formatDate(dateString) {
@@ -122,6 +95,7 @@ class TrashRow extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>
+                ${IconLibrary.importCss}
                 :host {
                     display: block;
                 }
@@ -161,7 +135,7 @@ class TrashRow extends HTMLElement {
                 }
 
                 .trash-icon {
-                    font-size: 32px;
+                    font-size: 28px;
                 }
 
                 .trash-info {

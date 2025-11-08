@@ -27,19 +27,19 @@ class ErrorMessage extends HTMLElement {
                 bg: 'var(--error-bg, #ffebee)',
                 color: 'var(--error-color, #d32f2f)',
                 border: 'var(--error-color, #d32f2f)',
-                icon: IconLibrary.getIcon('warning', 24)
+                icon: '<i class="mdi mdi-alert-circle-outline"></i>'
             },
             warning: {
                 bg: '#fff3e0',
                 color: '#e65100',
                 border: '#e65100',
-                icon: IconLibrary.getIcon('warning', 24)
+                icon: '<i class="mdi mdi-alert-outline"></i>'
             },
             info: {
                 bg: 'var(--info-bg, #e3f2fd)',
                 color: 'var(--info-color, #1976d2)',
                 border: 'var(--info-color, #1976d2)',
-                icon: IconLibrary.getIcon('info', 24)
+                icon: '<i class="mdi mdi-information-outline"></i>'
             }
         };
 
@@ -47,6 +47,7 @@ class ErrorMessage extends HTMLElement {
 
         this.shadowRoot.innerHTML = `
             <style>
+                ${IconLibrary.importCss}
                 * {
                     box-sizing: border-box;
                 }
@@ -75,11 +76,6 @@ class ErrorMessage extends HTMLElement {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                }
-
-                .error-icon svg {
-                    width: 24px;
-                    height: 24px;
                 }
 
                 .message-text {

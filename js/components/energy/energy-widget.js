@@ -136,7 +136,7 @@ class EnergyWidget extends BaseWidget {
     }
 
     getIcon() {
-        return IconLibrary.getIcon('energy');
+        return '<i class="mdi mdi-lightning-bolt-outline"></i>';
     }
 
     getPlaceholderText() {

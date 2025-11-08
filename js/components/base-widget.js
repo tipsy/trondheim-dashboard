@@ -16,9 +16,9 @@ class BaseWidget extends HTMLElement {
         return 'Widget';
     }
 
-    // Override this method to provide the widget icon SVG
+    // Override this method to provide the widget icon
     getIcon() {
-        return IconLibrary.getIcon('widget');
+        return '<i class="mdi mdi-square-outline"></i>';
     }
 
     // Override this method to provide additional header content (e.g., selectors)
@@ -34,6 +34,7 @@ class BaseWidget extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
             <style>
+                ${IconLibrary.importCss}
                 * {
                     box-sizing: border-box;
                 }
@@ -107,8 +108,8 @@ class BaseWidget extends HTMLElement {
                     white-space: nowrap;
                 }
 
-                h3 svg {
-                    stroke: var(--heading-color, var(--primary-color));
+                h3 i {
+                    font-size: 28px;
                 }
 
                 #content {

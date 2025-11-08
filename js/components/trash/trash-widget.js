@@ -155,7 +155,7 @@ class TrashWidget extends BaseWidget {
     }
 
     getIcon() {
-        return IconLibrary.getIcon('trash');
+        return '<i class="mdi mdi-trash-can-outline"></i>';
     }
 
     getPlaceholderText() {

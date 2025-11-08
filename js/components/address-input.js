@@ -106,6 +106,7 @@ class AddressInput extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
             <style>
+                ${IconLibrary.importCss}
                 * {
                     box-sizing: border-box;
                 }
@@ -130,8 +131,8 @@ class AddressInput extends HTMLElement {
                     gap: var(--spacing-sm);
                 }
 
-                h2 svg {
-                    stroke: var(--heading-color, var(--primary-color));
+                h2 i {
+                    font-size: 28px;
                 }
 
                 .input-group {
@@ -355,10 +356,6 @@ class AddressInput extends HTMLElement {
                     gap: var(--spacing-xs);
                 }
 
-                .error svg {
-                    flex-shrink: 0;
-                }
-
                 .loading {
                     display: inline-block;
                     width: 16px;
@@ -376,7 +373,7 @@ class AddressInput extends HTMLElement {
 
             <div class="address-container">
                 <h2>
-                    ${IconLibrary.getIcon('location')}
+                    <i class="mdi mdi-map-marker-outline"></i>
                     Your Address
                 </h2>
                 <div class="input-group">
@@ -390,17 +387,14 @@ class AddressInput extends HTMLElement {
                                 autocomplete="off"
                             />
                             <button id="clear-btn" class="clear-btn" title="Clear">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                                    <line x1="6" y1="6" x2="18" y2="18"></line>
-                                </svg>
+                                <i class="mdi mdi-close"></i>
                             </button>
                         </div>
                     </div>
                     <div class="button-row">
                         <button id="search-btn">Search</button>
                         <button id="location-btn" class="location-btn" title="Use my location">
-                            ${IconLibrary.getIcon('location-crosshair', 16)}
+                            <i class="mdi mdi-crosshairs-gps"></i>
                             <span class="location-text">Use Location</span>
                         </button>
                     </div>
@@ -671,7 +665,7 @@ class AddressInput extends HTMLElement {
     showError(message) {
         const errorDiv = this.shadowRoot.getElementById('error-message');
         errorDiv.innerHTML = `
-            ${IconLibrary.getIcon('warning', 18)}
+            <i class="mdi mdi-alert-outline"></i>
             <span>${message}</span>
         `;
         errorDiv.style.display = 'flex';

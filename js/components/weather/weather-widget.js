@@ -93,7 +93,7 @@ class WeatherWidget extends BaseWidget {
     }
 
     getIcon() {
-        return IconLibrary.getIcon('weather');
+        return '<i class="mdi mdi-weather-partly-cloudy"></i>';
     }
 
     getPlaceholderText() {

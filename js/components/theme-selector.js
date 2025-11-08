@@ -32,10 +32,9 @@ class ThemeSelector extends HTMLElement {
     }
 
     render() {
-        const themeIcon = IconLibrary.getIcon('sun');
-
         this.shadowRoot.innerHTML = `
             <style>
+                ${IconLibrary.importCss}
                 * {
                     box-sizing: border-box;
                 }
@@ -60,18 +59,14 @@ class ThemeSelector extends HTMLElement {
                     gap: var(--spacing-xs);
                 }
 
-                h2 svg {
-                    stroke: var(--heading-color, var(--primary-color));
-                }
-
-                svg {
-                    flex-shrink: 0;
+                h2 i {
+                    font-size: 28px;
                 }
             </style>
 
             <div class="theme-container">
                 <h2>
-                    ${themeIcon}
+                    <i class="mdi mdi-palette-outline"></i>
                     Theme
                 </h2>
                 <custom-select id="theme-select"></custom-select>
