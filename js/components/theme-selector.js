@@ -41,6 +41,7 @@ class ThemeSelector extends HTMLElement {
 
                 :host {
                     display: block;
+                    height: 100%;
                 }
 
                 .theme-container {
@@ -48,6 +49,9 @@ class ThemeSelector extends HTMLElement {
                     border-radius: var(--border-radius);
                     padding: var(--spacing-md);
                     box-shadow: var(--shadow);
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 h2 {

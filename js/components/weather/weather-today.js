@@ -202,7 +202,7 @@ class WeatherToday extends BaseWidget {
             .today-details {
                 display: flex;
                 flex-direction: column;
-                gap: var(--spacing-md);
+                gap: var(--spacing-sm);
                 padding: var(--spacing-md) 0;
             }
 

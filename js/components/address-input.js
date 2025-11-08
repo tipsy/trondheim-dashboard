@@ -113,6 +113,7 @@ class AddressInput extends HTMLElement {
 
                 :host {
                     display: block;
+                    height: 100%;
                 }
 
                 .address-container {
@@ -120,6 +121,9 @@ class AddressInput extends HTMLElement {
                     border-radius: var(--border-radius, 8px);
                     padding: var(--spacing-md, 16px);
                     box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
+                    height: 100%;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 h2 {

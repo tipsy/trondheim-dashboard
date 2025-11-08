@@ -96,25 +96,15 @@ class TrondheimDashboard extends HTMLElement {
                     .address-section {
                         grid-column: 1 / -1;
                         display: grid;
-                        grid-template-columns: 1fr 2fr 1fr;
+                        grid-template-columns: 2fr 1fr;
                         gap: var(--spacing-md, 16px);
-                        align-items: flex-start;
-                    }
-
-                    .address-section address-input {
-                        grid-column: 1 / 3;
-                        width: 100%;
-                    }
-
-                    .address-section theme-selector {
-                        grid-column: 3;
-                        width: 100%;
+                        align-items: stretch;
                     }
 
                     .widgets-grid {
                         grid-column: 1 / -1;
                         display: grid;
-                        grid-template-columns: 25fr 30fr 30fr 15fr;
+                        grid-template-columns: 25fr 20fr 30fr 25fr;
                         gap: var(--spacing-md, 16px);
                         min-height: 0;
                     }
@@ -161,11 +151,11 @@ class TrondheimDashboard extends HTMLElement {
                     .widgets-grid {
                         grid-template-columns: 1fr 1fr;
                     }
+                    <nrk-widget id="nrk-widget"></nrk-widget>
                 }
 
 
             </style>
-
             <div class="dashboard-content">
                 <div class="address-section">
                     <address-input id="address-input"></address-input>
