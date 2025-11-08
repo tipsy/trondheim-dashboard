@@ -103,9 +103,9 @@ class TrashRow extends HTMLElement {
 
     getCountdownText(daysUntil) {
         if (daysUntil === 0) return 'Today';
-        if (daysUntil === 1) return '1 day';
+        if (daysUntil === 1) return 'day';
         if (daysUntil < 0) return 'Past';
-        return `${daysUntil} days`;
+        return 'days';
     }
 
     shouldPulse(daysUntil) {

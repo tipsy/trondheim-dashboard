@@ -149,44 +149,7 @@ class TrondheimDashboard extends HTMLElement {
                     }
                 }
 
-                .footer {
-                    padding: var(--spacing-sm, 8px);
-                    text-align: center;
-                    color: var(--text-light, #666);
-                    font-size: 11px;
-                    border-top: 1px solid var(--border-color, #e0e0e0);
-                    background-color: var(--card-background, #ffffff);
-                    flex-shrink: 0;
-                }
 
-                .footer p {
-                    margin: var(--spacing-xs, 4px) 0;
-                }
-
-                .footer a {
-                    color: var(--primary-color, #0066cc);
-                    text-decoration: none;
-                }
-
-                .footer a:hover {
-                    text-decoration: underline;
-                }
-
-                .data-sources {
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    gap: var(--spacing-sm, 8px);
-                    flex-wrap: wrap;
-                }
-
-                .data-source {
-                    font-size: 11px;
-                    color: var(--text-light, #666);
-                    display: flex;
-                    align-items: center;
-                    gap: 4px;
-                }
             </style>
 
             <div class="dashboard-content">
@@ -202,31 +165,6 @@ class TrondheimDashboard extends HTMLElement {
                         <energy-widget id="energy-widget"></energy-widget>
                         <trash-widget id="trash-widget"></trash-widget>
                     </div>
-                </div>
-            </div>
-
-            <div class="footer">
-                <div class="data-sources">
-                    <span class="data-source">
-                        ${IconLibrary.getIcon('bus', 16)}
-                        <a href="https://entur.no" target="_blank">Entur/ATB</a>
-                    </span>
-                    <span class="data-source">
-                        ${IconLibrary.getIcon('sun', 16)}
-                        <a href="https://yr.no" target="_blank">YR/MET</a>
-                    </span>
-                    <span class="data-source">
-                        ${IconLibrary.getIcon('trash', 16)}
-                        <a href="https://trv.no" target="_blank">TRV</a>
-                    </span>
-                    <span class="data-source">
-                        ${IconLibrary.getIcon('energy', 16)}
-                        <a href="https://www.hvakosterstrommen.no" target="_blank">hvakosterstrommen.no</a>
-                    </span>
-                    <span class="data-source">
-                        ${IconLibrary.getIcon('sun', 16)}
-                        <a href="https://sunrise-sunset.org" target="_blank">sunrise-sunset.org</a>
-                    </span>
                 </div>
             </div>
         `;
