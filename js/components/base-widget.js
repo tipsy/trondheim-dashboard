@@ -106,6 +106,8 @@ class BaseWidget extends HTMLElement {
                     align-items: center;
                     gap: var(--spacing-xs);
                     white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
                 }
 
                 h3 i {

@@ -24,7 +24,8 @@ class WeatherToday extends BaseWidget {
             ]);
             this.renderWeather(weatherData, sunData);
         } catch (error) {
-            this.showError('Could not load weather data');
+            console.error('Weather Today error:', error);
+            this.showError(`Could not load weather data: ${error.message || error}`);
         } finally {
             this.showLoading(false);
         }

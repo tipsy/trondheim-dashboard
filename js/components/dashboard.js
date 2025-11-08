@@ -114,7 +114,7 @@ class TrondheimDashboard extends HTMLElement {
                     .widgets-grid {
                         grid-column: 1 / -1;
                         display: grid;
-                        grid-template-columns: 1fr 1fr 1fr 1fr;
+                        grid-template-columns: 25fr 30fr 30fr 15fr;
                         gap: var(--spacing-md, 16px);
                         min-height: 0;
                     }

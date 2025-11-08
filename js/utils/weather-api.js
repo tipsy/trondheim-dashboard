@@ -4,9 +4,13 @@
 class WeatherAPI extends APIBase {
     static async getWeatherForecast(lat, lon) {
         try {
+            // Use CORS proxy for Safari/iPad compatibility
+            const corsProxy = 'https://corsproxy.io/?';
+            const apiUrl = `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}`;
+
             const data = await this.fetchJSON(
                 'weather',
-                `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}`,
+                `${corsProxy}${encodeURIComponent(apiUrl)}`,
                 {
                     headers: {
                         'User-Agent': 'TrondheimDashboard/1.0'

@@ -21,7 +21,8 @@ class WeatherRightNow extends BaseWidget {
             const weatherData = await WeatherAPI.getWeatherForecast(this.location.lat, this.location.lon);
             this.renderWeather(weatherData);
         } catch (error) {
-            this.showError('Could not load weather data');
+            console.error('Weather Right Now error:', error);
+            this.showError(`Could not load weather data: ${error.message || error}`);
         } finally {
             this.showLoading(false);
         }
