@@ -22,7 +22,6 @@ class BusWidget extends BaseWidget {
         if (!this.location) return;
 
         this.showLoading(true);
-        this.hideError();
 
         try {
             // Get nearby quays (each quay represents one direction at a stop)
@@ -42,6 +41,7 @@ class BusWidget extends BaseWidget {
                 } else {
                     this.selectedStopId = quays[0].id;
                 }
+                this.ensureDeparturesContainer();
                 this.updateStopSelector();
                 await this.loadDepartures();
                 this.startAutoRefresh();
@@ -50,8 +50,6 @@ class BusWidget extends BaseWidget {
             }
         } catch (error) {
             this.showError('Could not load bus stops');
-        } finally {
-            this.showLoading(false);
         }
     }
 
@@ -202,8 +200,14 @@ class BusWidget extends BaseWidget {
         if (this.availableStops.length > 0) {
             selectorContainer.style.display = 'block';
         }
+        this.ensureDeparturesContainer();
+    }
+
+    ensureDeparturesContainer() {
         const content = this.shadowRoot.getElementById('content');
-        content.innerHTML = '<div id="departures-container" style="display:flex;flex-direction:column;gap:8px"></div>';
+        if (!content.querySelector('#departures-container')) {
+            content.innerHTML = '<div id="departures-container" style="display:flex;flex-direction:column;gap:8px"></div>';
+        }
     }
 }
 

@@ -26,7 +26,10 @@ class WeatherAPI extends APIBase {
 
             const data = await this.fetchJSON(
                 'sunrise-sunset',
-                `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dateStr}&formatted=0`
+                `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dateStr}&formatted=0`,
+                {},
+                10000,
+                24 * 60 * 60 * 1000 // cache for 24 hours
             );
 
             if (data.status !== 'OK') {
@@ -43,4 +46,3 @@ class WeatherAPI extends APIBase {
         }
     }
 }
-

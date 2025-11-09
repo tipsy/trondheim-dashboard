@@ -64,15 +64,18 @@ class PoliceWidget extends BaseWidget {
             const municipality = escapeAttr(msg.municipality || '');
             const area = escapeAttr(msg.area || '');
             const displayDate = escapeAttr(formatDate(msg.createdOn));
+            const category = escapeAttr(msg.category || '');
 
             const location = [municipality, area].filter(x => x).join(', ');
             const locationDate = [location, displayDate].filter(x => x).join(' • ');
+            // Prepend category (title) to description when available; use a short dot separator
+            const description = [category, locationDate].filter(x => x).join(' • ');
 
             // Extract threadId from id (e.g., "257vxg-0" -> "257vxg")
             const threadId = msg.id ? msg.id.split('-')[0] : '';
             const href = threadId ? `https://www.politiet.no/politiloggen/hendelse/#/${threadId}/` : '';
 
-            return `<widget-row title="${text}" description="${locationDate}" href="${href}"></widget-row>`;
+            return `<widget-row title="${text}" description="${description}" href="${href}"></widget-row>`;
         }).join('');
 
         content.innerHTML = `<div id="police-list" style="display:flex;flex-direction:column;gap:8px">${rowsHtml}</div>`;
@@ -97,4 +100,3 @@ class PoliceWidget extends BaseWidget {
 }
 
 customElements.define('police-widget', PoliceWidget);
-

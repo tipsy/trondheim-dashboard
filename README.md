@@ -117,11 +117,11 @@ How caching works (CacheClient)
 - Storage: All cached entries are stored in `localStorage` using keys prefixed with `trondheim-cache-`.
 - Keying: Cache keys are derived from the request URL using a simple 32-bit hash converted to base36 (see `CacheClient.getCacheKey(url)`).
 - Payload: Each entry stores `{ timestamp, url, data }` so the app can report age and size.
-- API: `CacheClient.get(url, ttl)`, `set(url, data)`, `remove(url)`, `clearAll()`, `getAge(url)`, and `getStats()`.
+- API: `CacheClient.get(url, ttl)`, `set(url, data)`, `getAge(url)`, and `isStale(url, ttl)`.
 - TTL behavior:
   - If `ttl` is a number (milliseconds), `CacheClient.get(url, ttl)` returns cached data only if age <= ttl.
   - If `ttl` is `null`, `CacheClient.get(url, null)` returns cached data regardless of age (used for "dynamic" data patterns where background refresh is desired).
-  - If `ttl` is omitted or `0` is used by the higher-level API, the request is treated as "no cache" and the response is fetched directly.
+  - If `ttl` is `0` (default in higher-level APIs), the request is treated as "no cache" and the response is fetched directly.
 
 How the higher-level API uses the cache (APIBase.fetchJSON / fetchGraphQL)
 - Function signature highlights:
@@ -148,8 +148,8 @@ CORS proxy behavior
 Development
 - No build step required: the app uses ES modules and runs in modern browsers. Serve with a static server (see Quick start).
 - Cache & debugging:
-  - Clear cache during development: in the browser console run `CacheClient.clearAll()` or use Application > Local Storage to remove keys.
-  - Inspect cache entries and sizes: `CacheClient.getStats()` and `CacheClient.getAge(url)`.
+  - Clear or inspect cache during development: open your browser DevTools → Application → Local Storage and remove keys prefixed with `trondheim-cache-`.
+  - Programmatic inspection: use `CacheClient.getAge(url)` and `CacheClient.isStale(url, ttl)` in the console as needed.
 - Testing & linting:
   - There are no automated tests included. For quick checks, run the app locally and open DevTools to inspect console and network requests.
   - Suggested next steps: add unit tests for pure utilities (`js/utils/`) with a lightweight runner (Vitest) and add an end-to-end smoke test (Playwright) that verifies widgets render and handle cached/mocked responses.

@@ -44,7 +44,9 @@ class BusAPI extends APIBase {
                 'https://api.entur.io/journey-planner/v3/graphql',
                 query,
                 {},
-                { 'ET-Client-Name': 'trondheim-dashboard' }
+                { 'ET-Client-Name': 'trondheim-dashboard' },
+                10000,
+                60 * 60 * 1000 // cache closest stops for 1 hour
             );
 
             // Transform the response to return individual quays
@@ -122,4 +124,3 @@ class BusAPI extends APIBase {
 
 
 }
-

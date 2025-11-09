@@ -27,6 +27,10 @@ class CacheClient {
      */
     static get(url, ttl = null) {
         try {
+            // If ttl is falsey, treat this as "no cache" and return null immediately.
+            // This avoids touching localStorage when callers explicitly request fresh data.
+            if (!ttl) return null;
+
             const cacheKey = this.getCacheKey(url);
             const cached = localStorage.getItem(cacheKey);
 
@@ -49,13 +53,6 @@ class CacheClient {
             console.error('[Cache] GET error:', error);
             return null;
         }
-    }
-
-    /**
-     * Check if cached data exists and is valid
-     */
-    static has(url, ttl = null) {
-        return this.get(url, ttl) !== null;
     }
 
     /**
@@ -103,70 +100,4 @@ class CacheClient {
         }
     }
 
-    /**
-     * Remove cached data for a URL
-     */
-    static remove(url) {
-        try {
-            const cacheKey = this.getCacheKey(url);
-            localStorage.removeItem(cacheKey);
-            console.log(`Cache removed for ${url}`);
-        } catch (error) {
-            console.error('Cache remove error:', error);
-        }
-    }
-
-    /**
-     * Clear all cache entries
-     */
-    static clearAll() {
-        try {
-            const keys = Object.keys(localStorage);
-            const cacheKeys = keys.filter(key => key.startsWith(this.CACHE_KEY_PREFIX));
-            
-            cacheKeys.forEach(key => localStorage.removeItem(key));
-            console.log(`Cleared ${cacheKeys.length} cache entries`);
-        } catch (error) {
-            console.error('Cache clear error:', error);
-        }
-    }
-
-    /**
-     * Get cache statistics
-     */
-    static getStats() {
-        try {
-            const keys = Object.keys(localStorage);
-            const cacheKeys = keys.filter(key => key.startsWith(this.CACHE_KEY_PREFIX));
-            
-            let totalSize = 0;
-            const entries = cacheKeys.map(key => {
-                const value = localStorage.getItem(key);
-                const size = value ? value.length : 0;
-                totalSize += size;
-                
-                try {
-                    const data = JSON.parse(value);
-                    return {
-                        key: key,
-                        url: data.url,
-                        age: Date.now() - data.timestamp,
-                        size: size
-                    };
-                } catch (e) {
-                    return null;
-                }
-            }).filter(e => e !== null);
-            
-            return {
-                count: cacheKeys.length,
-                totalSize: totalSize,
-                entries: entries
-            };
-        } catch (error) {
-            console.error('Cache stats error:', error);
-            return { count: 0, totalSize: 0, entries: [] };
-        }
-    }
 }
-

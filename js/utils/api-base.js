@@ -168,11 +168,15 @@ class APIBase {
         }
 
         // No cache available, fetch and wait
-        console.log(`❌ [${apiName}] CACHE MISS - Fetching - ${this.truncateUrl(originalUrl)}`);
-        const data = await this.fetchJSONDirect(apiName, url, options, timeout);
-        CacheClient.set(cacheKey, data);
-        console.log(`✅ [${apiName}] Received & cached - ${this.truncateUrl(originalUrl)}`);
-        return data;
+        if (!cacheTTL) {
+            console.log(`⚠️ [${apiName}] Cache disabled - Fetching - ${this.truncateUrl(originalUrl)}`);
+        } else {
+            console.log(`❌ [${apiName}] CACHE MISS - Fetching - ${this.truncateUrl(originalUrl)}`);
+        }
+         const data = await this.fetchJSONDirect(apiName, url, options, timeout);
+         CacheClient.set(cacheKey, data);
+         console.log(`✅ [${apiName}] Received & cached - ${this.truncateUrl(originalUrl)}`);
+         return data;
     }
 
     /**
@@ -250,11 +254,15 @@ class APIBase {
         }
 
         // No cache available, fetch and wait
-        console.log(`❌ [${apiName}] GraphQL CACHE MISS - Fetching - ${this.truncateUrl(url)}`);
-        const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
-        CacheClient.set(cacheKey, data);
-        console.log(`✅ [${apiName}] GraphQL received & cached - ${this.truncateUrl(url)}`);
-        return data;
+        if (cacheTTL === 0) {
+            console.log(`⚠️ [${apiName}] GraphQL cache disabled - Fetching - ${this.truncateUrl(url)}`);
+        } else {
+            console.log(`❌ [${apiName}] GraphQL CACHE MISS - Fetching - ${this.truncateUrl(url)}`);
+        }
+         const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
+         CacheClient.set(cacheKey, data);
+         console.log(`✅ [${apiName}] GraphQL received & cached - ${this.truncateUrl(url)}`);
+         return data;
     }
 
     /**
@@ -300,4 +308,3 @@ class APIBase {
         }
     }
 }
-
