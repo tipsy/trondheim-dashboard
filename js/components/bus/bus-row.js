@@ -138,6 +138,26 @@ class BusRow extends HTMLElement {
                     display: flex;
                     align-items: center;
                     gap: var(--spacing-xs);
+                    min-width: 0;
+                }
+
+                /* Mobile: allow text to wrap */
+                @media (max-width: 1024px) {
+                    .destination span {
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
+                        word-break: break-word;
+                        hyphens: auto;
+                    }
+                }
+
+                /* Desktop: use ellipsis for long text */
+                @media (min-width: 1025px) {
+                    .destination span {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
                 }
 
                 .time {

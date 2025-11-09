@@ -77,9 +77,25 @@ class NrkRow extends HTMLElement {
                     font-weight: bold;
                     color: var(--text-color);
                     font-size: var(--font-size-md);
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                }
+
+                /* Mobile: allow text to wrap */
+                @media (max-width: 1024px) {
+                    .title {
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
+                        word-break: break-word;
+                        hyphens: auto;
+                    }
+                }
+
+                /* Desktop: use ellipsis for long text */
+                @media (min-width: 1025px) {
+                    .title {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
                 }
 
                 .date {

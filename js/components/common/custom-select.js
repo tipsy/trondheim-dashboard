@@ -79,6 +79,12 @@ class CustomSelect extends HTMLElement {
                     font-family: var(--font-family, sans-serif);
                     cursor: pointer;
                     transition: border-color 0.2s;
+                    text-overflow: ellipsis;
+                }
+
+                option {
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
                 }
 
                 select:focus {

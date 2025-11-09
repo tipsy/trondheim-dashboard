@@ -147,11 +147,15 @@ class EnergyWidget extends BaseWidget {
                 .chip .price {
                     font-weight: 700;
                     font-size: 14px;
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
                 }
 
                 .chip .time {
                     font-size: 12px;
                     color: var(--text-light);
+                    overflow-wrap: break-word;
+                    word-wrap: break-word;
                 }
 
                 .trend.up { color: var(--error-color, #e74c3c); }

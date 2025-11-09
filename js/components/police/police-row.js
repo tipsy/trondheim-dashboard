@@ -107,9 +107,25 @@ class PoliceRow extends HTMLElement {
                     font-weight: bold;
                     color: var(--text-color);
                     font-size: var(--font-size-md);
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
+                }
+
+                /* Mobile: allow text to wrap */
+                @media (max-width: 1024px) {
+                    .text {
+                        overflow-wrap: break-word;
+                        word-wrap: break-word;
+                        word-break: break-word;
+                        hyphens: auto;
+                    }
+                }
+
+                /* Desktop: use ellipsis for long text */
+                @media (min-width: 1025px) {
+                    .text {
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                    }
                 }
 
                 .meta {
