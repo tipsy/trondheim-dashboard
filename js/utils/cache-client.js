@@ -8,8 +8,17 @@ class CacheClient {
      * Generate a cache key from a URL
      */
     static getCacheKey(url) {
-        // Create a simple hash of the URL for the cache key
-        return `${this.CACHE_KEY_PREFIX}${btoa(url).substring(0, 50)}`;
+        // Use a simple hash function to create a unique key
+        // This ensures different URLs get different cache keys
+        let hash = 0;
+        for (let i = 0; i < url.length; i++) {
+            const char = url.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // Convert to 32-bit integer
+        }
+        // Convert to base36 for a shorter string and make it positive
+        const hashStr = Math.abs(hash).toString(36);
+        return `${this.CACHE_KEY_PREFIX}${hashStr}`;
     }
 
     /**
