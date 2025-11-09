@@ -1,4 +1,3 @@
-// filepath: /Users/david/git/trondheim-dashboard/js/utils/police-api.js
 // Politiet API for Trondheim Dashboard
 // Returns latest police log messages from Trøndelag
 
@@ -20,7 +19,7 @@ class PoliceAPI extends APIBase {
                 url: apiUrl,
                 options: {},
                 timeout: timeout,
-                ttl: 60 * 5 * 1000, // 5 minute cache
+                ttl: CacheConfig.POLICE_TTL,
                 useCorsProxy: true
             }
         );

@@ -58,7 +58,7 @@ class EnergyWidget extends BaseWidget {
                 const m = String(nextDate.getMonth() + 1).padStart(2, '0');
                 const d = String(nextDate.getDate()).padStart(2, '0');
                 const url = `https://www.hvakosterstrommen.no/api/v1/prices/${y}/${m}-${d}_${this.priceArea}.json`;
-                const nextDayData = await APIBase.fetchJSON('energy-prices', { url, ttl: EnergyAPI.CACHE_DURATION });
+                const nextDayData = await APIBase.fetchJSON('energy-prices', { url, ttl: CacheConfig.ENERGY_TTL });
                 if (Array.isArray(nextDayData) && nextDayData.length > 0) {
                     // append next day prices after today's remaining
                     remainingPrices = remainingPrices.concat(nextDayData);

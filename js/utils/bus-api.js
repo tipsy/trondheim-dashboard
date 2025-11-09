@@ -49,7 +49,7 @@ class BusAPI extends APIBase {
                     query: query,
                     headers: { 'ET-Client-Name': 'trondheim-dashboard' },
                     timeout: 10000,
-                    ttl: 60 * 60 * 1000 // cache closest stops for 1 hour
+                    ttl: CacheConfig.BUS_STOPS_TTL
                 }
             );
 

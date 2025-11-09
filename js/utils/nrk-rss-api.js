@@ -18,11 +18,8 @@ class NrkRssAPI extends APIBase {
     static async getTopTen(region = 'trondelag', timeout = 10000) {
         const url = this.defaultFeed(region);
 
-        // Use a short TTL for RSS (5 minutes)
-        const ttl = 5 * 60 * 1000;
-
         // Check cache first - use named params
-        const cached = CacheClient.get({ key: url, ttl: ttl });
+        const cached = CacheClient.get({ key: url, ttl: CacheConfig.NRK_TTL });
         if (cached !== null) {
             return cached;
         }

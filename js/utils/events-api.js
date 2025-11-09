@@ -40,7 +40,7 @@ class EventsAPI extends APIBase {
                 variables: {},
                 headers: {},
                 timeout: timeout,
-                ttl: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+                ttl: CacheConfig.EVENTS_TTL
             }
         );
 

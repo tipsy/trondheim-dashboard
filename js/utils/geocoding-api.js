@@ -58,7 +58,7 @@ class GeocodingAPI extends APIBase {
                             'User-Agent': 'TrondheimDashboard/1.0'
                         }
                     },
-                    ttl: 60 * 60 * 1000 // 1 hour cache
+                    ttl: CacheConfig.GEOCODING_TTL
                 },
             );
 
@@ -172,7 +172,7 @@ class GeocodingAPI extends APIBase {
                             'User-Agent': 'TrondheimDashboard/1.0'
                         }
                     },
-                    ttl: 60 * 60 * 1000 // 1 hour cache
+                    ttl: CacheConfig.GEOCODING_TTL
                 },
             );
 

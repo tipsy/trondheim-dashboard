@@ -11,7 +11,7 @@ class WeatherAPI extends APIBase {
                 url: apiUrl,
                 options: { headers: { 'User-Agent': 'TrondheimDashboard/1.0' } },
                 timeout: 10000,
-                ttl: 5 * 60 * 1000, // 5 minute cache
+                ttl: CacheConfig.WEATHER_TTL,
                 useCorsProxy: true
             }
         );
@@ -27,7 +27,7 @@ class WeatherAPI extends APIBase {
                 {
                     url: `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dateStr}&formatted=0`,
                     timeout: 10000,
-                    ttl: 24 * 60 * 60 * 1000 // cache for 24 hours
+                    ttl: CacheConfig.SUN_TTL
                 }
             );
 

@@ -113,37 +113,57 @@ Below is a comprehensive list of all external integrations used by the app (endp
 Caching & CORS proxy
 This project uses a small, centralized client-side cache and an optional CORS proxy. The cache and proxy are used by `js/utils/api-base.js` and the various `*api.js` utilities.
 
+New central cache configuration
+- TTL values are now controlled from a single file: `js/utils/cache-config.js`.
+- The file exposes a small `CacheConfig` class with named static constants (for example `CacheConfig.WEATHER_TTL`, `CacheConfig.NRK_TTL`, `CacheConfig.BUS_STOPS_TTL`, etc.).
+- Update those constants in `js/utils/cache-config.js` to tune caching globally — no need to search individual API files.
+
 How caching works (CacheClient)
 - Storage: All cached entries are stored in `localStorage` using keys prefixed with `trondheim-cache-`.
 - Keying: Cache keys are derived from the request URL using a simple 32-bit hash converted to base36 (see `CacheClient.getCacheKey(url)`).
 - Payload: Each entry stores `{ timestamp, url, data }` so the app can report age and size.
-- API: `CacheClient.get(url, ttl)`, `set(url, data)`, `getAge(url)`, and `isStale(url, ttl)`.
-- TTL behavior:
-  - If `ttl` is a number (milliseconds), `CacheClient.get(url, ttl)` returns cached data only if age <= ttl.
-  - If `ttl` is falsy (for example `0` or omitted), caching is disabled and the request is fetched live (no background refresh behavior).
-  - The codebase now uses object-style calls for clarity: `CacheClient.get({ key, ttl })` and `CacheClient.set({ key, data })`.
+- API: `CacheClient.get(url, ttl)`, `set(url, data)`, `getAge(url)`, and `isStale(url, ttl)` — the repo now prefers the object-style calls: `CacheClient.get({ key, ttl })` and `CacheClient.set({ key, data })`.
+- TTL semantics (implementation):
+  - If `ttl` is the number `0`, caching is disabled for that request (no cache read, no cache write).
+  - If `ttl` is a number > 0, the cache entry is considered valid only if age <= ttl; otherwise `CacheClient.get` returns `null`.
+  - If `ttl` is `null`, `CacheClient.get` will return any cached entry regardless of age (this is useful if you want to show cached data even when stale). Note: the library does not automatically revalidate stale entries in the background — see below.
 
-- Examples from the codebase:
-  - `js/utils/trash-api.js` — `cacheTTL = 24h` for search and calendar (`TrashAPI.CACHE_DURATION`)
-  - `js/utils/energy-api.js` — `cacheTTL = 1h` for electricity prices (`EnergyAPI.CACHE_DURATION`)
-  - `js/utils/events-api.js` — `cacheTTL = 24h` for events
-  - `js/utils/nrk-rss-api.js` — uses a short TTL (5 minutes) and no background refresh
-  - `js/utils/bus-api.js` — real-time departures use `cacheTTL = 0` (no cache)
+Which constants are used by the code
+- The code references named constants in `CacheConfig` for each integration. Examples (names only — change values in `js/utils/cache-config.js`):
+  - `CacheConfig.WEATHER_TTL` — weather forecast freshness
+  - `CacheConfig.SUN_TTL` — sunrise/sunset data
+  - `CacheConfig.TRASH_TTL` — TRV wasteplan search & calendar
+  - `CacheConfig.ENERGY_TTL` — electricity prices
+  - `CacheConfig.EVENTS_TTL` — TrdEvents data
+  - `CacheConfig.BUS_STOPS_TTL` — nearest bus stops (stop/quay metadata)
+  - `CacheConfig.BUS_DEPARTURES_TTL` — departures (typically set to `0` — no cache)
+  - `CacheConfig.NRK_TTL` — NRK RSS feed
+  - `CacheConfig.POLICE_TTL` — Politiet feed
+  - `CacheConfig.GEOCODING_TTL` — Nominatim geocoding
+
+- If a particular API call does not pass a `ttl` explicitly it will default to the `fetchJSON` default (which is `0` = no cache).
 
 How the higher-level API uses the cache (APIBase.fetchJSON / fetchGraphQL)
-- Function signature highlights:
-  - `fetchJSON(apiName, url, options = {}, timeout = 10000, cacheTTL = 0, useCorsProxy = false)`
-  - `fetchGraphQL(apiName, url, query, variables = {}, headers = {}, timeout = 10000, cacheTTL = 0)`
-- Behavior summary:
-  - cacheTTL === 0 (default): No cache used. `fetchJSON` calls `fetchJSONDirect` and returns the live response immediately.
-  - cacheTTL === null: Treat the resource as dynamic — return cached value immediately if present, but always start a background refresh to update the cache when the fresh response arrives.
-  - cacheTTL is a number: Use it as TTL (ms). If cached data exists and is not stale, return it immediately. If stale, return the cached value and trigger a background refresh; if no cached data, wait for the network response, cache it and return it.
-- Examples from the codebase:
-  - `js/utils/trash-api.js` — `cacheTTL = 24h` for search and calendar (`TrashAPI.CACHE_DURATION`)
-  - `js/utils/energy-api.js` — `cacheTTL = 1h` for electricity prices (`EnergyAPI.CACHE_DURATION`)
-  - `js/utils/events-api.js` — `cacheTTL = 24h` for events
-  - `js/utils/nrk-rss-api.js` — uses a short TTL (5 minutes) and no background refresh
-  - `js/utils/bus-api.js` — real-time departures use `cacheTTL = 0` (no cache)
+- Function signatures (high level):
+  - `fetchJSON(apiName, urlOrConfig, options = {}, timeout = 10000, cacheTTL = 0, useCorsProxy = false)`
+  - `fetchGraphQL(apiName, urlOrConfig, queryOrNothing, variables = {}, headers = {}, timeout = 10000, cacheTTL = 0)`
+- Implemented behavior (accurate):
+  - `cacheTTL === 0`: No cache is used — the request is fetched live and the result is not cached.
+  - `cacheTTL === null`: The code will read and return any cached entry regardless of age. The current implementation does NOT automatically revalidate the cache in the background — it simply returns the cached value. If you want "stale-while-revalidate" behavior (return cached immediately, then refresh cache in background) you'll need to implement a small background refresh in `APIBase.fetchJSON`.
+  - `cacheTTL` is a positive number: the cache is read and the entry is returned only if it is within the TTL. If no valid (non-expired) entry exists, the network request is performed and the fresh response is cached.
+
+Examples from the codebase (what to look for)
+- `js/utils/trash-api.js` — uses `TrashAPI.CACHE_DURATION` (configured via `CacheConfig.TRASH_TTL`)
+- `js/utils/energy-api.js` — uses `EnergyAPI.CACHE_DURATION` (configured via `CacheConfig.ENERGY_TTL`)
+- `js/utils/events-api.js` — uses `CacheConfig.EVENTS_TTL`
+- `js/utils/nrk-rss-api.js` — uses `CacheConfig.NRK_TTL` (short TTL, RSS is parsed client-side)
+- `js/utils/bus-api.js` — stop metadata uses `CacheConfig.BUS_STOPS_TTL`; real-time departures use no cache (`ttl === 0`)
+
+Background refresh (optional enhancement)
+- The README used to describe automatic background refresh behavior; the current implementation does not perform background revalidation. If you want that UX, a recommended approach is:
+  1. When `CacheClient.get({ key, ttl })` returns a value but `CacheClient.isStale({ key, ttl })` is true, return the cached value immediately.
+  2. Start a non-blocking `fetchJSONDirect(...)` for that key and `CacheClient.set({ key, data })` when it resolves (optionally emit an event so the UI can refresh).
+- I can implement this `stale-while-revalidate` behavior in `js/utils/api-base.js` if you'd like.
 
 CORS proxy behavior
 - The optional CORS proxy is applied by `APIBase.fetchJSON` when `useCorsProxy` is truthy: the URL is prefixed with `https://corsproxy.io/?` and the original URL is encoded as a parameter.
@@ -157,6 +177,7 @@ Development
 - Cache & debugging:
   - Clear or inspect cache during development: open your browser DevTools → Application → Local Storage and remove keys prefixed with `trondheim-cache-`.
   - Programmatic inspection: use `CacheClient.getAge(url)` and `CacheClient.isStale(url, ttl)` in the console as needed.
+  - To change TTLs, edit `js/utils/cache-config.js` and reload the page.
 - Testing & linting:
   - There are no automated tests included. For quick checks, run the app locally and open DevTools to inspect console and network requests.
   - Suggested next steps: add unit tests for pure utilities (`js/utils/`) with a lightweight runner (Vitest) and add an end-to-end smoke test (Playwright) that verifies widgets render and handle cached/mocked responses.

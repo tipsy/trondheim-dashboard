@@ -3,8 +3,6 @@
 
 class EnergyAPI extends APIBase {
 
-    static CACHE_DURATION = 60 * 60 * 1000; // 1 hour
-
     static async getEnergyPrices(priceArea = 'NO3') {
         const today = new Date();
         const year = today.getFullYear();
@@ -18,7 +16,7 @@ class EnergyAPI extends APIBase {
             {
                 url: url,
                 timeout: 10000,
-                ttl: this.CACHE_DURATION // 1 hour in milliseconds
+                ttl: CacheConfig.ENERGY_TTL
             }
         );
     }
