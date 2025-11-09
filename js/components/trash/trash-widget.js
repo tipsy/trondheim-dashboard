@@ -11,6 +11,11 @@ class TrashWidget extends BaseWidget {
             return;
         }
 
+        // Check if this is the same address we already loaded
+        if (this.address === address && this.addressId) {
+            return;
+        }
+
         this.address = address;
         await this.loadTrashSchedule();
     }
@@ -37,18 +42,12 @@ class TrashWidget extends BaseWidget {
         try {
             const normalizedAddress = this.normalizeAddress(this.address);
 
-            console.log('Trash API: Original address:', this.address);
-            console.log('Trash API: Normalized address:', normalizedAddress);
-
             // Try to search with the normalized address
             let searchResults = await TrashAPI.searchTrashAddress(normalizedAddress);
-
-            console.log('Trash API: Search results:', searchResults);
 
             // If no results, try without the space before the letter
             if (!searchResults || searchResults.length === 0) {
                 const addressWithoutSpace = normalizedAddress.replace(/(\d+)\s+([A-Z])$/, '$1$2');
-                console.log('Trash API: Trying without space:', addressWithoutSpace);
                 searchResults = await TrashAPI.searchTrashAddress(addressWithoutSpace);
             }
 
@@ -57,7 +56,6 @@ class TrashWidget extends BaseWidget {
                 const addressLowerLetter = normalizedAddress.replace(/(\d+)\s+([A-Z])$/, (match, num, letter) => {
                     return `${num} ${letter.toLowerCase()}`;
                 });
-                console.log('Trash API: Trying with lowercase letter:', addressLowerLetter);
                 searchResults = await TrashAPI.searchTrashAddress(addressLowerLetter);
             }
 

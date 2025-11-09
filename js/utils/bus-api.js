@@ -74,52 +74,50 @@ class BusAPI extends APIBase {
     }
 
     static async getBusDepartures(quayId, numberOfDepartures = 10) {
-        try {
-            // Query a specific quay to get departures for one direction only
-            const query = `
-                {
-                    quay(id: "${quayId}") {
-                        id
-                        name
-                        description
-                        estimatedCalls(numberOfDepartures: ${numberOfDepartures}, timeRange: 86400) {
-                            realtime
-                            aimedDepartureTime
-                            expectedDepartureTime
-                            destinationDisplay {
-                                frontText
-                                via
+        // Query a specific quay to get departures for one direction only
+        const query = `
+            {
+                quay(id: "${quayId}") {
+                    id
+                    name
+                    description
+                    estimatedCalls(numberOfDepartures: ${numberOfDepartures}, timeRange: 86400) {
+                        realtime
+                        aimedDepartureTime
+                        expectedDepartureTime
+                        destinationDisplay {
+                            frontText
+                            via
+                        }
+                        quay {
+                            publicCode
+                        }
+                        serviceJourney {
+                            journeyPattern {
+                                name
                             }
-                            quay {
+                            line {
                                 publicCode
-                            }
-                            serviceJourney {
-                                journeyPattern {
-                                    name
-                                }
-                                line {
-                                    publicCode
-                                    name
-                                    transportMode
-                                }
+                                name
+                                transportMode
                             }
                         }
                     }
                 }
-            `;
+            }
+        `;
 
-            const data = await this.fetchGraphQL(
-                'bus-departures',
-                'https://api.entur.io/journey-planner/v3/graphql',
-                query,
-                {},
-                { 'ET-Client-Name': 'trondheim-dashboard' }
-            );
+        const data = await this.fetchGraphQL(
+            'bus-departures',
+            'https://api.entur.io/journey-planner/v3/graphql',
+            query,
+            {},
+            { 'ET-Client-Name': 'trondheim-dashboard' },
+            10000,
+            null // Always refresh in background (dynamic data)
+        );
 
-            return data.data?.quay || null;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to fetch bus departures');
-        }
+        return data.data?.quay || null;
     }
 
 

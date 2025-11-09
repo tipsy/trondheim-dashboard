@@ -2,20 +2,23 @@
 // Using hvakosterstrommen.no API
 
 class EnergyAPI extends APIBase {
+    static CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
     static async getEnergyPrices(priceArea = 'NO3') {
-        try {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            const day = String(today.getDate()).padStart(2, '0');
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
 
-            const url = `https://www.hvakosterstrommen.no/api/v1/prices/${year}/${month}-${day}_${priceArea}.json`;
+        const url = `https://www.hvakosterstrommen.no/api/v1/prices/${year}/${month}-${day}_${priceArea}.json`;
 
-            const data = await this.fetchJSON('energy-prices', url);
-            return data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to fetch energy prices');
-        }
+        return await this.fetchJSON(
+            'energy-prices',
+            url,
+            {},
+            10000,
+            this.CACHE_DURATION // 1 hour cache
+        );
     }
 
     // Get price area based on location (simplified mapping)

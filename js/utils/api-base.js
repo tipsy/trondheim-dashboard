@@ -59,6 +59,28 @@ class APIBase {
     }
 
     /**
+     * Truncate URL for logging
+     * @param {string} url - URL to truncate
+     * @returns {string} Truncated URL
+     */
+    static truncateUrl(url) {
+        const maxLength = 80;
+        if (url.length <= maxLength) return url;
+
+        // Try to extract meaningful parts
+        try {
+            const urlObj = new URL(url);
+            const path = urlObj.pathname + urlObj.search;
+            if (path.length <= maxLength - 10) {
+                return urlObj.hostname + path;
+            }
+            return url.substring(0, maxLength - 3) + '...';
+        } catch {
+            return url.substring(0, maxLength - 3) + '...';
+        }
+    }
+
+    /**
      * Handle common API errors and provide user-friendly messages
      * @param {Error} error - Error object
      * @param {string} defaultMessage - Default error message
@@ -89,14 +111,79 @@ class APIBase {
     }
 
     /**
-     * Fetch JSON data with error handling
+     * Fetch JSON data with error handling and caching
+     * @param {string} apiName - Name of the API (for rate limiting)
+     * @param {string} url - URL to fetch
+     * @param {object} options - Fetch options
+     * @param {number} timeout - Timeout in milliseconds
+     * @param {number|null} cacheTTL - Cache TTL in milliseconds (null = always refresh in background, 0 = no cache)
+     * @param {boolean} useCorsProxy - Whether to use CORS proxy
+     * @returns {Promise<any>} JSON response data
+     */
+    static async fetchJSON(apiName, url, options = {}, timeout = 10000, cacheTTL = 0, useCorsProxy = false) {
+        // Apply CORS proxy if requested
+        const originalUrl = url;
+        if (useCorsProxy) {
+            const corsProxy = 'https://corsproxy.io/?';
+            url = `${corsProxy}${encodeURIComponent(url)}`;
+        }
+
+        // If caching is disabled, fetch directly
+        if (cacheTTL === 0) {
+            console.log(`🌐 [${apiName}] Fetching (no cache) - ${this.truncateUrl(originalUrl)}`);
+            const data = await this.fetchJSONDirect(apiName, url, options, timeout);
+            console.log(`✅ [${apiName}] Received - ${this.truncateUrl(originalUrl)}`);
+            return data;
+        }
+
+        // Use original URL for cache key (not the proxied URL)
+        const cacheKey = originalUrl;
+
+        // Check cache first
+        const cached = CacheClient.get(cacheKey, cacheTTL);
+        if (cached !== null) {
+            // Return cached data immediately
+            const age = CacheClient.getAge(cacheKey);
+            const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
+            console.log(`📦 [${apiName}] CACHE HIT (${ageStr}) - ${this.truncateUrl(originalUrl)}`);
+
+            // If cacheTTL is null (dynamic data), always refresh in background
+            // If cacheTTL is a number, only refresh if stale
+            const shouldRefresh = cacheTTL === null || CacheClient.isStale(cacheKey, cacheTTL);
+
+            if (shouldRefresh) {
+                console.log(`🔄 [${apiName}] Background refresh - ${this.truncateUrl(originalUrl)}`);
+                // Fetch fresh data in background (don't await)
+                this.fetchJSONDirect(apiName, url, options, timeout)
+                    .then(data => {
+                        CacheClient.set(cacheKey, data);
+                        console.log(`✅ [${apiName}] Cache updated - ${this.truncateUrl(originalUrl)}`);
+                    })
+                    .catch(err => {
+                        console.error(`❌ [${apiName}] Background refresh failed - ${this.truncateUrl(originalUrl)}:`, err.message);
+                    });
+            }
+
+            return cached;
+        }
+
+        // No cache available, fetch and wait
+        console.log(`❌ [${apiName}] CACHE MISS - Fetching - ${this.truncateUrl(originalUrl)}`);
+        const data = await this.fetchJSONDirect(apiName, url, options, timeout);
+        CacheClient.set(cacheKey, data);
+        console.log(`✅ [${apiName}] Received & cached - ${this.truncateUrl(originalUrl)}`);
+        return data;
+    }
+
+    /**
+     * Fetch JSON data directly without caching
      * @param {string} apiName - Name of the API (for rate limiting)
      * @param {string} url - URL to fetch
      * @param {object} options - Fetch options
      * @param {number} timeout - Timeout in milliseconds
      * @returns {Promise<any>} JSON response data
      */
-    static async fetchJSON(apiName, url, options = {}, timeout = 10000) {
+    static async fetchJSONDirect(apiName, url, options = {}, timeout = 10000) {
         try {
             const response = await this.rateLimitedFetch(apiName, url, options, timeout);
 
@@ -112,7 +199,66 @@ class APIBase {
     }
 
     /**
-     * Fetch GraphQL data with error handling
+     * Fetch GraphQL data with error handling and caching
+     * @param {string} apiName - Name of the API (for rate limiting)
+     * @param {string} url - GraphQL endpoint URL
+     * @param {string} query - GraphQL query
+     * @param {object} variables - GraphQL variables
+     * @param {object} headers - Additional headers
+     * @param {number} timeout - Timeout in milliseconds
+     * @param {number|null} cacheTTL - Cache TTL in milliseconds (null = always refresh in background, 0 = no cache)
+     * @returns {Promise<any>} GraphQL response data
+     */
+    static async fetchGraphQL(apiName, url, query, variables = {}, headers = {}, timeout = 10000, cacheTTL = 0) {
+        // Create a unique cache key that includes the query and variables
+        const cacheKey = `${url}?query=${btoa(query)}&vars=${btoa(JSON.stringify(variables))}`;
+
+        // If caching is disabled, fetch directly
+        if (cacheTTL === 0) {
+            console.log(`🌐 [${apiName}] GraphQL (no cache) - ${this.truncateUrl(url)}`);
+            const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
+            console.log(`✅ [${apiName}] GraphQL received - ${this.truncateUrl(url)}`);
+            return data;
+        }
+
+        // Check cache first
+        const cached = CacheClient.get(cacheKey, cacheTTL);
+        if (cached !== null) {
+            // Return cached data immediately
+            const age = CacheClient.getAge(cacheKey);
+            const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
+            console.log(`📦 [${apiName}] GraphQL CACHE HIT (${ageStr}) - ${this.truncateUrl(url)}`);
+
+            // If cacheTTL is null (dynamic data), always refresh in background
+            // If cacheTTL is a number, only refresh if stale
+            const shouldRefresh = cacheTTL === null || CacheClient.isStale(cacheKey, cacheTTL);
+
+            if (shouldRefresh) {
+                console.log(`🔄 [${apiName}] GraphQL background refresh - ${this.truncateUrl(url)}`);
+                // Fetch fresh data in background (don't await)
+                this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout)
+                    .then(data => {
+                        CacheClient.set(cacheKey, data);
+                        console.log(`✅ [${apiName}] GraphQL cache updated - ${this.truncateUrl(url)}`);
+                    })
+                    .catch(err => {
+                        console.error(`❌ [${apiName}] GraphQL background refresh failed - ${this.truncateUrl(url)}:`, err.message);
+                    });
+            }
+
+            return cached;
+        }
+
+        // No cache available, fetch and wait
+        console.log(`❌ [${apiName}] GraphQL CACHE MISS - Fetching - ${this.truncateUrl(url)}`);
+        const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
+        CacheClient.set(cacheKey, data);
+        console.log(`✅ [${apiName}] GraphQL received & cached - ${this.truncateUrl(url)}`);
+        return data;
+    }
+
+    /**
+     * Fetch GraphQL data directly without caching
      * @param {string} apiName - Name of the API (for rate limiting)
      * @param {string} url - GraphQL endpoint URL
      * @param {string} query - GraphQL query
@@ -121,7 +267,7 @@ class APIBase {
      * @param {number} timeout - Timeout in milliseconds
      * @returns {Promise<any>} GraphQL response data
      */
-    static async fetchGraphQL(apiName, url, query, variables = {}, headers = {}, timeout = 10000) {
+    static async fetchGraphQLDirect(apiName, url, query, variables = {}, headers = {}, timeout = 10000) {
         try {
             const response = await this.rateLimitedFetch(
                 apiName,

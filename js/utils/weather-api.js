@@ -3,24 +3,20 @@
 
 class WeatherAPI extends APIBase {
     static async getWeatherForecast(lat, lon) {
-        try {
-            // Use CORS proxy for Safari/iPad compatibility
-            const corsProxy = 'https://corsproxy.io/?';
-            const apiUrl = `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}`;
+        const apiUrl = `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}`;
 
-            const data = await this.fetchJSON(
-                'weather',
-                `${corsProxy}${encodeURIComponent(apiUrl)}`,
-                {
-                    headers: {
-                        'User-Agent': 'TrondheimDashboard/1.0'
-                    }
+        return await this.fetchJSON(
+            'weather',
+            apiUrl,
+            {
+                headers: {
+                    'User-Agent': 'TrondheimDashboard/1.0'
                 }
-            );
-            return data;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to fetch weather data');
-        }
+            },
+            10000,
+            null, // Always refresh in background (dynamic data)
+            true  // Use CORS proxy
+        );
     }
 
     static async getSunriseSunset(lat, lon) {

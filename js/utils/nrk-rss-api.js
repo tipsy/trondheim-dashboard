@@ -11,10 +11,28 @@ class NrkRssAPI extends APIBase {
      * Fetch and return the top 10 RSS items as JSON-serializable objects:
      * [{ title, link, pubDate }]
      * pubDate will be an ISO string when parseable, otherwise the original string.
+     *
+     * Note: We can't use fetchJSON here because RSS returns XML, not JSON
+     * So we handle caching manually with rateLimitedFetch
      */
     static async getTopTen(region = 'trondelag', timeout = 10000) {
         const url = this.defaultFeed(region);
 
+        // Check cache first
+        const cached = CacheClient.get(url, null); // null = always refresh in background
+        if (cached !== null) {
+            // Fetch fresh data in background
+            this.fetchFreshNews(region, timeout, url).catch(err => {
+                console.error('NRK API: Background refresh failed', err);
+            });
+            return cached;
+        }
+
+        // No cache, fetch and wait
+        return await this.fetchFreshNews(region, timeout, url);
+    }
+
+    static async fetchFreshNews(region, timeout, url) {
         try {
             const response = await this.rateLimitedFetch('nrk-rss', url, {}, timeout);
             if (!response.ok) throw new Error(`API returned ${response.status}`);
@@ -44,6 +62,9 @@ class NrkRssAPI extends APIBase {
 
                     return { title, link, pubDate };
                 });
+
+            // Cache the results
+            CacheClient.set(url, items);
 
             return items;
         } catch (error) {

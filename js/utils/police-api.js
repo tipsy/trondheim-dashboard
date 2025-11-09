@@ -14,35 +14,31 @@ class PoliceAPI extends APIBase {
     static async getLatestMessages(timeout = 10000) {
         const apiUrl = this.defaultEndpoint();
 
-        // Use CORS proxy for browser compatibility
-        const corsProxy = 'https://corsproxy.io/?';
-        const url = `${corsProxy}${encodeURIComponent(apiUrl)}`;
+        const json = await this.fetchJSON(
+            'police-api',
+            apiUrl,
+            {},
+            timeout,
+            null, // Always refresh in background (dynamic data)
+            true  // Use CORS proxy
+        );
 
-        try {
-            const response = await this.rateLimitedFetch('police-api', url, {}, timeout);
-            if (!response.ok) throw new Error(`API returned ${response.status}`);
-
-            const json = await response.json();
-            
-            if (!json.data || !Array.isArray(json.data)) {
-                throw new Error('Invalid API response format');
-            }
-
-            // Map to simplified format
-            const messages = json.data.map(msg => ({
-                id: msg.id || '',
-                category: msg.category || '',
-                municipality: msg.municipality || '',
-                area: msg.area || '',
-                text: msg.text || '',
-                createdOn: msg.createdOn || '',
-                isActive: msg.isActive || false
-            }));
-
-            return messages;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to fetch police log messages');
+        if (!json.data || !Array.isArray(json.data)) {
+            throw new Error('Invalid API response format');
         }
+
+        // Map to simplified format
+        const messages = json.data.map(msg => ({
+            id: msg.id || '',
+            category: msg.category || '',
+            municipality: msg.municipality || '',
+            area: msg.area || '',
+            text: msg.text || '',
+            createdOn: msg.createdOn || '',
+            isActive: msg.isActive || false
+        }));
+
+        return messages;
     }
 }
 

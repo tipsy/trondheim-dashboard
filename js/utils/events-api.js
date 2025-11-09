@@ -3,6 +3,8 @@
 // Returns upcoming events in Trondheim
 
 class EventsAPI extends APIBase {
+    static CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
     static defaultEndpoint() {
         return 'https://trdevents-224613.web.app/graphQL';
     }
@@ -31,41 +33,31 @@ class EventsAPI extends APIBase {
             }
         `;
 
-        try {
-            const response = await this.rateLimitedFetch('events-api', url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ query })
-            }, timeout);
+        const json = await this.fetchGraphQL(
+            'events-api',
+            url,
+            query,
+            {},
+            {},
+            timeout,
+            this.CACHE_DURATION // 24 hour cache
+        );
 
-            if (!response.ok) throw new Error(`API returned ${response.status}`);
-
-            const json = await response.json();
-            
-            if (json.errors) {
-                throw new Error(`GraphQL errors: ${JSON.stringify(json.errors)}`);
-            }
-
-            if (!json.data || !json.data.events || !json.data.events.data) {
-                throw new Error('Invalid API response format');
-            }
-
-            // Map to simplified format
-            const events = json.data.events.data.map(event => ({
-                id: event.id || '',
-                slug: event.event_slug || '',
-                title: event.title_nb || '',
-                startDate: event.startDate || '',
-                endDate: event.endDate || '',
-                venue: event.venue?.name || ''
-            }));
-
-            return events;
-        } catch (error) {
-            throw this.handleError(error, 'Failed to fetch events');
+        if (!json.data || !json.data.events || !json.data.events.data) {
+            throw new Error('Invalid API response format');
         }
+
+        // Map to simplified format
+        const events = json.data.events.data.map(event => ({
+            id: event.id || '',
+            slug: event.event_slug || '',
+            title: event.title_nb || '',
+            startDate: event.startDate || '',
+            endDate: event.endDate || '',
+            venue: event.venue?.name || ''
+        }));
+
+        return events;
     }
 }
 
