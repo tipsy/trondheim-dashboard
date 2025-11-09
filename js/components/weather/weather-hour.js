@@ -36,35 +36,9 @@ class WeatherHour extends HTMLElement {
         return `${hours}:00`;
     }
 
-    getWeatherIcon(symbolCode) {
-        const code = symbolCode.replace(/_night|_day|_polartwilight/g, '');
-
-        // Material Design Icons weather icons
-        const icons = {
-            clearsky: '<i class="mdi mdi-weather-sunny"></i>',
-            partlycloudy: '<i class="mdi mdi-weather-partly-cloudy"></i>',
-            cloudy: '<i class="mdi mdi-weather-cloudy"></i>',
-            rain: '<i class="mdi mdi-weather-rainy"></i>',
-            snow: '<i class="mdi mdi-weather-snowy"></i>',
-            fog: '<i class="mdi mdi-weather-fog"></i>',
-            thunder: '<i class="mdi mdi-weather-lightning"></i>'
-        };
-
-        if (code.includes('clearsky')) return icons.clearsky;
-        if (code.includes('fair')) return icons.partlycloudy;
-        if (code.includes('partlycloudy')) return icons.partlycloudy;
-        if (code.includes('cloudy')) return icons.cloudy;
-        if (code.includes('rain') || code.includes('drizzle') || code.includes('sleet')) return icons.rain;
-        if (code.includes('snow')) return icons.snow;
-        if (code.includes('fog')) return icons.fog;
-        if (code.includes('thunder')) return icons.thunder;
-
-        return icons.cloudy;
-    }
-
     render() {
         const timeDisplay = this.formatTime(this.time);
-        const icon = this.getWeatherIcon(this.symbolCode);
+        const icon = IconLibrary.getWeatherIcon(this.symbolCode, 32);
 
         this.shadowRoot.innerHTML = `
             <style>
@@ -110,4 +84,3 @@ class WeatherHour extends HTMLElement {
 }
 
 customElements.define('weather-hour', WeatherHour);
-

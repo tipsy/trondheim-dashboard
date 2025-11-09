@@ -90,7 +90,7 @@ class WeatherToday extends BaseWidget {
 
         content.innerHTML = `
             <div class="today-overview">
-                <div class="today-icon">${this.getWeatherIcon(todayData.symbolCode)}</div>
+                <div class="today-icon">${IconLibrary.getWeatherIcon(todayData.symbolCode, 80)}</div>
                 <div class="today-temps">
                     <div class="temp-high">${Math.round(todayData.maxTemp)}°</div>
                     <div class="temp-low">${Math.round(todayData.minTemp)}°</div>
@@ -123,31 +123,6 @@ class WeatherToday extends BaseWidget {
                 ` : ''}
             </div>
         `;
-    }
-
-    getWeatherIcon(symbolCode) {
-        const code = symbolCode.replace(/_night|_day|_polartwilight/g, '');
-
-        const icons = {
-            clearsky: '<i class="mdi mdi-weather-sunny"></i>',
-            partlycloudy: '<i class="mdi mdi-weather-partly-cloudy"></i>',
-            cloudy: '<i class="mdi mdi-weather-cloudy"></i>',
-            rain: '<i class="mdi mdi-weather-rainy"></i>',
-            snow: '<i class="mdi mdi-weather-snowy"></i>',
-            fog: '<i class="mdi mdi-weather-fog"></i>',
-            thunder: '<i class="mdi mdi-weather-lightning"></i>'
-        };
-
-        if (code.includes('clearsky')) return icons.clearsky;
-        if (code.includes('fair')) return icons.partlycloudy;
-        if (code.includes('partlycloudy')) return icons.partlycloudy;
-        if (code.includes('cloudy')) return icons.cloudy;
-        if (code.includes('rain') || code.includes('drizzle') || code.includes('sleet')) return icons.rain;
-        if (code.includes('snow')) return icons.snow;
-        if (code.includes('fog')) return icons.fog;
-        if (code.includes('thunder')) return icons.thunder;
-
-        return icons.cloudy;
     }
 
     // Override BaseWidget methods
@@ -235,4 +210,3 @@ class WeatherToday extends BaseWidget {
 }
 
 customElements.define('weather-today', WeatherToday);
-

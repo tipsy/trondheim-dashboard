@@ -23,7 +23,6 @@
 
     /* Alternate backgrounds */
     --alt-background: #252525;
-    --hover-background: #3a3a3a;
     --hover-bg: #3a3a3a;
 
     /* Shadows */
@@ -60,4 +59,3 @@
     --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
 
 }
-

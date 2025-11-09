@@ -16,30 +16,6 @@ class WeatherCurrent extends HTMLElement {
         this.render();
     }
 
-    getWeatherIcon(symbolCode) {
-        // Material Design Icons weather icons
-        const iconMap = {
-            'clearsky': '<i class="mdi mdi-weather-sunny" style="font-size: 96px;"></i>',
-            'fair': '<i class="mdi mdi-weather-partly-cloudy" style="font-size: 96px;"></i>',
-            'partlycloudy': '<i class="mdi mdi-weather-partly-cloudy" style="font-size: 96px;"></i>',
-            'cloudy': '<i class="mdi mdi-weather-cloudy" style="font-size: 96px;"></i>',
-            'rain': '<i class="mdi mdi-weather-rainy" style="font-size: 96px;"></i>',
-            'lightrain': '<i class="mdi mdi-weather-rainy" style="font-size: 96px;"></i>',
-            'heavyrain': '<i class="mdi mdi-weather-pouring" style="font-size: 96px;"></i>',
-            'snow': '<i class="mdi mdi-weather-snowy" style="font-size: 96px;"></i>',
-            'sleet': '<i class="mdi mdi-weather-snowy-rainy" style="font-size: 96px;"></i>',
-            'fog': '<i class="mdi mdi-weather-fog" style="font-size: 96px;"></i>',
-            'thunder': '<i class="mdi mdi-weather-lightning" style="font-size: 96px;"></i>'
-        };
-
-        for (const [key, icon] of Object.entries(iconMap)) {
-            if (symbolCode && symbolCode.includes(key)) {
-                return icon;
-            }
-        }
-        return iconMap['fair'];
-    }
-
     render() {
         const temperature = this.getAttribute('temperature') || '0';
         const symbolCode = this.getAttribute('symbol-code') || 'clearsky';
@@ -92,7 +68,7 @@ class WeatherCurrent extends HTMLElement {
             </style>
 
             <div class="current-weather">
-                <div class="current-icon">${this.getWeatherIcon(symbolCode)}</div>
+                <div class="current-icon">${IconLibrary.getWeatherIcon(symbolCode, 96)}</div>
                 <div class="current-temp">${Math.round(parseFloat(temperature))}°C</div>
             </div>
             <div class="weather-details">
@@ -133,4 +109,3 @@ class WeatherCurrent extends HTMLElement {
 }
 
 customElements.define('weather-current', WeatherCurrent);
-

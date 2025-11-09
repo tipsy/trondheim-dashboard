@@ -18,39 +18,13 @@ class WeatherPeriod extends HTMLElement {
         this.render();
     }
 
-    getWeatherIcon(symbolCode) {
-        const code = symbolCode.replace(/_night|_day|_polartwilight/g, '');
-
-        // Material Design Icons weather icons
-        const icons = {
-            clearsky: '<i class="mdi mdi-weather-sunny"></i>',
-            partlycloudy: '<i class="mdi mdi-weather-partly-cloudy"></i>',
-            cloudy: '<i class="mdi mdi-weather-cloudy"></i>',
-            rain: '<i class="mdi mdi-weather-rainy"></i>',
-            snow: '<i class="mdi mdi-weather-snowy"></i>',
-            fog: '<i class="mdi mdi-weather-fog"></i>',
-            thunder: '<i class="mdi mdi-weather-lightning"></i>'
-        };
-
-        if (code.includes('clearsky')) return icons.clearsky;
-        if (code.includes('fair')) return icons.partlycloudy;
-        if (code.includes('partlycloudy')) return icons.partlycloudy;
-        if (code.includes('cloudy')) return icons.cloudy;
-        if (code.includes('rain') || code.includes('drizzle') || code.includes('sleet')) return icons.rain;
-        if (code.includes('snow')) return icons.snow;
-        if (code.includes('fog')) return icons.fog;
-        if (code.includes('thunder')) return icons.thunder;
-
-        return icons.cloudy;
-    }
-
     render() {
         const label = this.getAttribute('label') || 'Period';
         const minTemp = this.getAttribute('min-temp') || '0';
         const maxTemp = this.getAttribute('max-temp') || '0';
         const symbolCode = this.getAttribute('symbol-code') || 'clearsky';
         const precipitation = this.getAttribute('precipitation') || '0';
-        const icon = this.getWeatherIcon(symbolCode);
+        const icon = IconLibrary.getWeatherIcon(symbolCode, 40);
 
         this.shadowRoot.innerHTML = `
             <style>
