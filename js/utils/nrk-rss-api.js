@@ -4,7 +4,7 @@
 
 class NrkRssAPI extends APIBase {
     static defaultFeed(region = 'trondelag') {
-        return `https://www.nrk.no/${region}/toppsaker.rss`;
+        return `https://www.nrk.no/${region}/siste.rss`;
     }
 
     /**
