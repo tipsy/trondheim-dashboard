@@ -72,7 +72,8 @@ class TrondheimDashboard extends HTMLElement {
                 }
 
                 .weather-column,
-                .right-column {
+                .right-column,
+                .news-column {
                     display: flex;
                     flex-direction: column;
                     gap: var(--spacing-md, 16px);
@@ -115,7 +116,8 @@ class TrondheimDashboard extends HTMLElement {
                     }
 
                     .weather-column,
-                    .right-column {
+                    .right-column,
+                    .news-column {
                         height: 100%;
                         min-height: 0;
                         overflow: hidden;
@@ -140,6 +142,18 @@ class TrondheimDashboard extends HTMLElement {
                     }
 
                     .right-column > trash-widget {
+                        flex: 1;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
+
+                    .news-column > police-widget {
+                        flex: 1;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
+
+                    .news-column > nrk-widget {
                         flex: 1;
                         min-height: 0;
                         overflow: hidden;
@@ -172,7 +186,10 @@ class TrondheimDashboard extends HTMLElement {
                         <energy-widget id="energy-widget"></energy-widget>
                         <trash-widget id="trash-widget"></trash-widget>
                     </div>
-                    <nrk-widget id="nrk-widget"></nrk-widget>
+                    <div class="news-column">
+                        <police-widget id="police-widget"></police-widget>
+                        <nrk-widget id="nrk-widget"></nrk-widget>
+                    </div>
                 </div>
             </div>
         `;
