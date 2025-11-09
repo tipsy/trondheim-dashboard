@@ -71,6 +71,7 @@ class TrondheimDashboard extends HTMLElement {
                     gap: var(--spacing-md, 16px);
                 }
 
+                .bus-column,
                 .weather-column,
                 .right-column,
                 .news-column {
@@ -115,6 +116,7 @@ class TrondheimDashboard extends HTMLElement {
                         overflow: hidden;
                     }
 
+                    .bus-column,
                     .weather-column,
                     .right-column,
                     .news-column {
@@ -158,6 +160,18 @@ class TrondheimDashboard extends HTMLElement {
                         min-height: 0;
                         overflow: hidden;
                     }
+
+                    .bus-column > bus-widget {
+                        flex: 1;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
+
+                    .bus-column > events-widget {
+                        flex: 1;
+                        min-height: 0;
+                        overflow: hidden;
+                    }
                 }
 
                 /* Tablet layout */
@@ -177,7 +191,10 @@ class TrondheimDashboard extends HTMLElement {
                 </div>
 
                 <div class="widgets-grid">
-                    <bus-widget id="bus-widget"></bus-widget>
+                    <div class="bus-column">
+                        <bus-widget id="bus-widget"></bus-widget>
+                        <events-widget id="events-widget"></events-widget>
+                    </div>
                     <div class="weather-column">
                         <weather-right-now id="weather-right-now"></weather-right-now>
                         <weather-today id="weather-today"></weather-today>

@@ -65,7 +65,7 @@ class PoliceWidget extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-shield-alert"></i>';
+        return '<i class="mdi mdi-car-emergency"></i>';
     }
 
     getPlaceholderText() {
