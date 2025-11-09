@@ -35,7 +35,7 @@ class PoliceWidget extends BaseWidget {
             return;
         }
 
-        // Declarative HTML generation: build a safe HTML string of <police-row> elements
+        // Declarative HTML generation: build a safe HTML string of widget-row elements
         const escapeAttr = (s) => {
             if (s === undefined || s === null) return '';
             return String(s)
@@ -45,15 +45,34 @@ class PoliceWidget extends BaseWidget {
                 .replace(/>/g, '&gt;');
         };
 
+        const formatDate = (dateString) => {
+            try {
+                const d = new Date(dateString);
+                return isNaN(d.getTime()) ? dateString : d.toLocaleString('no-NO', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (e) {
+                return dateString;
+            }
+        };
+
         const rowsHtml = messages.map(msg => {
-            const id = escapeAttr(msg.id || '');
-            const category = escapeAttr(msg.category || '');
+            const text = escapeAttr(msg.text || '');
             const municipality = escapeAttr(msg.municipality || '');
             const area = escapeAttr(msg.area || '');
-            const text = escapeAttr(msg.text || '');
-            const createdOn = escapeAttr(msg.createdOn || '');
-            const isActive = msg.isActive ? 'true' : 'false';
-            return `<police-row id="${id}" category="${category}" municipality="${municipality}" area="${area}" text="${text}" createdon="${createdOn}" isactive="${isActive}"></police-row>`;
+            const displayDate = escapeAttr(formatDate(msg.createdOn));
+
+            const location = [municipality, area].filter(x => x).join(', ');
+            const locationDate = [location, displayDate].filter(x => x).join(' • ');
+
+            // Extract threadId from id (e.g., "257vxg-0" -> "257vxg")
+            const threadId = msg.id ? msg.id.split('-')[0] : '';
+            const href = threadId ? `https://www.politiet.no/politiloggen/hendelse/#/${threadId}/` : '';
+
+            return `<widget-row title="${text}" description="${locationDate}" href="${href}"></widget-row>`;
         }).join('');
 
         content.innerHTML = `<div id="police-list" style="display:flex;flex-direction:column;gap:8px">${rowsHtml}</div>`;

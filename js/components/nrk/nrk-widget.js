@@ -36,7 +36,7 @@ class NrkWidget extends BaseWidget {
             return;
         }
 
-        // Declarative HTML generation: build a safe HTML string of <nrk-row> elements
+        // Declarative HTML generation: build a safe HTML string of widget-row elements
         const escapeAttr = (s) => {
             if (s === undefined || s === null) return '';
             return String(s)
@@ -46,11 +46,21 @@ class NrkWidget extends BaseWidget {
                 .replace(/>/g, '&gt;');
         };
 
+        const formatDate = (dateString) => {
+            try {
+                const d = new Date(dateString);
+                return isNaN(d.getTime()) ? dateString : d.toLocaleString();
+            } catch (e) {
+                return dateString;
+            }
+        };
+
         const rowsHtml = items.map(it => {
             const title = escapeAttr(it.title || '');
-            const link = escapeAttr(it.link || '#');
-            const pub = escapeAttr(it.pubDate || '');
-            return `<nrk-row title="${title}" link="${link}" pubdate="${pub}"></nrk-row>`;
+            const href = escapeAttr(it.link || '');
+            const displayDate = escapeAttr(formatDate(it.pubDate));
+
+            return `<widget-row title="${title}" description="${displayDate}" href="${href}"></widget-row>`;
         }).join('');
 
         content.innerHTML = `<div id="nrk-list" style="display:flex;flex-direction:column;gap:8px">${rowsHtml}</div>`;

@@ -78,7 +78,6 @@ class BusRow extends HTMLElement {
         // Only show strikethrough if delayed AND the formatted times are different
         const hasDelay = isDelayed && aimedTimeDisplay !== expectedTimeDisplay;
 
-        const realtimeClass = this.isRealtime ? 'realtime' : '';
         const isFlybuss = this.destination.toLowerCase().includes('flybus') ||
                           this.destination.toLowerCase().includes('airport') ||
                           this.destination.toLowerCase().includes('værnes');
@@ -105,17 +104,11 @@ class BusRow extends HTMLElement {
                     display: block;
                 }
 
-                .departure-item {
+                .bus-content {
                     display: grid;
                     grid-template-columns: 70px 1fr auto;
                     gap: var(--spacing-md);
-                    padding: var(--spacing-md);
-                    border-bottom: 1px solid var(--border-color);
                     align-items: center;
-                }
-
-                .departure-item:last-child {
-                    border-bottom: none;
                 }
 
                 .line-number {
@@ -183,16 +176,18 @@ class BusRow extends HTMLElement {
                 }
             </style>
 
-            <div class="departure-item ${realtimeClass}">
-                <div class="line-number">
-                    ${vehicleIcon}
-                    <span>${this.lineNumber}</span>
+            <widget-row>
+                <div class="bus-content">
+                    <div class="line-number">
+                        ${vehicleIcon}
+                        <span>${this.lineNumber}</span>
+                    </div>
+                    <div class="destination">
+                        <span>${this.destination}</span>
+                    </div>
+                    <div class="time">${timeHTML}</div>
                 </div>
-                <div class="destination">
-                    <span>${this.destination}</span>
-                </div>
-                <div class="time">${timeHTML}</div>
-            </div>
+            </widget-row>
         `;
     }
 }

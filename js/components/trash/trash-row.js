@@ -86,12 +86,25 @@ class TrashRow extends HTMLElement {
         return daysUntil >= 0 && daysUntil <= 2;
     }
 
+    getBorderColor() {
+        const colorMap = {
+            'general': 'var(--trash-general)',
+            'paper': 'var(--trash-paper)',
+            'plastic': 'var(--trash-plastic)',
+            'food': 'var(--trash-food)',
+            'glass': 'var(--trash-glass)',
+            'metal': 'var(--trash-metal)'
+        };
+        return colorMap[this.trashClass] || 'var(--primary-color)';
+    }
+
     render() {
         const icon = this.getTrashIcon(this.trashType);
         const formattedDate = this.formatDate(this.collectionDate);
         const daysUntil = this.getDaysUntil(this.collectionDate);
         const countdownText = this.getCountdownText(daysUntil);
         const shouldPulse = this.shouldPulse(daysUntil);
+        const borderColor = this.getBorderColor();
 
         this.shadowRoot.innerHTML = `
             <style>
@@ -100,38 +113,11 @@ class TrashRow extends HTMLElement {
                     display: block;
                 }
 
-                .schedule-item {
-                    display: flex;
-                    align-items: center;
+                .trash-content {
+                    display: grid;
+                    grid-template-columns: auto 1fr auto;
                     gap: var(--spacing-md);
-                    padding: var(--spacing-md);
-                    background-color: var(--alt-background);
-                    border-radius: var(--border-radius);
-                    border-left: 4px solid var(--primary-color);
-                }
-
-                .schedule-item.general {
-                    border-left-color: var(--trash-general);
-                }
-
-                .schedule-item.paper {
-                    border-left-color: var(--trash-paper);
-                }
-
-                .schedule-item.plastic {
-                    border-left-color: var(--trash-plastic);
-                }
-
-                .schedule-item.food {
-                    border-left-color: var(--trash-food);
-                }
-
-                .schedule-item.glass {
-                    border-left-color: var(--trash-glass);
-                }
-
-                .schedule-item.metal {
-                    border-left-color: var(--trash-metal);
+                    align-items: center;
                 }
 
                 .trash-icon {
@@ -139,8 +125,8 @@ class TrashRow extends HTMLElement {
                 }
 
                 .trash-info {
-                    flex: 1;
-                    min-width: 0;
+                    display: flex;
+                    flex-direction: column;
                 }
 
                 .trash-type {
@@ -149,28 +135,10 @@ class TrashRow extends HTMLElement {
                     font-size: var(--font-size-md);
                 }
 
-                /* Mobile: allow text to wrap */
-                @media (max-width: 1024px) {
-                    .trash-type {
-                        overflow-wrap: break-word;
-                        word-wrap: break-word;
-                        word-break: break-word;
-                        hyphens: auto;
-                    }
-                }
-
-                /* Desktop: use ellipsis for long text */
-                @media (min-width: 1025px) {
-                    .trash-type {
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        white-space: nowrap;
-                    }
-                }
-
                 .trash-date {
                     font-size: var(--font-size-sm);
                     color: var(--text-light);
+                    margin-top: 4px;
                 }
 
                 .countdown-indicator {
@@ -245,17 +213,19 @@ class TrashRow extends HTMLElement {
                 }
             </style>
 
-            <div class="schedule-item ${this.trashClass}">
-                <div class="trash-icon">${icon}</div>
-                <div class="trash-info">
-                    <div class="trash-type">${this.trashType}</div>
-                    <div class="trash-date">${formattedDate}</div>
+            <widget-row border-color="${borderColor}">
+                <div class="trash-content">
+                    <div class="trash-icon">${icon}</div>
+                    <div class="trash-info">
+                        <div class="trash-type">${this.trashType}</div>
+                        <div class="trash-date">${formattedDate}</div>
+                    </div>
+                    <div class="countdown-indicator ${shouldPulse ? 'pulse' : ''}">
+                        <div class="countdown-days">${daysUntil >= 0 ? daysUntil : '-'}</div>
+                        <div class="countdown-label">${countdownText}</div>
+                    </div>
                 </div>
-                <div class="countdown-indicator ${shouldPulse ? 'pulse' : ''}">
-                    <div class="countdown-days">${daysUntil >= 0 ? daysUntil : '-'}</div>
-                    <div class="countdown-label">${countdownText}</div>
-                </div>
-            </div>
+            </widget-row>
         `;
     }
 }

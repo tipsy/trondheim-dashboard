@@ -35,7 +35,7 @@ class EventsWidget extends BaseWidget {
             return;
         }
 
-        // Declarative HTML generation: build a safe HTML string of <event-row> elements
+        // Declarative HTML generation: build a safe HTML string of widget-row elements
         const escapeAttr = (s) => {
             if (s === undefined || s === null) return '';
             return String(s)
@@ -45,14 +45,31 @@ class EventsWidget extends BaseWidget {
                 .replace(/>/g, '&gt;');
         };
 
+        const formatDate = (dateString) => {
+            try {
+                const d = new Date(dateString);
+                if (isNaN(d.getTime())) return dateString;
+
+                // Format as "DD.MM HH:MM"
+                const day = String(d.getDate()).padStart(2, '0');
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const hours = String(d.getHours()).padStart(2, '0');
+                const minutes = String(d.getMinutes()).padStart(2, '0');
+
+                return `${day}.${month} ${hours}:${minutes}`;
+            } catch (e) {
+                return dateString;
+            }
+        };
+
         const rowsHtml = events.map(event => {
-            const id = escapeAttr(event.id || '');
-            const slug = escapeAttr(event.slug || '');
             const title = escapeAttr(event.title || '');
-            const startDate = escapeAttr(event.startDate || '');
-            const endDate = escapeAttr(event.endDate || '');
             const venue = escapeAttr(event.venue || '');
-            return `<event-row id="${id}" slug="${slug}" title="${title}" startdate="${startDate}" enddate="${endDate}" venue="${venue}"></event-row>`;
+            const displayDate = escapeAttr(formatDate(event.startDate));
+            const venueDate = [venue, displayDate].filter(x => x).join(' • ');
+            const href = event.slug ? `https://trdevents.no/event/${escapeAttr(event.slug)}` : '';
+
+            return `<widget-row title="${title}" description="${venueDate}" href="${href}"></widget-row>`;
         }).join('');
 
         content.innerHTML = `<div id="events-list" style="display:flex;flex-direction:column;gap:8px">${rowsHtml}</div>`;

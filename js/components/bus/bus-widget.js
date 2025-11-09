@@ -203,7 +203,7 @@ class BusWidget extends BaseWidget {
             selectorContainer.style.display = 'block';
         }
         const content = this.shadowRoot.getElementById('content');
-        content.innerHTML = '<div id="departures-container"></div>';
+        content.innerHTML = '<div id="departures-container" style="display:flex;flex-direction:column;gap:8px"></div>';
     }
 }
 
