@@ -2,7 +2,8 @@
 // Using hvakosterstrommen.no API
 
 class EnergyAPI extends APIBase {
-    static CACHE_DURATION = 60 * 60 * 1000; // 1 hour in milliseconds
+
+    static CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
     static async getEnergyPrices(priceArea = 'NO3') {
         const today = new Date();
@@ -14,10 +15,11 @@ class EnergyAPI extends APIBase {
 
         return await this.fetchJSON(
             'energy-prices',
-            url,
-            {},
-            10000,
-            this.CACHE_DURATION // 1 hour cache
+            {
+                url: url,
+                timeout: 10000,
+                ttl: this.CACHE_DURATION // 1 hour in milliseconds
+            }
         );
     }
 
@@ -42,5 +44,5 @@ class EnergyAPI extends APIBase {
             return 'NO1'; // Øst-Norge (Oslo area)
         }
     }
-}
 
+}

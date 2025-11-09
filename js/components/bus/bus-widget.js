@@ -5,6 +5,7 @@ class BusWidget extends BaseWidget {
         this.selectedStopId = null;
         this.availableStops = [];
         this.refreshInterval = null;
+        this.isLoadingDepartures = false; // guard to avoid overlapping departure loads
     }
 
     disconnectedCallback() {
@@ -56,11 +57,26 @@ class BusWidget extends BaseWidget {
     async loadDepartures() {
         if (!this.selectedStopId) return;
 
+        // Prevent overlapping loads
+        if (this.isLoadingDepartures) {
+            return;
+        }
+
+        this.isLoadingDepartures = true;
         try {
+            // Ensure container exists and show inline spinner so header/selector stay visible
+            this.ensureDeparturesContainer();
+            const container = this.shadowRoot.getElementById('departures-container');
+            if (container) {
+                container.innerHTML = '<div class="loading-container"><loading-spinner size="large"></loading-spinner></div>';
+            }
+
             const stopData = await BusAPI.getBusDepartures(this.selectedStopId, 10);
             this.renderDepartures(stopData);
         } catch (error) {
             this.showError('Could not load departures');
+        } finally {
+            this.isLoadingDepartures = false;
         }
     }
 
@@ -187,11 +203,18 @@ class BusWidget extends BaseWidget {
     attachEventListeners() {
         const selector = this.shadowRoot.querySelector('custom-select');
         if (selector) {
-            selector.addEventListener('change', async (e) => {
+            // Remove any previously attached handler (custom-select may have been re-rendered)
+            if (this._selectorChangeHandler) {
+                selector.removeEventListener('change', this._selectorChangeHandler);
+            }
+
+            this._selectorChangeHandler = async (e) => {
                 this.selectedStopId = e.detail.value;
                 localStorage.setItem('trondheim-dashboard-bus-stop', this.selectedStopId);
                 await this.loadDepartures();
-            });
+            };
+
+            selector.addEventListener('change', this._selectorChangeHandler);
         }
     }
 
@@ -212,4 +235,3 @@ class BusWidget extends BaseWidget {
 }
 
 customElements.define('bus-widget', BusWidget);
-

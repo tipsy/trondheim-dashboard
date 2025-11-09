@@ -51,12 +51,15 @@ class GeocodingAPI extends APIBase {
             const encodedAddress = encodeURIComponent(searchAddress);
             const data = await this.fetchJSON(
                 'geocoding',
-                `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=${limit}&countrycodes=no&addressdetails=1`,
                 {
-                    headers: {
-                        'User-Agent': 'TrondheimDashboard/1.0'
-                    }
-                }
+                    url: `https://nominatim.openstreetmap.org/search?q=${encodedAddress}&format=json&limit=${limit}&countrycodes=no&addressdetails=1`,
+                    options: {
+                        headers: {
+                            'User-Agent': 'TrondheimDashboard/1.0'
+                        }
+                    },
+                    ttl: 60 * 60 * 1000 // 1 hour cache
+                },
             );
 
             if (!data || data.length === 0) {
@@ -162,12 +165,15 @@ class GeocodingAPI extends APIBase {
         try {
             const data = await this.fetchJSON(
                 'reverse-geocoding',
-                `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
                 {
-                    headers: {
-                        'User-Agent': 'TrondheimDashboard/1.0'
-                    }
-                }
+                    url: `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+                    options: {
+                        headers: {
+                            'User-Agent': 'TrondheimDashboard/1.0'
+                        }
+                    },
+                    ttl: 60 * 60 * 1000 // 1 hour cache
+                },
             );
 
             if (data && data.display_name) {
@@ -233,4 +239,3 @@ class GeocodingAPI extends APIBase {
         });
     }
 }
-

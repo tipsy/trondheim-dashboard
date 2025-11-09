@@ -3,7 +3,6 @@
 // Returns upcoming events in Trondheim
 
 class EventsAPI extends APIBase {
-    static CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
     static defaultEndpoint() {
         return 'https://trdevents-224613.web.app/graphQL';
@@ -35,12 +34,14 @@ class EventsAPI extends APIBase {
 
         const json = await this.fetchGraphQL(
             'events-api',
-            url,
-            query,
-            {},
-            {},
-            timeout,
-            this.CACHE_DURATION // 24 hour cache
+            {
+                url: url,
+                query: query,
+                variables: {},
+                headers: {},
+                timeout: timeout,
+                ttl: 24 * 60 * 60 * 1000 // 24 hours in milliseconds
+            }
         );
 
         if (!json.data || !json.data.events || !json.data.events.data) {
@@ -60,4 +61,3 @@ class EventsAPI extends APIBase {
         return events;
     }
 }
-

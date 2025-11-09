@@ -18,13 +18,12 @@ class NrkRssAPI extends APIBase {
     static async getTopTen(region = 'trondelag', timeout = 10000) {
         const url = this.defaultFeed(region);
 
-        // Check cache first
-        const cached = CacheClient.get(url, null); // null = always refresh in background
+        // Use a short TTL for RSS (5 minutes)
+        const ttl = 5 * 60 * 1000;
+
+        // Check cache first - use named params
+        const cached = CacheClient.get({ key: url, ttl: ttl });
         if (cached !== null) {
-            // Fetch fresh data in background
-            this.fetchFreshNews(region, timeout, url).catch(err => {
-                console.error('NRK API: Background refresh failed', err);
-            });
             return cached;
         }
 
@@ -63,8 +62,8 @@ class NrkRssAPI extends APIBase {
                     return { title, link, pubDate };
                 });
 
-            // Cache the results
-            CacheClient.set(url, items);
+            // Cache the results using named params
+            CacheClient.set({ key: url, data: items });
 
             return items;
         } catch (error) {

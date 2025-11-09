@@ -3,6 +3,9 @@
 // Note: We query individual quays (platforms) to separate different directions
 
 class BusAPI extends APIBase {
+    // Track in-flight requests to avoid duplicate concurrent fetches for the same quay
+    static inFlightRequests = new Map();
+
     static async getClosestBusStops(lat, lon, radius = 500) {
         try {
             // Query for stop places and their quays
@@ -41,12 +44,13 @@ class BusAPI extends APIBase {
 
             const data = await this.fetchGraphQL(
                 'bus-stops',
-                'https://api.entur.io/journey-planner/v3/graphql',
-                query,
-                {},
-                { 'ET-Client-Name': 'trondheim-dashboard' },
-                10000,
-                60 * 60 * 1000 // cache closest stops for 1 hour
+                {
+                    url: 'https://api.entur.io/journey-planner/v3/graphql',
+                    query: query,
+                    headers: { 'ET-Client-Name': 'trondheim-dashboard' },
+                    timeout: 10000,
+                    ttl: 60 * 60 * 1000 // cache closest stops for 1 hour
+                }
             );
 
             // Transform the response to return individual quays
@@ -76,51 +80,69 @@ class BusAPI extends APIBase {
     }
 
     static async getBusDepartures(quayId, numberOfDepartures = 10) {
-        // Query a specific quay to get departures for one direction only
-        const query = `
-            {
-                quay(id: "${quayId}") {
-                    id
-                    name
-                    description
-                    estimatedCalls(numberOfDepartures: ${numberOfDepartures}, timeRange: 86400) {
-                        realtime
-                        aimedDepartureTime
-                        expectedDepartureTime
-                        destinationDisplay {
-                            frontText
-                            via
-                        }
-                        quay {
-                            publicCode
-                        }
-                        serviceJourney {
-                            journeyPattern {
-                                name
-                            }
-                            line {
-                                publicCode
-                                name
-                                transportMode
+        // If a request for this quay is already in-flight, return the same Promise
+        if (this.inFlightRequests.has(quayId)) {
+            return this.inFlightRequests.get(quayId);
+        }
+
+        // Create a promise for this request and store it
+        const requestPromise = (async () => {
+            try {
+                // Query a specific quay to get departures for one direction only
+                const query = `
+                    {
+                        quay(id: "${quayId}") {
+                            id
+                            name
+                            description
+                            estimatedCalls(numberOfDepartures: ${numberOfDepartures}, timeRange: 86400) {
+                                realtime
+                                aimedDepartureTime
+                                expectedDepartureTime
+                                destinationDisplay {
+                                    frontText
+                                    via
+                                }
+                                quay {
+                                    publicCode
+                                }
+                                serviceJourney {
+                                    journeyPattern {
+                                        name
+                                    }
+                                    line {
+                                        publicCode
+                                        name
+                                        transportMode
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                `;
+
+                const data = await this.fetchGraphQL(
+                    'bus-departures',
+                    {
+                        url: 'https://api.entur.io/journey-planner/v3/graphql',
+                        query: query,
+                        headers: { 'ET-Client-Name': 'trondheim-dashboard' },
+                        timeout: 10000,
+                        ttl: 0 // No cache for real-time departures
+                    }
+                );
+
+                return data.data?.quay || null;
+            } catch (error) {
+                throw this.handleError(error, 'Failed to fetch departures');
+            } finally {
+                // Remove the in-flight marker when done (success or failure)
+                this.inFlightRequests.delete(quayId);
             }
-        `;
+        })();
 
-        const data = await this.fetchGraphQL(
-            'bus-departures',
-            'https://api.entur.io/journey-planner/v3/graphql',
-            query,
-            {},
-            { 'ET-Client-Name': 'trondheim-dashboard' },
-            10000,
-            null // Always refresh in background (dynamic data)
-        );
-
-        return data.data?.quay || null;
+        this.inFlightRequests.set(quayId, requestPromise);
+        return requestPromise;
     }
-
 
 }

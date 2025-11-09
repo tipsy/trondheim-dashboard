@@ -2,7 +2,7 @@
 // Provides common functionality for all API classes
 
 class APIBase {
-    // Rate limiting: track last request time per API
+    // Rate limiting: track last request time
     static lastRequestTimes = new Map();
     static minRequestInterval = 1000; // Minimum 1 second between requests
 
@@ -112,23 +112,42 @@ class APIBase {
 
     /**
      * Fetch JSON data with error handling and caching
+     * Simplified rules:
+     *  - if cacheTTL is falsy => fetch and do not cache
+     *  - if cacheTTL is a number => return cached value if present and not expired, otherwise fetch and cache
      * @param {string} apiName - Name of the API (for rate limiting)
      * @param {string} url - URL to fetch
      * @param {object} options - Fetch options
      * @param {number} timeout - Timeout in milliseconds
-     * @param {number|null} cacheTTL - Cache TTL in milliseconds (null = always refresh in background, 0 = no cache)
+     * @param {number|null|false} cacheTTL - Cache TTL in milliseconds (falsey = no cache)
      * @param {boolean} useCorsProxy - Whether to use CORS proxy
      * @returns {Promise<any>} JSON response data
      */
-    static async fetchJSON(apiName, url, options = {}, timeout = 10000, cacheTTL = 0, useCorsProxy = false) {
-        // Apply CORS proxy if requested
-        const originalUrl = url;
-        if (useCorsProxy) {
-            const corsProxy = 'https://corsproxy.io/?';
-            url = `${corsProxy}${encodeURIComponent(url)}`;
+    static async fetchJSON(apiName, urlOrConfig, options = {}, timeout = 10000, cacheTTL = 0, useCorsProxy = false) {
+        // Support two calling styles for backward compatibility:
+        // 1) fetchJSON(apiName, url, options, timeout, cacheTTL, useCorsProxy)
+        // 2) fetchJSON(apiName, { url, options, timeout, ttl, useCorsProxy })
+        let originalUrl;
+        if (typeof urlOrConfig === 'string') {
+            originalUrl = urlOrConfig;
+        } else if (urlOrConfig && typeof urlOrConfig === 'object') {
+            originalUrl = urlOrConfig.url;
+            options = urlOrConfig.options || {};
+            timeout = urlOrConfig.timeout !== undefined ? urlOrConfig.timeout : timeout;
+            cacheTTL = urlOrConfig.ttl !== undefined ? urlOrConfig.ttl : cacheTTL;
+            useCorsProxy = urlOrConfig.useCorsProxy !== undefined ? urlOrConfig.useCorsProxy : useCorsProxy;
+        } else {
+            throw new Error('Invalid arguments to fetchJSON: url or config object required');
         }
 
-        // If caching is disabled, fetch directly
+        // Apply CORS proxy if requested
+        let url = originalUrl;
+        if (useCorsProxy) {
+            const corsProxy = 'https://corsproxy.io/?';
+            url = `${corsProxy}${encodeURIComponent(originalUrl)}`;
+        }
+
+        // If caching is explicitly disabled (cacheTTL === 0), fetch directly and don't cache
         if (cacheTTL === 0) {
             console.log(`🌐 [${apiName}] Fetching (no cache) - ${this.truncateUrl(originalUrl)}`);
             const data = await this.fetchJSONDirect(apiName, url, options, timeout);
@@ -139,44 +158,21 @@ class APIBase {
         // Use original URL for cache key (not the proxied URL)
         const cacheKey = originalUrl;
 
-        // Check cache first
-        const cached = CacheClient.get(cacheKey, cacheTTL);
+        // Check cache first - use named parameter object
+        const cached = CacheClient.get({ key: cacheKey, ttl: cacheTTL });
         if (cached !== null) {
-            // Return cached data immediately
-            const age = CacheClient.getAge(cacheKey);
+            const age = CacheClient.getAge({ key: cacheKey });
             const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
             console.log(`📦 [${apiName}] CACHE HIT (${ageStr}) - ${this.truncateUrl(originalUrl)}`);
-
-            // If cacheTTL is null (dynamic data), always refresh in background
-            // If cacheTTL is a number, only refresh if stale
-            const shouldRefresh = cacheTTL === null || CacheClient.isStale(cacheKey, cacheTTL);
-
-            if (shouldRefresh) {
-                console.log(`🔄 [${apiName}] Background refresh - ${this.truncateUrl(originalUrl)}`);
-                // Fetch fresh data in background (don't await)
-                this.fetchJSONDirect(apiName, url, options, timeout)
-                    .then(data => {
-                        CacheClient.set(cacheKey, data);
-                        console.log(`✅ [${apiName}] Cache updated - ${this.truncateUrl(originalUrl)}`);
-                    })
-                    .catch(err => {
-                        console.error(`❌ [${apiName}] Background refresh failed - ${this.truncateUrl(originalUrl)}:`, err.message);
-                    });
-            }
-
             return cached;
         }
 
-        // No cache available, fetch and wait
-        if (!cacheTTL) {
-            console.log(`⚠️ [${apiName}] Cache disabled - Fetching - ${this.truncateUrl(originalUrl)}`);
-        } else {
-            console.log(`❌ [${apiName}] CACHE MISS - Fetching - ${this.truncateUrl(originalUrl)}`);
-        }
-         const data = await this.fetchJSONDirect(apiName, url, options, timeout);
-         CacheClient.set(cacheKey, data);
-         console.log(`✅ [${apiName}] Received & cached - ${this.truncateUrl(originalUrl)}`);
-         return data;
+        // No valid cache available, fetch and cache result
+        console.log(`❌ [${apiName}] CACHE MISS - Fetching - ${this.truncateUrl(originalUrl)}`);
+        const data = await this.fetchJSONDirect(apiName, url, options, timeout);
+        CacheClient.set({ key: cacheKey, data: data });
+        console.log(`✅ [${apiName}] Received & cached - ${this.truncateUrl(originalUrl)}`);
+        return data;
     }
 
     /**
@@ -204,20 +200,40 @@ class APIBase {
 
     /**
      * Fetch GraphQL data with error handling and caching
+     * Simplified rules mirror fetchJSON: falsy cacheTTL = no cache; numeric TTL = use cache if valid
      * @param {string} apiName - Name of the API (for rate limiting)
      * @param {string} url - GraphQL endpoint URL
      * @param {string} query - GraphQL query
      * @param {object} variables - GraphQL variables
      * @param {object} headers - Additional headers
      * @param {number} timeout - Timeout in milliseconds
-     * @param {number|null} cacheTTL - Cache TTL in milliseconds (null = always refresh in background, 0 = no cache)
+     * @param {number|null|false} cacheTTL - Cache TTL in milliseconds (falsey = no cache)
      * @returns {Promise<any>} GraphQL response data
      */
-    static async fetchGraphQL(apiName, url, query, variables = {}, headers = {}, timeout = 10000, cacheTTL = 0) {
+    static async fetchGraphQL(apiName, urlOrConfig, queryOrNothing, variables = {}, headers = {}, timeout = 10000, cacheTTL = 0) {
+        // Support two calling styles:
+        // 1) fetchGraphQL(apiName, url, query, variables, headers, timeout, cacheTTL)
+        // 2) fetchGraphQL(apiName, { url, query, variables, headers, timeout, ttl })
+        let url;
+        let query;
+        if (typeof urlOrConfig === 'string') {
+            url = urlOrConfig;
+            query = queryOrNothing;
+        } else if (urlOrConfig && typeof urlOrConfig === 'object') {
+            url = urlOrConfig.url;
+            query = urlOrConfig.query;
+            variables = urlOrConfig.variables || {};
+            headers = urlOrConfig.headers || {};
+            timeout = urlOrConfig.timeout !== undefined ? urlOrConfig.timeout : timeout;
+            cacheTTL = urlOrConfig.ttl !== undefined ? urlOrConfig.ttl : cacheTTL;
+        } else {
+            throw new Error('Invalid arguments to fetchGraphQL: url or config object required');
+        }
+
         // Create a unique cache key that includes the query and variables
         const cacheKey = `${url}?query=${btoa(query)}&vars=${btoa(JSON.stringify(variables))}`;
 
-        // If caching is disabled, fetch directly
+        // If caching is explicitly disabled (cacheTTL === 0), fetch directly and don't cache
         if (cacheTTL === 0) {
             console.log(`🌐 [${apiName}] GraphQL (no cache) - ${this.truncateUrl(url)}`);
             const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
@@ -226,43 +242,20 @@ class APIBase {
         }
 
         // Check cache first
-        const cached = CacheClient.get(cacheKey, cacheTTL);
+        const cached = CacheClient.get({ key: cacheKey, ttl: cacheTTL });
         if (cached !== null) {
-            // Return cached data immediately
-            const age = CacheClient.getAge(cacheKey);
+            const age = CacheClient.getAge({ key: cacheKey });
             const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
             console.log(`📦 [${apiName}] GraphQL CACHE HIT (${ageStr}) - ${this.truncateUrl(url)}`);
-
-            // If cacheTTL is null (dynamic data), always refresh in background
-            // If cacheTTL is a number, only refresh if stale
-            const shouldRefresh = cacheTTL === null || CacheClient.isStale(cacheKey, cacheTTL);
-
-            if (shouldRefresh) {
-                console.log(`🔄 [${apiName}] GraphQL background refresh - ${this.truncateUrl(url)}`);
-                // Fetch fresh data in background (don't await)
-                this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout)
-                    .then(data => {
-                        CacheClient.set(cacheKey, data);
-                        console.log(`✅ [${apiName}] GraphQL cache updated - ${this.truncateUrl(url)}`);
-                    })
-                    .catch(err => {
-                        console.error(`❌ [${apiName}] GraphQL background refresh failed - ${this.truncateUrl(url)}:`, err.message);
-                    });
-            }
-
             return cached;
         }
 
-        // No cache available, fetch and wait
-        if (cacheTTL === 0) {
-            console.log(`⚠️ [${apiName}] GraphQL cache disabled - Fetching - ${this.truncateUrl(url)}`);
-        } else {
-            console.log(`❌ [${apiName}] GraphQL CACHE MISS - Fetching - ${this.truncateUrl(url)}`);
-        }
-         const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
-         CacheClient.set(cacheKey, data);
-         console.log(`✅ [${apiName}] GraphQL received & cached - ${this.truncateUrl(url)}`);
-         return data;
+        // No valid cache available, fetch and cache
+        console.log(`❌ [${apiName}] GraphQL CACHE MISS - Fetching - ${this.truncateUrl(url)}`);
+        const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
+        CacheClient.set({ key: cacheKey, data: data });
+        console.log(`✅ [${apiName}] GraphQL received & cached - ${this.truncateUrl(url)}`);
+        return data;
     }
 
     /**

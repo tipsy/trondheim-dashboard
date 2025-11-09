@@ -2,7 +2,8 @@
 // Using Trondheim Kommune (TRV) Wasteplan API
 
 class TrashAPI extends APIBase {
-    static CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+    static CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
     /**
      * Search for address to get waste collection schedule
@@ -11,10 +12,11 @@ class TrashAPI extends APIBase {
         const encodedAddress = encodeURIComponent(address);
         return await this.fetchJSON(
             'trash-search',
-            `https://trv.no/wp-json/wasteplan/v2/adress?s=${encodedAddress}`,
-            {},
-            10000,
-            this.CACHE_DURATION // 24 hour cache for search results too
+            {
+                url: `https://trv.no/wp-json/wasteplan/v2/adress?s=${encodedAddress}`,
+                timeout: 10000,
+                ttl: this.CACHE_DURATION // 24 hours in milliseconds
+            }
         );
     }
 
@@ -26,11 +28,11 @@ class TrashAPI extends APIBase {
 
         return await this.fetchJSON(
             'trash-schedule',
-            url,
-            {},
-            10000,
-            this.CACHE_DURATION // 24 hour cache
+            {
+                url: url,
+                timeout: 10000,
+                ttl: this.CACHE_DURATION // 24 hour cache
+            }
         );
     }
 }
-

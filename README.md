@@ -94,7 +94,7 @@ Below is a comprehensive list of all external integrations used by the app (endp
 - NRK RSS
   - Endpoint pattern: `https://www.nrk.no/{region}/siste.rss` (e.g., `trondelag`)
   - Purpose: Fetch latest news RSS feed and parse into JSON objects (used by `js/utils/nrk-rss-api.js`).
-  - Notes: RSS is XML; the app parses XML in the browser and caches results (background refresh allowed).
+  - Notes: RSS is XML; the app parses XML in the browser and caches results (short TTL by default).
 
 - TrdEvents (third-party GraphQL for Trondheim events)
   - Endpoint: `https://trdevents-224613.web.app/graphQL`
@@ -120,8 +120,15 @@ How caching works (CacheClient)
 - API: `CacheClient.get(url, ttl)`, `set(url, data)`, `getAge(url)`, and `isStale(url, ttl)`.
 - TTL behavior:
   - If `ttl` is a number (milliseconds), `CacheClient.get(url, ttl)` returns cached data only if age <= ttl.
-  - If `ttl` is `null`, `CacheClient.get(url, null)` returns cached data regardless of age (used for "dynamic" data patterns where background refresh is desired).
-  - If `ttl` is `0` (default in higher-level APIs), the request is treated as "no cache" and the response is fetched directly.
+  - If `ttl` is falsy (for example `0` or omitted), caching is disabled and the request is fetched live (no background refresh behavior).
+  - The codebase now uses object-style calls for clarity: `CacheClient.get({ key, ttl })` and `CacheClient.set({ key, data })`.
+
+- Examples from the codebase:
+  - `js/utils/trash-api.js` — `cacheTTL = 24h` for search and calendar (`TrashAPI.CACHE_DURATION`)
+  - `js/utils/energy-api.js` — `cacheTTL = 1h` for electricity prices (`EnergyAPI.CACHE_DURATION`)
+  - `js/utils/events-api.js` — `cacheTTL = 24h` for events
+  - `js/utils/nrk-rss-api.js` — uses a short TTL (5 minutes) and no background refresh
+  - `js/utils/bus-api.js` — real-time departures use `cacheTTL = 0` (no cache)
 
 How the higher-level API uses the cache (APIBase.fetchJSON / fetchGraphQL)
 - Function signature highlights:
@@ -135,8 +142,8 @@ How the higher-level API uses the cache (APIBase.fetchJSON / fetchGraphQL)
   - `js/utils/trash-api.js` — `cacheTTL = 24h` for search and calendar (`TrashAPI.CACHE_DURATION`)
   - `js/utils/energy-api.js` — `cacheTTL = 1h` for electricity prices (`EnergyAPI.CACHE_DURATION`)
   - `js/utils/events-api.js` — `cacheTTL = 24h` for events
-  - `js/utils/nrk-rss-api.js` — uses `CacheClient.get(url, null)` to return cached RSS items immediately and performs a background refresh
-  - `js/utils/bus-api.js` — real-time departures use `cacheTTL = null` (background refresh); some bus queries intentionally use no cache
+  - `js/utils/nrk-rss-api.js` — uses a short TTL (5 minutes) and no background refresh
+  - `js/utils/bus-api.js` — real-time departures use `cacheTTL = 0` (no cache)
 
 CORS proxy behavior
 - The optional CORS proxy is applied by `APIBase.fetchJSON` when `useCorsProxy` is truthy: the URL is prefixed with `https://corsproxy.io/?` and the original URL is encoded as a parameter.

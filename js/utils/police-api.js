@@ -16,11 +16,13 @@ class PoliceAPI extends APIBase {
 
         const json = await this.fetchJSON(
             'police-api',
-            apiUrl,
-            {},
-            timeout,
-            null, // Always refresh in background (dynamic data)
-            true  // Use CORS proxy
+            {
+                url: apiUrl,
+                options: {},
+                timeout: timeout,
+                ttl: 60 * 5 * 1000, // 5 minute cache
+                useCorsProxy: true
+            }
         );
 
         if (!json.data || !Array.isArray(json.data)) {
@@ -41,4 +43,3 @@ class PoliceAPI extends APIBase {
         return messages;
     }
 }
-

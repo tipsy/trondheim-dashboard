@@ -5,6 +5,8 @@ class BaseWidget extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
+        // Timer id for delayed placeholder
+        this._placeholderTimerId = null;
     }
 
     connectedCallback() {
@@ -198,13 +200,16 @@ class BaseWidget extends HTMLElement {
                     ${this.getHeaderContent()}
                 </div>
                 <div id="content">
-                    <p class="placeholder">${this.getPlaceholderText()}</p>
+                    <!-- Placeholder will appear after a short delay if no activity -->
                 </div>
             </div>
         `;
 
         // Set up scroll listener for header border
         this.setupScrollListener();
+
+        // Start delayed placeholder timer (only show placeholder if widget remains idle)
+        this.startPlaceholderTimer();
 
         // Call post-render hook for child classes
         this.afterRender();
@@ -249,25 +254,60 @@ class BaseWidget extends HTMLElement {
         }
     }
 
-    // Override this method to attach event listeners after render
+    // Start a delayed placeholder that will appear after 1s if no content/activity occurs
+    startPlaceholderTimer() {
+        this.cancelPlaceholderTimer();
+        this._placeholderTimerId = setTimeout(() => {
+            // Only show placeholder if the element is still connected
+            if (!this.isConnected) return;
+            // Only show the placeholder if the content is still empty
+            const content = this.shadowRoot.getElementById('content');
+            if (content && content.children.length === 0) {
+                this.showPlaceholder();
+            }
+        }, 1000);
+    }
+
+    cancelPlaceholderTimer() {
+        if (this._placeholderTimerId) {
+            clearTimeout(this._placeholderTimerId);
+            this._placeholderTimerId = null;
+        }
+    }
+
+    // Set up post-render hook for child classes
     afterRender() {
         // Child classes can override this
     }
 
     // Utility methods for common widget operations
     showLoading(isLoading) {
+        // Cancel delayed placeholder so it doesn't appear while loading
+        this.cancelPlaceholderTimer();
+
         const content = this.shadowRoot.getElementById('content');
         if (isLoading) {
             content.innerHTML = '<div class="loading-container"><loading-spinner size="large"></loading-spinner></div>';
+        } else {
+            // If we're turning loading off and the content currently shows our loading container,
+            // remove it and start the placeholder timer (so placeholder appears after 1s if nothing else fills the content).
+            if (content && content.querySelector && content.querySelector('.loading-container')) {
+                content.innerHTML = '';
+                this.startPlaceholderTimer();
+            }
         }
     }
 
     showError(message) {
+        // Cancel delayed placeholder - error takes precedence
+        this.cancelPlaceholderTimer();
         const content = this.shadowRoot.getElementById('content');
         content.innerHTML = `<error-message message="${message}"></error-message>`;
     }
 
     showPlaceholder() {
+        // Clear any pending timer and show the placeholder
+        this.cancelPlaceholderTimer();
         const content = this.shadowRoot.getElementById('content');
         content.innerHTML = `<p class="placeholder">${this.getPlaceholderText()}</p>`;
     }
@@ -282,4 +322,3 @@ class BaseWidget extends HTMLElement {
         return this.shadowRoot.getElementById('content');
     }
 }
-

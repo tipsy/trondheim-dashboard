@@ -7,15 +7,13 @@ class WeatherAPI extends APIBase {
 
         return await this.fetchJSON(
             'weather',
-            apiUrl,
             {
-                headers: {
-                    'User-Agent': 'TrondheimDashboard/1.0'
-                }
-            },
-            10000,
-            null, // Always refresh in background (dynamic data)
-            true  // Use CORS proxy
+                url: apiUrl,
+                options: { headers: { 'User-Agent': 'TrondheimDashboard/1.0' } },
+                timeout: 10000,
+                ttl: 5 * 60 * 1000, // 5 minute cache
+                useCorsProxy: true
+            }
         );
     }
 
@@ -26,10 +24,11 @@ class WeatherAPI extends APIBase {
 
             const data = await this.fetchJSON(
                 'sunrise-sunset',
-                `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dateStr}&formatted=0`,
-                {},
-                10000,
-                24 * 60 * 60 * 1000 // cache for 24 hours
+                {
+                    url: `https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&date=${dateStr}&formatted=0`,
+                    timeout: 10000,
+                    ttl: 24 * 60 * 60 * 1000 // cache for 24 hours
+                }
             );
 
             if (data.status !== 'OK') {
