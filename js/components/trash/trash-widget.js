@@ -21,16 +21,39 @@ class TrashWidget extends BaseWidget {
     }
 
     normalizeAddress(address) {
-        // addresses are given as Persaunvegen 1C, 7045 Trondheim, we care about
-        // Persaunvegen 1C, but we want to add a space between the number and the letter
-        const parts = address.split(',')[0].split(' ');
-        const street = parts[0].trim();
-        let number = parts[1].trim();
-        if (number.match(/[A-Z]/)) {
-             // if the number includes a letter, we have to insert a space
-            number = number.replace(/(\d+)([A-Z])/, '$1 $2');
+        // addresses are given as "Nedre Kristianstens gate 18B, 7014 Trondheim"
+        // we need to extract "Nedre Kristianstens gate 18 B" (with space before letter)
+
+        // Get the street address part (before the comma)
+        const streetAddress = address.split(',')[0].trim();
+
+        // Find the house number (last part that contains a digit)
+        const parts = streetAddress.split(' ');
+        let numberIndex = -1;
+
+        // Find the last part that contains a number
+        for (let i = parts.length - 1; i >= 0; i--) {
+            if (/\d/.test(parts[i])) {
+                numberIndex = i;
+                break;
+            }
         }
-        return (street + ' ' + number).toUpperCase();
+
+        if (numberIndex === -1) {
+            // No number found, return as-is
+            return streetAddress.toUpperCase();
+        }
+
+        // Split into street name and house number
+        const streetName = parts.slice(0, numberIndex).join(' ');
+        let houseNumber = parts[numberIndex];
+
+        // Add space before letter if needed (18B -> 18 B)
+        if (houseNumber.match(/\d+[A-Z]/i)) {
+            houseNumber = houseNumber.replace(/(\d+)([A-Z])/i, '$1 $2');
+        }
+
+        return `${streetName} ${houseNumber}`.toUpperCase();
     }
 
     async loadTrashSchedule() {

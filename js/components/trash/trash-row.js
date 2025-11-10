@@ -166,7 +166,7 @@ class TrashRow extends HTMLElement {
                     right: -2px;
                     bottom: -2px;
                     border: 2px solid var(--error-color);
-                    background-color: color-mix(in srgb, var(--error-color) 20%, transparent);
+                    background-color: color-mix(in srgb, var(--error-color) 10%, transparent);
                     border-radius: var(--border-radius);
                     animation: ripple 2s ease-out infinite;
                 }
@@ -197,17 +197,29 @@ class TrashRow extends HTMLElement {
                     color: var(--error-color);
                 }
 
+                .countdown-label.today {
+                    font-size: 14px;
+                    line-height: 32px;
+                    font-weight: bold;
+                    color: var(--text-color);
+                    margin-top: 0;
+                }
+
+                .countdown-indicator.pulse .countdown-label.today {
+                    color: var(--error-color);
+                }
+
                 @keyframes ripple {
                     0% {
                         transform: scale(1);
-                        opacity: 1;
+                        opacity: 0.8;
                     }
                     75% {
-                        transform: scale(1.5);
+                        transform: scale(1.25);
                         opacity: 0;
                     }
                     100% {
-                        transform: scale(1.5);
+                        transform: scale(1.25);
                         opacity: 0;
                     }
                 }
@@ -221,8 +233,8 @@ class TrashRow extends HTMLElement {
                         <div class="trash-date">${formattedDate}</div>
                     </div>
                     <div class="countdown-indicator ${shouldPulse ? 'pulse' : ''}">
-                        <div class="countdown-days">${daysUntil >= 0 ? daysUntil : '-'}</div>
-                        <div class="countdown-label">${countdownText}</div>
+                        ${daysUntil !== 0 ? `<div class="countdown-days">${daysUntil >= 0 ? daysUntil : '-'}</div>` : ''}
+                        <div class="countdown-label ${daysUntil === 0 ? 'today' : ''}">${countdownText}</div>
                     </div>
                 </div>
             </widget-row>
