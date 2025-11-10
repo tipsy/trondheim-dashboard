@@ -74,6 +74,10 @@ class WidgetRow extends HTMLElement {
                     font-weight: bold;
                     color: var(--text-color);
                     font-size: var(--font-size-md);
+                    display: -webkit-box;
+                    -webkit-box-orient: vertical;
+                    -webkit-line-clamp: 2;
+                    overflow: hidden;
                 }
 
                 .description {
@@ -93,9 +97,8 @@ class WidgetRow extends HTMLElement {
                     }
                 }
 
-                /* Desktop: use ellipsis for long text */
+                /* Desktop: use single-line ellipsis for descriptions only */
                 @media (min-width: 1025px) {
-                    .title,
                     .description {
                         overflow: hidden;
                         text-overflow: ellipsis;
@@ -125,4 +128,3 @@ class WidgetRow extends HTMLElement {
 }
 
 customElements.define('widget-row', WidgetRow);
-
