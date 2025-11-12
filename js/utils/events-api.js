@@ -11,13 +11,14 @@ class EventsAPI extends APIBase {
     /**
      * Fetch and return upcoming events:
      * [{ id, title, startDate, endDate, venue }]
+     * Accepts pageSize and page to allow fetching additional pages.
      */
-    static async getUpcomingEvents(pageSize = 10, timeout = 10000) {
+    static async getUpcomingEvents(pageSize = 10, page = 0, timeout = 10000) {
         const url = this.defaultEndpoint();
 
         const query = `
             query {
-                events(filter: {}, page: 0, pageSize: ${pageSize}) {
+                events(filter: {}, page: ${page}, pageSize: ${pageSize}) {
                     data {
                         id
                         event_slug
@@ -60,4 +61,5 @@ class EventsAPI extends APIBase {
 
         return events;
     }
+
 }
