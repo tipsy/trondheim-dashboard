@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { LitElement, html, css } from 'lit';
 
 class ErrorMessage extends LitElement {
     static properties = {
@@ -6,7 +6,6 @@ class ErrorMessage extends LitElement {
     };
 
     static styles = css`
-        ${unsafeCSS(IconLibrary.importCss)}
 
         :host {
             display: block;

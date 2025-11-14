@@ -1,4 +1,4 @@
-import { LitElement, html, css, unsafeCSS } from 'lit';
+import { LitElement, html, css } from 'lit';
 
 class WeatherDetail extends LitElement {
     static properties = {
@@ -8,7 +8,6 @@ class WeatherDetail extends LitElement {
     };
 
     static styles = css`
-        ${unsafeCSS(IconLibrary.importCss)}
 
         :host {
             display: block;

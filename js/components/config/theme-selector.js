@@ -1,90 +1,56 @@
-class ThemeSelector extends HTMLElement {
+import { LitElement, html, css } from 'lit';
+
+class ThemeSelector extends LitElement {
+    static properties = {
+        selectedTheme: { type: String, state: true }
+    };
+
+    static styles = css`
+
+        :host {
+            display: block;
+            height: 100%;
+        }
+
+        .theme-container {
+            background-color: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+        }
+
+        h2 {
+            margin: 0 0 var(--spacing-sm) 0;
+            color: var(--heading-color, var(--text-color));
+            font-size: var(--font-size-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        h2 i {
+            font-size: 28px;
+        }
+    `;
+
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.selectedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'midnight-blue';
     }
 
-    connectedCallback() {
-        this.render();
-        this.loadSavedTheme();
-        this.attachEventListeners();
+    async firstUpdated() {
+        this.setTheme(this.selectedTheme);
+        await this.setupThemeSelector();
     }
 
-    loadSavedTheme() {
-        const savedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'midnight-blue';
-        this.setTheme(savedTheme);
+    async setupThemeSelector() {
         const select = this.shadowRoot.querySelector('custom-select');
-        if (select) {
-            select.setAttribute('selected', savedTheme);
-        }
-    }
+        if (!select) return;
 
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('trondheim-dashboard-theme', theme);
-
-        // Dispatch event for dashboard to update URL
-        this.dispatchEvent(new CustomEvent('theme-changed', {
-            detail: { theme },
-            bubbles: true,
-            composed: true
-        }));
-    }
-
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                ${IconLibrary.importCss}
-                * {
-                    box-sizing: border-box;
-                }
-
-                :host {
-                    display: block;
-                    height: 100%;
-                }
-
-                .theme-container {
-                    background-color: var(--card-background);
-                    border-radius: var(--border-radius);
-                    padding: var(--spacing-md);
-                    box-shadow: var(--shadow);
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                }
-
-                h2 {
-                    margin: 0 0 var(--spacing-sm) 0;
-                    color: var(--heading-color, var(--text-color));
-                    font-size: var(--font-size-lg);
-                    display: flex;
-                    align-items: center;
-                    gap: var(--spacing-xs);
-                }
-
-                h2 i {
-                    font-size: 28px;
-                }
-            </style>
-
-            <div class="theme-container">
-                <h2>
-                    <i class="mdi mdi-palette-outline"></i>
-                    Theme
-                </h2>
-                <custom-select id="theme-select"></custom-select>
-            </div>
-        `;
-    }
-
-    async attachEventListeners() {
-        const select = this.shadowRoot.querySelector('custom-select');
-
-        // Wait for the custom element to be upgraded
         await customElements.whenDefined('custom-select');
 
-        // Set options
         await select.setOptions([
             { value: 'midnight-blue', label: 'Midnight Blue' },
             { value: 'peach', label: 'Peach Pink' },
@@ -96,8 +62,36 @@ class ThemeSelector extends HTMLElement {
         ]);
 
         select.addEventListener('change', (e) => {
-            this.setTheme(e.detail.value);
+            this.handleThemeChange(e.detail.value);
         });
+    }
+
+    handleThemeChange(theme) {
+        this.selectedTheme = theme;
+        this.setTheme(theme);
+    }
+
+    setTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('trondheim-dashboard-theme', theme);
+
+        this.dispatchEvent(new CustomEvent('theme-changed', {
+            detail: { theme },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    render() {
+        return html`
+            <div class="theme-container">
+                <h2>
+                    <i class="mdi mdi-palette-outline"></i>
+                    Theme
+                </h2>
+                <custom-select id="theme-select" .selected=${this.selectedTheme}></custom-select>
+            </div>
+        `;
     }
 }
 

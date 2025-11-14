@@ -223,13 +223,8 @@ class TrondheimDashboard extends HTMLElement {
                 // Set theme directly
                 document.documentElement.setAttribute('data-theme', theme);
                 localStorage.setItem('trondheim-dashboard-theme', theme);
-                // Update the selector to reflect the theme
-                setTimeout(() => {
-                    const select = themeSelector.shadowRoot.querySelector('custom-select');
-                    if (select) {
-                        select.setAttribute('selected', theme);
-                    }
-                }, 100);
+                // Update the selector's property to reflect the theme
+                themeSelector.selectedTheme = theme;
             }
         }
 
