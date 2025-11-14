@@ -7,6 +7,13 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "lit": "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js"
+            }
+        }
+    </script>
 </head>
 <body>
     <trondheim-dashboard></trondheim-dashboard>
@@ -30,18 +37,17 @@
 
     <!-- Common Components -->
     <script src="js/components/common/base-widget.js"></script>
-    <script src="js/components/common/loading-spinner.js"></script>
-    <script src="js/components/common/error-message.js"></script>
-    <script src="js/components/common/icon-button.js"></script>
-    <script src="js/components/common/detail-item.js"></script>
-    <script src="js/components/common/custom-select.js"></script>
+    <script type="module" src="js/components/common/loading-spinner.js"></script>
+    <script type="module" src="js/components/common/error-message.js"></script>
+    <script type="module" src="js/components/common/custom-select.js"></script>
 
     <!-- Address Components -->
     <script src="js/components/address/address-suggestion-item.js"></script>
     <script src="js/components/address/address-input.js"></script>
 
     <!-- Sub-components -->
-    <script src="js/components/common/widget-row.js"></script>
+    <script type="module" src="js/components/common/widget-row.js"></script>
+    <script type="module" src="js/components/weather/weather-detail.js"></script>
     <script src="js/components/bus/bus-row.js"></script>
     <script src="js/components/trash/trash-row.js"></script>
     <script src="js/components/weather/weather-hour.js"></script>

@@ -141,9 +141,12 @@ class EventsWidget extends BaseWidget {
         this.setupDateSelector();
     }
 
-    setupDateSelector() {
+    async setupDateSelector() {
         const select = this.shadowRoot.querySelector('#events-date-select');
         if (!select) return;
+
+        // Wait for the custom element to be upgraded
+        await customElements.whenDefined('custom-select');
 
         // Build options: Today + next 7 days
         const options = [];
@@ -171,7 +174,7 @@ class EventsWidget extends BaseWidget {
         }
 
         // Set options on the custom-select
-        select.setOptions(options);
+        await select.setOptions(options);
         select.setAttribute('selected', this.selectedDate);
 
         // Remove previous handler if re-rendered

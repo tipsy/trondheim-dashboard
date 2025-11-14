@@ -90,10 +90,13 @@ class BusWidget extends BaseWidget {
         }, 60000);
     }
 
-    updateStopSelector() {
+    async updateStopSelector() {
         const selectorContainer = this.shadowRoot.querySelector('.stop-selector-container');
         const selector = this.shadowRoot.querySelector('custom-select');
         if (!selector || !selectorContainer) return;
+
+        // Wait for the custom element to be upgraded
+        await customElements.whenDefined('custom-select');
 
         if (this.availableStops.length > 0) {
             const options = this.availableStops.map(stop => {
@@ -119,7 +122,7 @@ class BusWidget extends BaseWidget {
                 };
             });
 
-            selector.setOptions(options);
+            await selector.setOptions(options);
             selector.setAttribute('selected', this.selectedStopId);
             selectorContainer.style.display = 'block';
         } else {

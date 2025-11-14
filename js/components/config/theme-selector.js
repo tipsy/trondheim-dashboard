@@ -78,11 +78,14 @@ class ThemeSelector extends HTMLElement {
         `;
     }
 
-    attachEventListeners() {
+    async attachEventListeners() {
         const select = this.shadowRoot.querySelector('custom-select');
 
+        // Wait for the custom element to be upgraded
+        await customElements.whenDefined('custom-select');
+
         // Set options
-        select.setOptions([
+        await select.setOptions([
             { value: 'midnight-blue', label: 'Midnight Blue' },
             { value: 'peach', label: 'Peach Pink' },
             { value: 'solarized', label: 'Solarized️' },

@@ -72,36 +72,36 @@ class WeatherCurrent extends HTMLElement {
                 <div class="current-temp">${Math.round(parseFloat(temperature))}°C</div>
             </div>
             <div class="weather-details">
-                <detail-item
+                <weather-detail
                     icon="precipitation"
                     label="Precipitation"
                     value="${precipitation} mm">
-                </detail-item>
-                <detail-item
+                </weather-detail>
+                <weather-detail
                     icon="wind"
                     label="Wind"
                     value="${windSpeed} m/s">
-                </detail-item>
+                </weather-detail>
                 ${sunrise ? `
-                    <detail-item
+                    <weather-detail
                         icon="sunrise"
                         label="Sunrise"
                         value="${sunrise}">
-                    </detail-item>
+                    </weather-detail>
                 ` : ''}
                 ${sunset ? `
-                    <detail-item
+                    <weather-detail
                         icon="sunset"
                         label="Sunset"
                         value="${sunset}">
-                    </detail-item>
+                    </weather-detail>
                 ` : ''}
                 ${daylight ? `
-                    <detail-item
+                    <weather-detail
                         icon="daylight"
                         label="Daylight"
                         value="${daylight}">
-                    </detail-item>
+                    </weather-detail>
                 ` : ''}
             </div>
         `;
