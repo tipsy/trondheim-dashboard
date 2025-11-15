@@ -39,7 +39,7 @@ class PoliceWidget extends BaseWidget {
   }
 
   getLocation(msg) {
-    return [msg.municipality, msg.area].filter((x) => x).join(", ");
+    return [msg.municipality, msg.area].filter(Boolean).join(", ");
   }
 
   getDescription(msg) {
@@ -48,21 +48,20 @@ class PoliceWidget extends BaseWidget {
       location,
       DateFormatter.formatToNorwegianDateTime(msg.createdOn),
     ]
-      .filter((x) => x)
+      .filter(Boolean)
       .join(" • ");
-    return [msg.category, locationDate].filter((x) => x).join(" • ");
+    return [msg.category, locationDate].filter(Boolean).join(" • ");
   }
 
   getThreadUrl(msg) {
-    if (!msg.id) return "";
-    const threadId = msg.id.split("-")[0];
+    const threadId = msg.id?.split("-")[0];
     return threadId
       ? `https://www.politiet.no/politiloggen/hendelse/#/${threadId}/`
       : "";
   }
 
   renderContent() {
-    if (!this.messages || this.messages.length === 0) {
+    if (!this.messages?.length) {
       return html`<p class="no-data">No police log messages available</p>`;
     }
 
