@@ -68,26 +68,17 @@ class ThemeSelector extends LitElement {
     async firstUpdated() {
         adoptMDIStyles(this.shadowRoot);
         this.setTheme(this.selectedTheme);
-
-        // Attach change listener to the select
-        const select = this.shadowRoot.querySelector('custom-select');
-        if (select) {
-            select.addEventListener('change', (e) => {
-                this.handleThemeChange(e.detail.value);
-            });
-        }
     }
 
-    handleThemeChange(theme) {
+    handleThemeChange(e) {
+        const theme = e.detail.value;
         this.selectedTheme = theme;
         this.setTheme(theme);
     }
 
-
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('trondheim-dashboard-theme', theme);
-
         dispatchEvent(this, 'theme-changed', { theme });
     }
 
@@ -99,14 +90,13 @@ class ThemeSelector extends LitElement {
                         <i class="mdi mdi-palette-outline"></i>
                         Config
                     </h2>
-                    <refresh-button title="Clear all cached data and refresh">
-                        <i class="mdi mdi-refresh"></i>
-                    </refresh-button>
+                    <refresh-button></refresh-button>
                 </div>
                 <custom-select
                     id="theme-select"
                     .options=${this.themeOptions}
-                    .selected=${this.selectedTheme}>
+                    .selected=${this.selectedTheme}
+                    @change=${this.handleThemeChange}>
                 </custom-select>
             </div>
         `;
