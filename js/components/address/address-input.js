@@ -60,76 +60,12 @@ class AddressInput extends LitElement {
             gap: var(--spacing-md);
         }
 
-        input {
-            flex: 1;
-            padding: var(--spacing-sm) 40px var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            font-size: var(--font-size-md);
-            background-color: var(--input-background);
-            color: var(--text-color);
-            font-family: var(--font-family, sans-serif);
-            transition: border-color 0.2s;
-            width: 100%;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-        }
-
         .input-wrapper {
             position: relative;
             flex: 1;
             width: 100%;
         }
 
-
-        button {
-            padding: var(--spacing-sm) var(--spacing-md);
-            background-color: var(--primary-color);
-            color: var(--button-text);
-            border: none;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-size: var(--font-size-md);
-            transition: background-color 0.2s;
-            font-family: var(--font-family, sans-serif);
-            white-space: nowrap;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #search-btn {
-            min-width: 90px;
-        }
-
-        button:hover {
-            background-color: var(--secondary-color);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .location-btn {
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-            background-color: var(--card-background);
-            color: var(--text-color);
-            border: 1px solid var(--border-color);
-        }
-
-        .location-btn:hover {
-            background-color: var(--hover-bg, #f5f5f5);
-        }
 
         .location-text {
             display: none;
@@ -140,7 +76,8 @@ class AddressInput extends LitElement {
                 flex-direction: column;
             }
 
-            button {
+            primary-button,
+            secondary-button {
                 width: 100%;
             }
 
@@ -165,14 +102,6 @@ class AddressInput extends LitElement {
 
             .button-row {
                 flex-shrink: 0;
-            }
-
-            button {
-                flex: 0 0 auto;
-            }
-
-            .location-btn {
-                min-width: auto;
             }
         }
 
@@ -203,21 +132,6 @@ class AddressInput extends LitElement {
 
         address-suggestion-item:last-child {
             border-bottom: none;
-        }
-
-
-        .loading {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid var(--button-text);
-            border-top-color: transparent;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
         }
     `];
 
@@ -331,41 +245,8 @@ class AddressInput extends LitElement {
         }
     }
 
-    handleInput(e) {
-        this.addressValue = e.target.value;
-        this.handleInputChange(e.target.value);
-    }
-
-    handleKeydown(e) {
-        if (e.key === 'Enter') {
-            this.cancelDebounce();
-            this.handleAddressSearch(true);
-        } else if (e.key === 'Escape') {
-            this.hideSuggestionsState();
-            this.cancelDebounce();
-        }
-    }
-
-    handleClear() {
-        this.addressValue = '';
-        this.hideSuggestionsState();
-        this.cancelDebounce();
-        this.shouldFocusInput = true;
-    }
-
-    updated(changedProperties) {
-        super.updated(changedProperties);
-
-        if (this.shouldFocusInput) {
-            const input = this.shadowRoot.querySelector('input');
-            if (input) {
-                input.focus();
-                this.shouldFocusInput = false;
-            }
-        }
-    }
-
     handleInputChange(value) {
+        this.addressValue = value;
         this.cancelDebounce();
 
         const trimmedValue = value.trim();
@@ -382,6 +263,36 @@ class AddressInput extends LitElement {
         this.searchTimeout = setTimeout(() => {
             this.handleAddressSearch();
         }, this.debounceDelay);
+    }
+
+    handleInputKeydown(e) {
+        const key = e.detail.key;
+        if (key === 'Enter') {
+            this.cancelDebounce();
+            this.handleAddressSearch(true);
+        } else if (key === 'Escape') {
+            this.hideSuggestionsState();
+            this.cancelDebounce();
+        }
+    }
+
+    handleClear() {
+        this.addressValue = '';
+        this.hideSuggestionsState();
+        this.cancelDebounce();
+        this.shouldFocusInput = true;
+    }
+
+    updated(changedProperties) {
+        super.updated(changedProperties);
+
+        if (this.shouldFocusInput) {
+            const inputField = this.shadowRoot.querySelector('input-field');
+            if (inputField) {
+                inputField.focus();
+                this.shouldFocusInput = false;
+            }
+        }
     }
 
     cancelDebounce() {
@@ -524,17 +435,13 @@ class AddressInput extends LitElement {
                 <div class="input-group">
                     <div class="input-row">
                         <div class="input-wrapper">
-                            <input
-                                type="text"
-                                id="address-input"
-                                placeholder="Start typing an address..."
-                                aria-label="Address"
-                                autocomplete="off"
+                            <input-field
                                 .value=${this.addressValue}
-                                @input=${this.handleInput}
-                                @keydown=${this.handleKeydown}
+                                placeholder="Start typing an address..."
                                 ?disabled=${this.inputDisabled}
-                            />
+                                @input-change=${(e) => this.handleInputChange(e.detail.value)}
+                                @input-keydown=${this.handleInputKeydown}
+                            ></input-field>
                             <clear-button
                                 ?hidden=${!this.addressValue.trim()}
                                 @clear=${this.handleClear}
@@ -542,22 +449,21 @@ class AddressInput extends LitElement {
                         </div>
                     </div>
                     <div class="button-row">
-                        <button
-                            id="search-btn"
-                            @click=${() => this.handleAddressSearch(true)}
+                        <primary-button
                             ?disabled=${this.buttonsDisabled}
+                            ?loading=${this.isLoading}
+                            @button-click=${() => this.handleAddressSearch(true)}
                         >
-                            ${this.isLoading ? html`<span class="loading"></span>` : 'Search'}
-                        </button>
-                        <button
-                            class="location-btn"
-                            title="Use my location"
-                            @click=${this.handleCurrentLocation}
+                            Search
+                        </primary-button>
+                        <secondary-button
                             ?disabled=${this.buttonsDisabled}
+                            title="Use my location"
+                            @button-click=${this.handleCurrentLocation}
                         >
                             <i class="mdi mdi-crosshairs-gps"></i>
                             <span class="location-text">Use Location</span>
-                        </button>
+                        </secondary-button>
                     </div>
                 </div>
                 <div class="suggestions" style="display: ${this.showSuggestions ? 'block' : 'none'}">

@@ -11,16 +11,17 @@ class ClearButton extends LitElement {
         css`
             :host {
                 position: absolute;
-                right: 8px;
-                top: 50%;
-                transform: translateY(-50%);
+                right: 0;
+                top: 0;
+                height: 40px;
+                width: 40px;
                 z-index: 10;
             }
 
             button {
                 background: none;
                 border: none;
-                padding: 6px;
+                padding: 0;
                 cursor: pointer;
                 color: var(--text-light, #999);
                 display: flex;
@@ -28,8 +29,8 @@ class ClearButton extends LitElement {
                 justify-content: center;
                 border-radius: 50%;
                 transition: all 0.2s;
-                width: 28px;
-                height: 28px;
+                width: 100%;
+                height: 100%;
             }
 
             button:hover {
@@ -39,6 +40,10 @@ class ClearButton extends LitElement {
 
             button:active {
                 transform: scale(0.95);
+            }
+
+            button i {
+                font-size: 20px;
             }
 
             :host([hidden]) {
