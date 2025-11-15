@@ -1,7 +1,9 @@
 // Cache Client for Trondheim Dashboard
 // Centralized caching with TTL support
 
-class CacheClient {
+import { CacheConfig } from './cache-config.js';
+
+export class CacheClient {
     static CACHE_KEY_PREFIX = 'trondheim-cache-';
 
     /**

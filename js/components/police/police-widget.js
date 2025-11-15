@@ -3,6 +3,7 @@
 
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
+import { PoliceAPI } from '../../utils/police-api.js';
 
 class PoliceWidget extends BaseWidget {
     constructor() {

@@ -2,6 +2,7 @@
 
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import { IconLibrary } from '../../utils/icon-library.js';
 
 class WeatherHour extends LitElement {
     static properties = {

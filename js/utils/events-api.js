@@ -1,8 +1,10 @@
-// filepath: /Users/david/git/trondheim-dashboard/js/utils/events-api.js
 // TrdEvents API for Trondheim Dashboard
 // Returns upcoming events in Trondheim
 
-class EventsAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+
+export class EventsAPI extends APIBase {
 
     static defaultEndpoint() {
         return 'https://trdevents-224613.web.app/graphQL';

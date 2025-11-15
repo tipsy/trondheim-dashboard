@@ -1,7 +1,10 @@
 // Geocoding API utilities for Trondheim Dashboard
 // Using Nominatim (OpenStreetMap) for geocoding
 
-class GeocodingAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+
+export class GeocodingAPI extends APIBase {
 
     /**
      * Check if address is in Trøndelag county

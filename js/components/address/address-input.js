@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 import { dispatchEvent } from '../../utils/event-helpers.js';
+import { GeocodingAPI } from '../../utils/geocoding-api.js';
 
 class AddressInput extends LitElement {
     static properties = {

@@ -2,6 +2,8 @@
 
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
+import { WeatherAPI } from '../../utils/weather-api.js';
+import { IconLibrary } from '../../utils/icon-library.js';
 
 class WeatherRightNow extends BaseWidget {
     constructor() {

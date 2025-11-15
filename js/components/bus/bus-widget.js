@@ -1,5 +1,6 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
+import { BusAPI } from '../../utils/bus-api.js';
 
 class BusWidget extends BaseWidget {
     constructor() {

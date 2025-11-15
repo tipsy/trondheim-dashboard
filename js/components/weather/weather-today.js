@@ -2,6 +2,9 @@
 
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
+import { WeatherAPI } from '../../utils/weather-api.js';
+import { IconLibrary } from '../../utils/icon-library.js';
+import { DateFormatter } from '../../utils/date-formatter.js';
 
 class WeatherToday extends BaseWidget {
     constructor() {

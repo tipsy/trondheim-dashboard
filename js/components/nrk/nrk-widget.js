@@ -3,6 +3,7 @@
 
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
+import { NrkRssAPI } from '../../utils/nrk-rss-api.js';
 
 class NRKWidget extends BaseWidget {
     static properties = {

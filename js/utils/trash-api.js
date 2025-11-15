@@ -1,7 +1,10 @@
 // Trash API utilities for Trondheim Dashboard
 // Using Trondheim Kommune (TRV) Wasteplan API
 
-class TrashAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+
+export class TrashAPI extends APIBase {
 
     /**
      * Search for address to get waste collection schedule

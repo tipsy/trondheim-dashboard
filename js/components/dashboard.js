@@ -1,19 +1,187 @@
-class TrondheimDashboard extends HTMLElement {
+import { LitElement, html, css } from 'lit';
+import { sharedStyles } from '../utils/shared-styles.js';
+
+class TrondheimDashboard extends LitElement {
+    static properties = {
+        currentLocation: { type: Object, state: true }
+    };
+
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
         this.refreshInterval = null;
         this.currentLocation = null;
     }
 
+    static styles = [
+        sharedStyles,
+        css`
+            :host {
+                display: flex;
+                flex-direction: column;
+                min-height: 100vh;
+            }
+
+            .dashboard-content {
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+                padding: var(--spacing-sm, 8px);
+                gap: var(--spacing-sm, 8px);
+            }
+
+            /* Larger padding on desktop */
+            @media (min-width: 768px) {
+                .dashboard-content {
+                    padding: var(--spacing-md, 16px);
+                    gap: var(--spacing-md, 16px);
+                }
+            }
+
+            .address-section {
+                flex-shrink: 0;
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-md, 16px);
+            }
+
+            .address-section address-input {
+                width: 100%;
+            }
+
+            .address-section theme-selector {
+                width: 100%;
+            }
+
+            .widgets-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: var(--spacing-md, 16px);
+            }
+
+            .bus-column,
+            .weather-column,
+            .right-column,
+            .news-column {
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-md, 16px);
+            }
+
+            /* Desktop layout */
+            @media (min-width: 1025px) {
+                :host {
+                    height: 100vh;
+                    overflow: hidden;
+                }
+
+                .dashboard-content {
+                    overflow: hidden;
+                    display: grid;
+                    grid-template-columns: 1fr 1fr 1fr 1fr;
+                    grid-template-rows: auto 1fr;
+                    gap: var(--spacing-md, 16px);
+                }
+
+                .address-section {
+                    grid-column: 1 / -1;
+                    display: grid;
+                    grid-template-columns: 2fr 1fr;
+                    gap: var(--spacing-md, 16px);
+                    align-items: stretch;
+                }
+
+                .widgets-grid {
+                    grid-column: 1 / -1;
+                    display: grid;
+                    grid-template-columns: 25fr 20fr 30fr 25fr;
+                    gap: var(--spacing-md, 16px);
+                    min-height: 0;
+                }
+
+                .widgets-grid > * {
+                    height: 100%;
+                    overflow: hidden;
+                }
+
+                .bus-column,
+                .weather-column,
+                .right-column,
+                .news-column {
+                    height: 100%;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .weather-column > weather-right-now {
+                    flex: 0 0 auto;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .weather-column > weather-today {
+                    flex: 1;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .right-column > energy-widget {
+                    flex: 0 0 auto;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .right-column > trash-widget {
+                    flex: 1;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .news-column > police-widget {
+                    flex: 1;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .news-column > nrk-widget {
+                    flex: 1;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .bus-column > bus-widget {
+                    flex: 1;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+
+                .bus-column > events-widget {
+                    flex: 1;
+                    min-height: 0;
+                    overflow: hidden;
+                }
+            }
+
+            /* Tablet layout */
+            @media (min-width: 768px) and (max-width: 1024px) {
+                .widgets-grid {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+        `
+    ];
+
     connectedCallback() {
-        this.render();
-        this.attachEventListeners();
-        this.loadURLParameters();
+        super.connectedCallback();
         this.startAutoRefresh();
     }
 
+    firstUpdated() {
+        this.attachEventListeners();
+        this.loadURLParameters();
+    }
+
     disconnectedCallback() {
+        super.disconnectedCallback();
         // Clean up interval when component is removed
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
@@ -22,168 +190,7 @@ class TrondheimDashboard extends HTMLElement {
     }
 
     render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                * {
-                    box-sizing: border-box;
-                }
-
-                :host {
-                    display: flex;
-                    flex-direction: column;
-                    min-height: 100vh;
-                }
-
-                .dashboard-content {
-                    display: flex;
-                    flex-direction: column;
-                    flex: 1;
-                    padding: var(--spacing-sm, 8px);
-                    gap: var(--spacing-sm, 8px);
-                }
-
-                /* Larger padding on desktop */
-                @media (min-width: 768px) {
-                    .dashboard-content {
-                        padding: var(--spacing-md, 16px);
-                        gap: var(--spacing-md, 16px);
-                    }
-                }
-
-                .address-section {
-                    flex-shrink: 0;
-                    display: flex;
-                    flex-direction: column;
-                    gap: var(--spacing-md, 16px);
-                }
-
-                .address-section address-input {
-                    width: 100%;
-                }
-
-                .address-section theme-selector {
-                    width: 100%;
-                }
-
-                .widgets-grid {
-                    display: grid;
-                    grid-template-columns: 1fr;
-                    gap: var(--spacing-md, 16px);
-                }
-
-                .bus-column,
-                .weather-column,
-                .right-column,
-                .news-column {
-                    display: flex;
-                    flex-direction: column;
-                    gap: var(--spacing-md, 16px);
-                }
-
-                /* Desktop layout */
-                @media (min-width: 1025px) {
-                    :host {
-                        height: 100vh;
-                        overflow: hidden;
-                    }
-
-                    .dashboard-content {
-                        overflow: hidden;
-                        display: grid;
-                        grid-template-columns: 1fr 1fr 1fr 1fr;
-                        grid-template-rows: auto 1fr;
-                        gap: var(--spacing-md, 16px);
-                    }
-
-                    .address-section {
-                        grid-column: 1 / -1;
-                        display: grid;
-                        grid-template-columns: 2fr 1fr;
-                        gap: var(--spacing-md, 16px);
-                        align-items: stretch;
-                    }
-
-                    .widgets-grid {
-                        grid-column: 1 / -1;
-                        display: grid;
-                        grid-template-columns: 25fr 20fr 30fr 25fr;
-                        gap: var(--spacing-md, 16px);
-                        min-height: 0;
-                    }
-
-                    .widgets-grid > * {
-                        height: 100%;
-                        overflow: hidden;
-                    }
-
-                    .bus-column,
-                    .weather-column,
-                    .right-column,
-                    .news-column {
-                        height: 100%;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .weather-column > weather-right-now {
-                        flex: 0 0 auto;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .weather-column > weather-today {
-                        flex: 1;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .right-column > energy-widget {
-                        flex: 0 0 auto;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .right-column > trash-widget {
-                        flex: 1;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .news-column > police-widget {
-                        flex: 1;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .news-column > nrk-widget {
-                        flex: 1;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .bus-column > bus-widget {
-                        flex: 1;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-
-                    .bus-column > events-widget {
-                        flex: 1;
-                        min-height: 0;
-                        overflow: hidden;
-                    }
-                }
-
-                /* Tablet layout */
-                @media (min-width: 768px) and (max-width: 1024px) {
-                    .widgets-grid {
-                        grid-template-columns: 1fr 1fr;
-                    }
-                    <nrk-widget id="nrk-widget"></nrk-widget>
-                }
-
-
-            </style>
+        return html`
             <div class="dashboard-content">
                 <div class="address-section">
                     <address-input id="address-input"></address-input>

@@ -1,8 +1,12 @@
-// filepath: /Users/david/git/trondheim-dashboard/js/utils/nrk-rss-api.js
 // Minimal NRK RSS API for Trondheim Dashboard
 // Returns top 10 RSS items (title, link, pubDate)
+// Updated: 2025-11-15
 
-class NrkRssAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+import { CacheClient } from './cache-client.js';
+
+export class NrkRssAPI extends APIBase {
     static defaultFeed(region = 'trondelag') {
         return `https://www.nrk.no/${region}/siste.rss`;
     }

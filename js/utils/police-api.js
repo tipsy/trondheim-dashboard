@@ -1,7 +1,10 @@
 // Politiet API for Trondheim Dashboard
 // Returns latest police log messages from Trøndelag
 
-class PoliceAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+
+export class PoliceAPI extends APIBase {
     static defaultEndpoint() {
         return 'https://api.politiet.no/politiloggen/v1/messages?Districts=Tr%C3%B8ndelag&Take=10';
     }

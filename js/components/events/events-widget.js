@@ -3,6 +3,7 @@
 
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
+import { EventsAPI } from '../../utils/events-api.js';
 
 class EventsWidget extends BaseWidget {
     constructor() {

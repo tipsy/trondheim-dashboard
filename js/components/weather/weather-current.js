@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import { IconLibrary } from '../../utils/icon-library.js';
 
 class WeatherCurrent extends LitElement {
     static properties = {

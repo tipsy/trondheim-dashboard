@@ -2,7 +2,10 @@
 // Using EnTur Journey Planner GraphQL API with real-time data
 // Note: We query individual quays (platforms) to separate different directions
 
-class BusAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+
+export class BusAPI extends APIBase {
     // Track in-flight requests to avoid duplicate concurrent fetches for the same quay
     static inFlightRequests = new Map();
 

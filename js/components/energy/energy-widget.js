@@ -1,5 +1,6 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
+import { EnergyAPI } from '../../utils/energy-api.js';
 
 class EnergyWidget extends BaseWidget {
     constructor() {
