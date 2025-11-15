@@ -9,10 +9,6 @@ class WidgetList extends LitElement {
     sharedStyles,
     css`
       :host {
-        display: block;
-      }
-
-      .list {
         display: flex;
         flex-direction: column;
         gap: var(--spacing-sm);
@@ -21,11 +17,7 @@ class WidgetList extends LitElement {
   ];
 
   render() {
-    return html`
-      <div class="list">
-        <slot></slot>
-      </div>
-    `;
+    return html`<slot></slot>`;
   }
 }
 
