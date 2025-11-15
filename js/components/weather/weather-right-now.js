@@ -15,6 +15,8 @@ class WeatherRightNow extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'Weather Now';
+        this.icon = 'mdi-weather-partly-cloudy';
         this.currentWeather = null;
         this.hourlyForecast = [];
         this.location = null;
@@ -156,15 +158,6 @@ class WeatherRightNow extends BaseWidget {
                 </div>
             </div>
         `;
-    }
-
-    // Override BaseWidget methods
-    getTitle() {
-        return 'Weather Now';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-weather-partly-cloudy"></i>`;
     }
 
     getPlaceholderText() {

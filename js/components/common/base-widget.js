@@ -5,9 +5,12 @@ import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 import './loading-spinner.js';
 import './error-message.js';
+import './heading-2.js';
 
 export class BaseWidget extends LitElement {
     static properties = {
+        title: { type: String },
+        icon: { type: String },
         isLoading: { type: Boolean, state: true },
         errorMessage: { type: String, state: true },
         showPlaceholderState: { type: Boolean, state: true }
@@ -15,6 +18,8 @@ export class BaseWidget extends LitElement {
 
     constructor() {
         super();
+        this.title = 'Widget';
+        this.icon = 'mdi-square-outline';
         this.isLoading = false;
         this.errorMessage = '';
         this.showPlaceholderState = false;
@@ -67,13 +72,9 @@ export class BaseWidget extends LitElement {
             }
 
             .widget-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
                 margin-bottom: var(--spacing-sm);
                 padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm) var(--spacing-md);
                 flex-shrink: 0;
-                gap: var(--spacing-md);
                 border-bottom: 1px solid transparent;
                 transition: border-color 0.2s ease;
             }
@@ -83,21 +84,6 @@ export class BaseWidget extends LitElement {
                 margin-bottom: 0;
             }
 
-            h3 {
-                margin: 0;
-                color: var(--heading-color, var(--text-color));
-                font-size: var(--font-size-lg);
-                display: flex;
-                align-items: center;
-                gap: var(--spacing-xs);
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-
-            h3 i {
-                font-size: 28px;
-            }
 
             #content {
                 padding: 0 var(--spacing-md) var(--spacing-md) var(--spacing-md);
@@ -164,19 +150,12 @@ export class BaseWidget extends LitElement {
         this.startPlaceholderTimer();
     }
 
-    // Override these methods in child classes to provide widget-specific content
-    getTitle() {
-        return 'Widget';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-square-outline"></i>`;
-    }
-
-    getHeaderContent() {
+    // Override this method in child classes to provide header actions (like refresh buttons)
+    renderHeaderActions() {
         return html``;
     }
 
+    // Override this method in child classes to customize placeholder text
     getPlaceholderText() {
         return 'Enter address to see information';
     }
@@ -200,11 +179,9 @@ export class BaseWidget extends LitElement {
         return html`
             <div class="widget-container">
                 <div class="widget-header">
-                    <h3>
-                        ${this.getIcon()}
-                        ${this.getTitle()}
-                    </h3>
-                    ${this.getHeaderContent()}
+                    <heading-2 icon="${this.icon}" title="${this.title}">
+                        ${this.renderHeaderActions()}
+                    </heading-2>
                 </div>
                 <div id="content">
                     ${contentTemplate}

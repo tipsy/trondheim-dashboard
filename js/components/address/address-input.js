@@ -7,6 +7,7 @@ import '../common/clear-button.js';
 import '../common/primary-button.js';
 import '../common/secondary-button.js';
 import '../common/error-message.js';
+import '../common/heading-2.js';
 import './address-suggestion-item.js';
 
 class AddressInput extends LitElement {
@@ -50,20 +51,10 @@ class AddressInput extends LitElement {
             display: flex;
             flex-direction: column;
             height: 100%;
-            gap: var(--spacing-sm);
         }
 
-        h2 {
-            margin: 0 0 var(--spacing-sm) 0;
-            color: var(--heading-color, var(--text-color));
-            font-size: var(--font-size-lg);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-sm);
-        }
-
-        h2 i {
-            font-size: 28px;
+        heading-2 {
+            margin-bottom: var(--spacing-sm);
         }
 
         .input-group {
@@ -415,10 +406,7 @@ class AddressInput extends LitElement {
     render() {
         return html`
             <div class="address-container">
-                <h2>
-                    <i class="mdi mdi-map-marker-outline"></i>
-                    Your Address
-                </h2>
+                <heading-2 icon="mdi-map-marker-outline" title="Your Address"></heading-2>
                 <div class="input-group">
                     <div class="input-row">
                         <div class="input-wrapper">

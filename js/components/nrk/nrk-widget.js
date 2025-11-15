@@ -14,6 +14,8 @@ class NRKWidget extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'News';
+        this.icon = 'mdi-newspaper-variant-outline';
         this.stories = [];
     }
 
@@ -60,15 +62,6 @@ class NRKWidget extends BaseWidget {
                 `)}
             </div>
         `;
-    }
-
-    // BaseWidget overrides
-    getTitle() {
-        return 'News';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-newspaper"></i>`;
     }
 
     getPlaceholderText() {

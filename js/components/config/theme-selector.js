@@ -3,6 +3,7 @@ import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 import { dispatchEvent } from '../../utils/event-helpers.js';
 import '../common/custom-select.js';
 import '../common/refresh-button.js';
+import '../common/heading-2.js';
 
 class ThemeSelector extends LitElement {
     static properties = {
@@ -43,24 +44,13 @@ class ThemeSelector extends LitElement {
             height: 100%;
         }
 
-        .header-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        heading-2 {
             margin-bottom: var(--spacing-sm);
         }
 
-        h2 {
-            margin: 0;
-            color: var(--heading-color, var(--text-color));
-            font-size: var(--font-size-lg);
-            display: flex;
-            align-items: center;
-            gap: var(--spacing-xs);
-        }
-
-        h2 i {
-            font-size: 28px;
+        heading-2 i.mdi {
+            color: var(--primary-color);
+            font-size: 20px;
         }
     `];
 
@@ -85,15 +75,11 @@ class ThemeSelector extends LitElement {
     render() {
         return html`
             <div class="theme-container">
-                <div class="header-row">
-                    <h2>
-                        <i class="mdi mdi-palette-outline"></i>
-                        Config
-                    </h2>
+                <heading-2 icon="mdi-palette-outline" title="Config">
                     <refresh-button>
                         <i class="mdi mdi-refresh"></i>
                     </refresh-button>
-                </div>
+                </heading-2>
                 <custom-select
                     id="theme-select"
                     .options=${this.themeOptions}

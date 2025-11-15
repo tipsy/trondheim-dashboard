@@ -15,6 +15,8 @@ class WeatherToday extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'Weather Today';
+        this.icon = 'mdi-calendar-today';
         this.todayData = null;
         this.sunData = null;
         this.location = null;
@@ -204,15 +206,6 @@ class WeatherToday extends BaseWidget {
                 ` : ''}
             </div>
         `;
-    }
-
-    // Override BaseWidget methods
-    getTitle() {
-        return 'Weather Today';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-calendar-today"></i>`;
     }
 
     getPlaceholderText() {

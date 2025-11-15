@@ -16,6 +16,8 @@ class BusWidget extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'Buses';
+        this.icon = 'mdi-bus-clock';
         this.departures = [];
         this.availableStops = [];
         this.selectedStopId = null;
@@ -233,16 +235,7 @@ class BusWidget extends BaseWidget {
         `;
     }
 
-    // Override BaseWidget methods
-    getTitle() {
-        return 'Buses';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-bus-clock"></i>`;
-    }
-
-    getHeaderContent() {
+    renderHeaderActions() {
         return html`
             <div class="stop-selector-container" style="${this.availableStops.length > 0 ? 'display: block;' : 'display: none;'}">
                 <custom-select id="stop-selector"></custom-select>

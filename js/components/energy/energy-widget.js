@@ -14,6 +14,8 @@ class EnergyWidget extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'Electricity';
+        this.icon = 'mdi-lightning-bolt-outline';
         this.currentPrice = null;
         this.nextHours = [];
         this.priceArea = 'NO3'; // Default to Trondheim area
@@ -213,15 +215,6 @@ class EnergyWidget extends BaseWidget {
                 `)}
             </div>
         `;
-    }
-
-    // Override BaseWidget methods
-    getTitle() {
-        return 'Electricity';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-lightning-bolt-outline"></i>`;
     }
 
     getPlaceholderText() {

@@ -15,6 +15,8 @@ class EventsWidget extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'Events';
+        this.icon = 'mdi-calendar-star';
         this.events = [];
         // Default to today's date in YYYY-MM-DD (local date, not UTC)
         const today = new Date();
@@ -128,16 +130,7 @@ class EventsWidget extends BaseWidget {
         `;
     }
 
-    // Override BaseWidget methods
-    getTitle() {
-        return 'Events';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-calendar-star"></i>`;
-    }
-
-    getHeaderContent() {
+    renderHeaderActions() {
         return html`
             <div class="date-selector-container">
                 <custom-select id="events-date-select"></custom-select>

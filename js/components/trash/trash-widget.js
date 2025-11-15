@@ -15,6 +15,8 @@ class TrashWidget extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'Trash Schedule';
+        this.icon = 'mdi-trash-can-outline';
         this.collections = [];
         this.address = null;
         this.addressId = null;
@@ -186,15 +188,6 @@ class TrashWidget extends BaseWidget {
                 `)}
             </div>
         `;
-    }
-
-    // Override BaseWidget methods
-    getTitle() {
-        return 'Trash Schedule';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-trash-can-outline"></i>`;
     }
 
     getPlaceholderText() {

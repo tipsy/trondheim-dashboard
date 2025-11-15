@@ -13,6 +13,8 @@ class PoliceWidget extends BaseWidget {
 
     constructor() {
         super();
+        this.title = 'Police Log';
+        this.icon = 'mdi-car-emergency';
         this.messages = [];
     }
 
@@ -80,15 +82,6 @@ class PoliceWidget extends BaseWidget {
                 `)}
             </div>
         `;
-    }
-
-    // BaseWidget overrides
-    getTitle() {
-        return 'Police Log';
-    }
-
-    getIcon() {
-        return html`<i class="mdi mdi-car-emergency"></i>`;
     }
 
     getPlaceholderText() {
