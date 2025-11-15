@@ -1,6 +1,18 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles } from '../utils/shared-styles.js';
 
+// Import all components used in the template
+import './address/address-input.js';
+import './config/theme-selector.js';
+import './bus/bus-widget.js';
+import './events/events-widget.js';
+import './weather/weather-right-now.js';
+import './weather/weather-today.js';
+import './energy/energy-widget.js';
+import './trash/trash-widget.js';
+import './police/police-widget.js';
+import './nrk/nrk-widget.js';
+
 class TrondheimDashboard extends LitElement {
     static properties = {
         currentLocation: { type: Object, state: true }

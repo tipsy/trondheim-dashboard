@@ -1,6 +1,8 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
 import { BusAPI } from '../../utils/bus-api.js';
+import './bus-row.js';
+import '../common/custom-select.js';
 
 class BusWidget extends BaseWidget {
     constructor() {

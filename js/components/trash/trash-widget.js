@@ -2,6 +2,7 @@ import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
 import { TrashAPI } from '../../utils/trash-api.js';
 import { DateFormatter } from '../../utils/date-formatter.js';
+import './trash-row.js';
 
 class TrashWidget extends BaseWidget {
     constructor() {

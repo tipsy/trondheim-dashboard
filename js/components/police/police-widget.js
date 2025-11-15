@@ -4,6 +4,7 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
 import { PoliceAPI } from '../../utils/police-api.js';
+import '../common/widget-row.js';
 
 class PoliceWidget extends BaseWidget {
     constructor() {

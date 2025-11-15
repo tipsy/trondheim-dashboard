@@ -2,6 +2,7 @@
 
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import '../common/widget-row.js';
 
 class BusRow extends LitElement {
     static properties = {

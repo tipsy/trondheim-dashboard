@@ -3,6 +3,8 @@
 
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import './loading-spinner.js';
+import './error-message.js';
 
 export class BaseWidget extends LitElement {
     static properties = {

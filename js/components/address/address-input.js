@@ -2,6 +2,12 @@ import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 import { dispatchEvent } from '../../utils/event-helpers.js';
 import { GeocodingAPI } from '../../utils/geocoding-api.js';
+import '../common/input-field.js';
+import '../common/clear-button.js';
+import '../common/primary-button.js';
+import '../common/secondary-button.js';
+import '../common/error-message.js';
+import './address-suggestion-item.js';
 
 class AddressInput extends LitElement {
     static properties = {

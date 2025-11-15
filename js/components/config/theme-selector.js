@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 import { dispatchEvent } from '../../utils/event-helpers.js';
+import '../common/custom-select.js';
 
 class ThemeSelector extends LitElement {
     static properties = {

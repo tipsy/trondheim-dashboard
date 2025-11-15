@@ -4,6 +4,8 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
 import { EventsAPI } from '../../utils/events-api.js';
+import '../common/widget-row.js';
+import '../common/custom-select.js';
 
 class EventsWidget extends BaseWidget {
     constructor() {
