@@ -1,33 +1,60 @@
 // Weather Hour Component - displays hourly weather forecast
 
-class WeatherHour extends HTMLElement {
+import { LitElement, html, css } from 'lit';
+import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+
+class WeatherHour extends LitElement {
+    static properties = {
+        time: { type: String },
+        temperature: { type: Number },
+        symbolCode: { type: String, attribute: 'symbol-code' }
+    };
+
+    static styles = [
+        sharedStyles,
+        css`
+            :host {
+                display: block;
+            }
+
+            .hour-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: var(--spacing-xs);
+                padding: var(--spacing-sm);
+                background-color: var(--alt-background);
+                border-radius: var(--border-radius);
+            }
+
+            .hour-time {
+                font-size: var(--font-size-sm);
+                color: var(--text-light);
+            }
+
+            .hour-icon {
+                display: inline-flex;
+                font-size: 32px;
+            }
+
+            .hour-temp {
+                font-size: var(--font-size-lg);
+                font-weight: bold;
+                color: var(--text-alt, var(--text-color));
+            }
+        `
+    ];
+
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
-    }
-
-    static get observedAttributes() {
-        return ['time', 'temperature', 'symbol-code'];
+        this.time = '';
+        this.temperature = 0;
+        this.symbolCode = '';
     }
 
     connectedCallback() {
-        this.render();
-    }
-
-    attributeChangedCallback() {
-        this.render();
-    }
-
-    get time() {
-        return this.getAttribute('time') || '';
-    }
-
-    get temperature() {
-        return this.getAttribute('temperature') || '';
-    }
-
-    get symbolCode() {
-        return this.getAttribute('symbol-code') || '';
+        super.connectedCallback();
+        adoptMDIStyles(this.shadowRoot);
     }
 
     formatTime(isoString) {
@@ -38,45 +65,14 @@ class WeatherHour extends HTMLElement {
 
     render() {
         const timeDisplay = this.formatTime(this.time);
-        const icon = IconLibrary.getWeatherIcon(this.symbolCode, 32);
+        const iconClass = IconLibrary.getWeatherIconClass(this.symbolCode);
 
-        this.shadowRoot.innerHTML = `
-            <style>
-                ${IconLibrary.importCss}
-                :host {
-                    display: block;
-                }
-
-                .hour-item {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: var(--spacing-xs);
-                    padding: var(--spacing-sm);
-                    background-color: var(--alt-background);
-                    border-radius: var(--border-radius);
-                }
-
-                .hour-time {
-                    font-size: var(--font-size-sm);
-                    color: var(--text-light);
-                }
-
-                .hour-icon {
-                    display: inline-flex;
-                    font-size: 32px;
-                }
-
-                .hour-temp {
-                    font-size: var(--font-size-lg);
-                    font-weight: bold;
-                    color: var(--text-alt, var(--text-color));
-                }
-            </style>
-
+        return html`
             <div class="hour-item">
                 <div class="hour-time">${timeDisplay}</div>
-                <div class="hour-icon">${icon}</div>
+                <div class="hour-icon">
+                    <i class="mdi ${iconClass}"></i>
+                </div>
                 <div class="hour-temp">${Math.round(this.temperature)}°</div>
             </div>
         `;
@@ -84,3 +80,5 @@ class WeatherHour extends HTMLElement {
 }
 
 customElements.define('weather-hour', WeatherHour);
+
+
