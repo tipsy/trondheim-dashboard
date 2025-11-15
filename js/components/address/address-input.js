@@ -14,25 +14,23 @@ class AddressInput extends LitElement {
   static properties = {
     addressValue: { type: String, state: true },
     suggestions: { type: Array, state: true },
-    showSuggestions: { type: Boolean, state: true },
     errorMessage: { type: String, state: true },
     isLoading: { type: Boolean, state: true },
-    buttonsDisabled: { type: Boolean, state: true },
-    inputDisabled: { type: Boolean, state: true },
   };
 
   constructor() {
     super();
     this.addressValue = "";
     this.suggestions = [];
-    this.showSuggestions = false;
     this.errorMessage = "";
     this.isLoading = false;
-    this.buttonsDisabled = false;
-    this.inputDisabled = false;
     this.searchTimeout = null;
     this.debounceDelay = 500;
     this.isSearching = false;
+  }
+
+  get showSuggestions() { // Derived getters for reactive state
+    return this.suggestions.length > 0 && !this.errorMessage;
   }
 
   static styles = [
@@ -148,7 +146,7 @@ class AddressInput extends LitElement {
       try {
         const path = e.composedPath();
         if (!path.includes(this)) {
-          this.hideSuggestionsState();
+          this.suggestions = [];
         }
       } catch (error) {
         console.error("Error in click outside handler:", error);
@@ -210,8 +208,7 @@ class AddressInput extends LitElement {
 
     this.addressValue = address;
     this.isLoading = true;
-    this.buttonsDisabled = true;
-    this.hideErrorState();
+    this.errorMessage = "";
 
     try {
       const locations = await GeocodingAPI.geocodeAddress(address);
@@ -219,20 +216,13 @@ class AddressInput extends LitElement {
       if (locations && locations.length > 0) {
         this.selectLocation(locations[0]);
       } else {
-        this.showErrorState(
-          "Could not find address from URL. Please search again.",
-        );
+        this.errorMessage = "Could not find address from URL. Please search again.";
       }
     } catch (error) {
       console.error("Error loading address from URL:", error);
-      this.showErrorState(
-        error.message ||
-          "Could not find address from URL. Please search again.",
-      );
+      this.errorMessage = error.message || "Could not find address from URL. Please search again.";
     } finally {
       this.isLoading = false;
-      this.buttonsDisabled = false;
-      this.inputDisabled = false;
     }
   }
 
@@ -243,12 +233,12 @@ class AddressInput extends LitElement {
     const trimmedValue = value.trim();
 
     if (trimmedValue.length < 3) {
-      this.hideSuggestionsState();
-      this.hideErrorState();
+      this.suggestions = [];
+      this.errorMessage = "";
       return;
     }
 
-    this.hideErrorState();
+    this.errorMessage = "";
 
     this.searchTimeout = setTimeout(() => {
       this.handleAddressSearch();
@@ -259,16 +249,16 @@ class AddressInput extends LitElement {
     const key = e.detail.key;
     if (key === "Enter") {
       this.cancelDebounce();
-      this.handleAddressSearch(true);
+      this.handleAddressSearch();
     } else if (key === "Escape") {
-      this.hideSuggestionsState();
+      this.suggestions = [];
       this.cancelDebounce();
     }
   }
 
   handleClear() {
     this.addressValue = "";
-    this.hideSuggestionsState();
+    this.suggestions = [];
     this.cancelDebounce();
     this.shouldFocusInput = true;
   }
@@ -292,7 +282,7 @@ class AddressInput extends LitElement {
     }
   }
 
-  async handleAddressSearch(disableInput = false) {
+  async handleAddressSearch() {
     if (this.isSearching) {
       console.log("Search already in progress, skipping...");
       return;
@@ -301,7 +291,7 @@ class AddressInput extends LitElement {
     const address = this.addressValue.trim();
 
     if (!address) {
-      this.showErrorState("Please enter an address");
+      this.errorMessage = "Please enter an address";
       return;
     }
 
@@ -311,7 +301,7 @@ class AddressInput extends LitElement {
         const { address: savedAddress, lat, lon } = JSON.parse(savedData);
         if (savedAddress === address && lat && lon) {
           this.updateLocation(lat, lon, address);
-          this.hideSuggestionsState();
+          this.suggestions = [];
           return;
         }
       } catch (error) {
@@ -321,23 +311,17 @@ class AddressInput extends LitElement {
 
     this.isSearching = true;
     this.isLoading = true;
-    this.buttonsDisabled = true;
-    this.inputDisabled = disableInput;
-    this.hideErrorState();
-    this.hideSuggestionsState();
+    this.errorMessage = "";
+    this.suggestions = [];
 
     try {
       const locations = await GeocodingAPI.geocodeAddress(address);
-      this.showSuggestionsState(locations);
+      this.suggestions = locations;
     } catch (error) {
       console.error("Address search error:", error);
-      this.showErrorState(
-        error.message || "Could not find address. Please try again.",
-      );
+      this.errorMessage = error.message || "Could not find address. Please try again.";
     } finally {
       this.isLoading = false;
-      this.buttonsDisabled = false;
-      this.inputDisabled = false;
       this.isSearching = false;
     }
   }
@@ -347,16 +331,6 @@ class AddressInput extends LitElement {
     this.addressValue = addressToSave;
     this.saveLocation(addressToSave, location.lat, location.lon);
     this.updateLocation(location.lat, location.lon, addressToSave);
-    this.hideSuggestionsState();
-  }
-
-  showSuggestionsState(locations) {
-    this.suggestions = locations;
-    this.showSuggestions = true;
-  }
-
-  hideSuggestionsState() {
-    this.showSuggestions = false;
     this.suggestions = [];
   }
 
@@ -368,10 +342,8 @@ class AddressInput extends LitElement {
 
     this.isSearching = true;
     this.isLoading = true;
-    this.buttonsDisabled = true;
-    this.inputDisabled = true;
-    this.hideErrorState();
-    this.hideSuggestionsState();
+    this.errorMessage = "";
+    this.suggestions = [];
 
     try {
       const location = await GeocodingAPI.getCurrentLocation();
@@ -384,27 +356,15 @@ class AddressInput extends LitElement {
       this.updateLocation(location.lat, location.lon, address);
     } catch (error) {
       console.error("Current location error:", error);
-      this.showErrorState(
-        error.message || "Could not get your location. Check browser settings.",
-      );
+      this.errorMessage = error.message || "Could not get your location. Check browser settings.";
     } finally {
       this.isLoading = false;
-      this.buttonsDisabled = false;
-      this.inputDisabled = false;
       this.isSearching = false;
     }
   }
 
   updateLocation(lat, lon, address) {
     dispatchEvent(this, "location-updated", { lat, lon, address });
-  }
-
-  showErrorState(message) {
-    this.errorMessage = message;
-  }
-
-  hideErrorState() {
-    this.errorMessage = "";
   }
 
   handleSuggestionSelect(e) {
@@ -427,7 +387,6 @@ class AddressInput extends LitElement {
               <input-field
                 .value=${this.addressValue}
                 placeholder="Start typing an address..."
-                ?disabled=${this.inputDisabled}
                 @input-change=${(e) => this.handleInputChange(e.detail.value)}
                 @input-keydown=${this.handleInputKeydown}
               ></input-field>
@@ -439,14 +398,14 @@ class AddressInput extends LitElement {
           </div>
           <div class="button-row">
             <primary-button
-              ?disabled=${this.buttonsDisabled}
+              ?disabled=${this.isLoading}
               ?loading=${this.isLoading}
-              @button-click=${() => this.handleAddressSearch(true)}
+              @button-click=${this.handleAddressSearch}
             >
               Search
             </primary-button>
             <secondary-button
-              ?disabled=${this.buttonsDisabled}
+              ?disabled=${this.isLoading}
               title="Use my location"
               @button-click=${this.handleCurrentLocation}
             >
