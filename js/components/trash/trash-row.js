@@ -2,6 +2,7 @@
 
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import { DateFormatter } from '../../utils/date-formatter.js';
 import '../common/widget-row.js';
 
 class TrashRow extends LitElement {
@@ -156,18 +157,6 @@ class TrashRow extends LitElement {
         return 'mdi-trash-can-outline';
     }
 
-    formatDate(dateString) {
-        const date = new Date(dateString);
-        const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
-        const dayName = days[date.getDay()];
-        const day = date.getDate();
-        const month = months[date.getMonth()];
-
-        return `${dayName}, ${month} ${day}`;
-    }
-
     getDaysUntil(dateString) {
         const collectionDate = new Date(dateString);
         const today = new Date();
@@ -206,7 +195,8 @@ class TrashRow extends LitElement {
 
     render() {
         const iconClass = this.getTrashIconClass(this.trashType);
-        const formattedDate = this.formatDate(this.collectionDate);
+        const collectionDate = new Date(this.collectionDate);
+        const formattedDate = DateFormatter.formatLongDate(collectionDate);
         const daysUntil = this.getDaysUntil(this.collectionDate);
         const countdownText = this.getCountdownText(daysUntil);
         const shouldPulse = this.shouldPulse(daysUntil);

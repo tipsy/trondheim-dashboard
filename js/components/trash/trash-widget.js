@@ -3,8 +3,8 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html, css } from 'lit';
 import { TrashAPI } from '../../utils/trash-api.js';
-import { DateFormatter } from '../../utils/date-formatter.js';
 import './trash-row.js';
+import '../common/widget-list.js';
 
 class TrashWidget extends BaseWidget {
     static properties = {
@@ -23,15 +23,7 @@ class TrashWidget extends BaseWidget {
     }
 
     static styles = [
-        ...BaseWidget.styles,
-        css`
-            .schedule-list {
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-sm);
-                max-width: 100%;
-            }
-        `
+        ...BaseWidget.styles
     ];
 
     async updateAddress(address) {
@@ -178,7 +170,7 @@ class TrashWidget extends BaseWidget {
         }
 
         return html`
-            <div class="schedule-list">
+            <widget-list>
                 ${this.collections.map(item => html`
                     <trash-row
                         trash-type="${item.type}"
@@ -186,7 +178,7 @@ class TrashWidget extends BaseWidget {
                         trash-class="${item.trashClass}">
                     </trash-row>
                 `)}
-            </div>
+            </widget-list>
         `;
     }
 

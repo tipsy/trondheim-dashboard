@@ -59,24 +59,9 @@ class WidgetRow extends LitElement {
             margin-top: 4px;
         }
 
-        /* Mobile: allow text to wrap */
-        @media (max-width: 1024px) {
-            .title,
-            .description {
-                overflow-wrap: break-word;
-                word-wrap: break-word;
-                word-break: break-word;
-                hyphens: auto;
-            }
-        }
-
-        /* Desktop: use single-line ellipsis for descriptions only */
-        @media (min-width: 1025px) {
-            .description {
-                overflow: hidden;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-            }
+        .title.responsive-text,
+        .description.responsive-text {
+            /* Responsive text handling via shared styles */
         }
     `];
 
@@ -87,7 +72,7 @@ class WidgetRow extends LitElement {
             return html`
                 <div class="content">
                     ${this.title ? html`<div class="title">${this.title}</div>` : ''}
-                    ${this.description ? html`<div class="description">${this.description}</div>` : ''}
+                    ${this.description ? html`<div class="description responsive-text">${this.description}</div>` : ''}
                 </div>
             `;
         }

@@ -50,10 +50,6 @@ class CustomSelect extends LitElement {
             text-overflow: ellipsis;
         }
 
-        option {
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-        }
 
         select:focus {
             outline: none;

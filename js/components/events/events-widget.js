@@ -3,7 +3,9 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html, css } from 'lit';
 import { EventsAPI } from '../../utils/events-api.js';
+import { DateFormatter } from '../../utils/date-formatter.js';
 import '../common/widget-row.js';
+import '../common/widget-list.js';
 import '../common/custom-select.js';
 
 class EventsWidget extends BaseWidget {
@@ -85,26 +87,9 @@ class EventsWidget extends BaseWidget {
         });
     }
 
-    formatDate(dateString) {
-        try {
-            const d = new Date(dateString);
-            if (isNaN(d.getTime())) return dateString;
-
-            // Format as "DD. Mon HH:MM"
-            const day = String(d.getDate()).padStart(2, '0');
-            const monthShort = d.toLocaleDateString(undefined, { month: 'short' });
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-
-            return `${day}. ${monthShort} ${hours}:${minutes}`;
-        } catch (e) {
-            return dateString;
-        }
-    }
-
     getEventDescription(event) {
         const venue = event.venue || '';
-        const displayDate = this.formatDate(event.startDate);
+        const displayDate = DateFormatter.formatToEventDateTime(event.startDate);
         return [venue, displayDate].filter(x => x).join(' • ');
     }
 
@@ -118,7 +103,7 @@ class EventsWidget extends BaseWidget {
         }
 
         return html`
-            <div id="events-list" style="display:flex;flex-direction:column;gap:8px">
+            <widget-list>
                 ${this.events.map(event => html`
                     <widget-row
                         title="${event.title || ''}"
@@ -126,7 +111,7 @@ class EventsWidget extends BaseWidget {
                         href="${this.getEventUrl(event)}">
                     </widget-row>
                 `)}
-            </div>
+            </widget-list>
         `;
     }
 
@@ -180,3 +165,4 @@ class EventsWidget extends BaseWidget {
 }
 
 customElements.define('events-widget', EventsWidget);
+

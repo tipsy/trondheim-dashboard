@@ -3,7 +3,9 @@
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
 import { PoliceAPI } from '../../utils/police-api.js';
+import { DateFormatter } from '../../utils/date-formatter.js';
 import '../common/widget-row.js';
+import '../common/widget-list.js';
 
 class PoliceWidget extends BaseWidget {
     static properties = {
@@ -36,27 +38,13 @@ class PoliceWidget extends BaseWidget {
         }
     }
 
-    formatDate(dateString) {
-        try {
-            const d = new Date(dateString);
-            return isNaN(d.getTime()) ? dateString : d.toLocaleString('no-NO', {
-                day: '2-digit',
-                month: '2-digit',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        } catch (e) {
-            return dateString;
-        }
-    }
-
     getLocation(msg) {
         return [msg.municipality, msg.area].filter(x => x).join(', ');
     }
 
     getDescription(msg) {
         const location = this.getLocation(msg);
-        const locationDate = [location, this.formatDate(msg.createdOn)].filter(x => x).join(' • ');
+        const locationDate = [location, DateFormatter.formatToNorwegianDateTime(msg.createdOn)].filter(x => x).join(' • ');
         return [msg.category, locationDate].filter(x => x).join(' • ');
     }
 
@@ -72,7 +60,7 @@ class PoliceWidget extends BaseWidget {
         }
 
         return html`
-            <div id="police-list" style="display:flex;flex-direction:column;gap:8px">
+            <widget-list>
                 ${this.messages.map(msg => html`
                     <widget-row
                         title="${msg.text || ''}"
@@ -80,7 +68,7 @@ class PoliceWidget extends BaseWidget {
                         href="${this.getThreadUrl(msg)}">
                     </widget-row>
                 `)}
-            </div>
+            </widget-list>
         `;
     }
 

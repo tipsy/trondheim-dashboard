@@ -4,6 +4,7 @@ import { BaseWidget } from '../common/base-widget.js';
 import { html, css } from 'lit';
 import { BusAPI } from '../../utils/bus-api.js';
 import './bus-row.js';
+import '../common/widget-list.js';
 import '../common/custom-select.js';
 
 class BusWidget extends BaseWidget {
@@ -39,12 +40,6 @@ class BusWidget extends BaseWidget {
                 .stop-selector-container {
                     max-width: 200px;
                 }
-            }
-
-            .departures-list {
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-sm);
             }
         `
     ];
@@ -221,7 +216,7 @@ class BusWidget extends BaseWidget {
         }
 
         return html`
-            <div class="departures-list">
+            <widget-list>
                 ${this.departures.map(departure => html`
                     <bus-row
                         line-number="${departure.lineNumber}"
@@ -231,7 +226,7 @@ class BusWidget extends BaseWidget {
                         ?realtime="${departure.realtime}">
                     </bus-row>
                 `)}
-            </div>
+            </widget-list>
         `;
     }
 

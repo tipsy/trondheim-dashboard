@@ -71,15 +71,11 @@ class EnergyWidget extends BaseWidget {
             .chip .price {
                 font-weight: 700;
                 font-size: 14px;
-                overflow-wrap: break-word;
-                word-wrap: break-word;
             }
 
             .chip .time {
                 font-size: 12px;
                 color: var(--text-light);
-                overflow-wrap: break-word;
-                word-wrap: break-word;
             }
 
             .trend.up { color: var(--error-color, #e74c3c); }
@@ -203,14 +199,14 @@ class EnergyWidget extends BaseWidget {
                 ${this.nextHours.map(h => html`
                     <div class="chip">
                         <div class="price-row">
-                            <div class="price">${h.valueStr}</div>
+                            <div class="price text-wrap">${h.valueStr}</div>
                             ${h.trend !== 'none' ? html`
                                 <div class="trend ${h.trend}">
                                     <i class="mdi ${h.trend === 'up' ? 'mdi-arrow-up' : h.trend === 'down' ? 'mdi-arrow-down' : ''}"></i>
                                 </div>
                             ` : ''}
                         </div>
-                        <div class="time">${h.label}</div>
+                        <div class="time text-wrap">${h.label}</div>
                     </div>
                 `)}
             </div>

@@ -50,22 +50,6 @@ class BusRow extends LitElement {
                 min-width: 0;
             }
 
-            @media (max-width: 1024px) {
-                .destination span {
-                    overflow-wrap: break-word;
-                    word-wrap: break-word;
-                    word-break: break-word;
-                    hyphens: auto;
-                }
-            }
-
-            @media (min-width: 1025px) {
-                .destination span {
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                }
-            }
 
             .time {
                 font-weight: bold;
@@ -158,4 +142,3 @@ class BusRow extends LitElement {
 }
 
 customElements.define('bus-row', BusRow);
-

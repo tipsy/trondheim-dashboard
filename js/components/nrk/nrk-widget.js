@@ -1,10 +1,11 @@
-// filepath: /Users/david/git/trondheim-dashboard/js/components/nrk-widget.js
 // NRK Widget - displays top 10 NRK Trøndelag stories
 
 import { BaseWidget } from '../common/base-widget.js';
 import { html } from 'lit';
 import { NrkRssAPI } from '../../utils/nrk-rss-api.js';
+import { DateFormatter } from '../../utils/date-formatter.js';
 import '../common/widget-row.js';
+import '../common/widget-list.js';
 
 class NRKWidget extends BaseWidget {
     static properties = {
@@ -37,30 +38,21 @@ class NRKWidget extends BaseWidget {
         }
     }
 
-    formatDate(dateString) {
-        try {
-            const d = new Date(dateString);
-            return isNaN(d.getTime()) ? dateString : d.toLocaleString();
-        } catch (e) {
-            return dateString;
-        }
-    }
-
     renderContent() {
         if (!this.stories || this.stories.length === 0) {
             return html`<p class="no-data">No news available</p>`;
         }
 
         return html`
-            <div id="nrk-list" style="display:flex;flex-direction:column;gap:8px">
+            <widget-list>
                 ${this.stories.map(story => html`
                     <widget-row
                         title="${story.title || ''}"
-                        description="${this.formatDate(story.pubDate)}"
+                        description="${DateFormatter.formatToLocaleString(story.pubDate)}"
                         href="${story.link || ''}">
                     </widget-row>
                 `)}
-            </div>
+            </widget-list>
         `;
     }
 
@@ -70,3 +62,4 @@ class NRKWidget extends BaseWidget {
 }
 
 customElements.define('nrk-widget', NRKWidget);
+

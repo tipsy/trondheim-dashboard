@@ -10,6 +10,40 @@ export const sharedStyles = css`
     i.mdi {
         line-height: 1;
     }
+
+
+    /* Common responsive text overflow patterns */
+    .text-wrap {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+        hyphens: auto;
+    }
+
+    .text-ellipsis {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* Mobile: allow text to wrap */
+    @media (max-width: 1024px) {
+        .responsive-text {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            hyphens: auto;
+        }
+    }
+
+    /* Desktop: use single-line ellipsis */
+    @media (min-width: 1025px) {
+        .responsive-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    }
 `;
 
 // Helper function to inject MDI font stylesheet into shadow root

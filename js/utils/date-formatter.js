@@ -150,5 +150,62 @@ export class DateFormatter {
             return `${seconds}s`;
         }
     }
+
+    /**
+     * Format date string to locale string with fallback
+     * Used by NRK and Police widgets
+     * @param {string} dateString - ISO date string
+     * @returns {string} Formatted date string or original if invalid
+     */
+    static formatToLocaleString(dateString) {
+        try {
+            const d = new Date(dateString);
+            return isNaN(d.getTime()) ? dateString : d.toLocaleString();
+        } catch (e) {
+            return dateString;
+        }
+    }
+
+    /**
+     * Format date string to Norwegian date format (DD.MM HH:MM)
+     * Used by Police widget
+     * @param {string} dateString - ISO date string
+     * @returns {string} Formatted date string
+     */
+    static formatToNorwegianDateTime(dateString) {
+        try {
+            const d = new Date(dateString);
+            return isNaN(d.getTime()) ? dateString : d.toLocaleString('no-NO', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return dateString;
+        }
+    }
+
+    /**
+     * Format date string to "DD. Mon HH:MM"
+     * Used by Events widget
+     * @param {string} dateString - ISO date string
+     * @returns {string} Formatted date string
+     */
+    static formatToEventDateTime(dateString) {
+        try {
+            const d = new Date(dateString);
+            if (isNaN(d.getTime())) return dateString;
+
+            const day = String(d.getDate()).padStart(2, '0');
+            const monthShort = d.toLocaleDateString(undefined, { month: 'short' });
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+
+            return `${day}. ${monthShort} ${hours}:${minutes}`;
+        } catch (e) {
+            return dateString;
+        }
+    }
 }
 
