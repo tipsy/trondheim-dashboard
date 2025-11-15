@@ -13,9 +13,9 @@ Analyzed all 29 component files in the codebase and identified opportunities to 
 1. **bus-widget.js** - Uses innerHTML + createElement, manual DOM manipulation, imperative event listeners
 2. **weather-right-now.js** - Uses innerHTML + createElement for weather-hour components
 3. **weather-today.js** - Uses innerHTML + manual style injection in afterRender()
-4. **energy-widget.js** - Uses innerHTML with template strings (should use html``)
+4. ~~**energy-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 5. **trash-widget.js** - Uses innerHTML + createElement, manual style injection
-6. **events-widget.js** - Uses innerHTML with manual HTML escaping (Lit auto-escapes!)
+6. ~~**events-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 7. ~~**police-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 
 ### Benefits of converting these:
@@ -214,17 +214,25 @@ renderContent() {
 
 ---
 
-### Task 8: Review and optimize energy-widget.js
+### Task 8: Review and optimize energy-widget.js ✅ COMPLETED
 **Priority:** High  
-**Issues:**
-- Uses `this._usesInnerHTML = true`
-- innerHTML with template strings
-- Manual HTML string concatenation with `.map().join('')`
+**Status:** ✅ DONE - Converted to Lit templates with reactive properties
 
-**Opportunities:**
-- Convert to `html` template with `.map()`
-- Use reactive properties for price data
-- Remove manual string concatenation
+**Changes made:**
+- ✅ Removed `this._usesInnerHTML = true`
+- ✅ Converted innerHTML with template strings to `html` template
+- ✅ Moved inline `<style>` to `static styles` using Lit's `css`
+- ✅ Added reactive properties:
+  - `currentPrice` - current hour's price object
+  - `nextHours` - processed array of next 4 hours with trends
+  - `priceArea` - energy price area (NO3, etc.)
+- ✅ Implemented `renderContent()` with declarative Lit templates
+- ✅ Refactored helper methods:
+  - `processPrices()` - processes raw price data into reactive state
+  - `fetchNextDayPrices()` - fetches next day if needed
+  - `calculateNextHours()` - calculates trends and formats hours
+- ✅ Fully reactive - price updates trigger automatic re-rendering
+- ✅ Cleaner separation between data processing and rendering
 
 ---
 
