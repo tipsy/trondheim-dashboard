@@ -1,4 +1,3 @@
-// filepath: /Users/david/git/trondheim-dashboard/js/components/police-widget.js
 // Police Widget - displays latest police log messages from Trøndelag
 
 import { BaseWidget } from '../common/base-widget.js';
@@ -7,24 +6,27 @@ import { PoliceAPI } from '../../utils/police-api.js';
 import '../common/widget-row.js';
 
 class PoliceWidget extends BaseWidget {
+    static properties = {
+        ...BaseWidget.properties,
+        messages: { type: Array, state: true }
+    };
+
     constructor() {
         super();
-        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
+        this.messages = [];
     }
 
     async connectedCallback() {
-        // BaseWidget.connectedCallback calls render; we want to fetch after render
         super.connectedCallback();
         await this.loadMessages();
     }
 
     async loadMessages() {
         this.showLoading(true);
-        this.hideError();
 
         try {
             const messages = await PoliceAPI.getLatestMessages();
-            this.renderMessages(messages);
+            this.messages = messages || [];
         } catch (error) {
             this.showError('Could not load police log');
         } finally {
@@ -32,59 +34,52 @@ class PoliceWidget extends BaseWidget {
         }
     }
 
-    renderMessages(messages) {
-        const content = this.getContentElement();
-        if (!content) return;
+    formatDate(dateString) {
+        try {
+            const d = new Date(dateString);
+            return isNaN(d.getTime()) ? dateString : d.toLocaleString('no-NO', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        } catch (e) {
+            return dateString;
+        }
+    }
 
-        if (!messages || !messages.length) {
-            content.innerHTML = '<p class="no-data">No police log messages available</p>';
-            return;
+    getLocation(msg) {
+        return [msg.municipality, msg.area].filter(x => x).join(', ');
+    }
+
+    getDescription(msg) {
+        const location = this.getLocation(msg);
+        const locationDate = [location, this.formatDate(msg.createdOn)].filter(x => x).join(' • ');
+        return [msg.category, locationDate].filter(x => x).join(' • ');
+    }
+
+    getThreadUrl(msg) {
+        if (!msg.id) return '';
+        const threadId = msg.id.split('-')[0];
+        return threadId ? `https://www.politiet.no/politiloggen/hendelse/#/${threadId}/` : '';
+    }
+
+    renderContent() {
+        if (!this.messages || this.messages.length === 0) {
+            return html`<p class="no-data">No police log messages available</p>`;
         }
 
-        // Declarative HTML generation: build a safe HTML string of widget-row elements
-        const escapeAttr = (s) => {
-            if (s === undefined || s === null) return '';
-            return String(s)
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&quot;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-        };
-
-        const formatDate = (dateString) => {
-            try {
-                const d = new Date(dateString);
-                return isNaN(d.getTime()) ? dateString : d.toLocaleString('no-NO', {
-                    day: '2-digit',
-                    month: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-            } catch (e) {
-                return dateString;
-            }
-        };
-
-        const rowsHtml = messages.map(msg => {
-            const text = escapeAttr(msg.text || '');
-            const municipality = escapeAttr(msg.municipality || '');
-            const area = escapeAttr(msg.area || '');
-            const displayDate = escapeAttr(formatDate(msg.createdOn));
-            const category = escapeAttr(msg.category || '');
-
-            const location = [municipality, area].filter(x => x).join(', ');
-            const locationDate = [location, displayDate].filter(x => x).join(' • ');
-            // Prepend category (title) to description when available; use a short dot separator
-            const description = [category, locationDate].filter(x => x).join(' • ');
-
-            // Extract threadId from id (e.g., "257vxg-0" -> "257vxg")
-            const threadId = msg.id ? msg.id.split('-')[0] : '';
-            const href = threadId ? `https://www.politiet.no/politiloggen/hendelse/#/${threadId}/` : '';
-
-            return `<widget-row title="${text}" description="${description}" href="${href}"></widget-row>`;
-        }).join('');
-
-        content.innerHTML = `<div id="police-list" style="display:flex;flex-direction:column;gap:8px">${rowsHtml}</div>`;
+        return html`
+            <div id="police-list" style="display:flex;flex-direction:column;gap:8px">
+                ${this.messages.map(msg => html`
+                    <widget-row
+                        title="${msg.text || ''}"
+                        description="${this.getDescription(msg)}"
+                        href="${this.getThreadUrl(msg)}">
+                    </widget-row>
+                `)}
+            </div>
+        `;
     }
 
     // BaseWidget overrides
@@ -99,10 +94,7 @@ class PoliceWidget extends BaseWidget {
     getPlaceholderText() {
         return 'Loading police log...';
     }
-
-    afterRender() {
-        // No-op; styles are in police-row
-    }
 }
 
 customElements.define('police-widget', PoliceWidget);
+
