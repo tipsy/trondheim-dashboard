@@ -242,19 +242,24 @@ renderContent() {
 
 ---
 
-### Task 10: Review and optimize events-widget.js
-**Priority:** High  
-**Issues:**
-- Uses `this._usesInnerHTML = true`
-- Manual HTML escaping with `escapeAttr()` function
-- innerHTML with string concatenation
-- Manual event listener management for date selector
+### Task 10: Review and optimize events-widget.js ✅ COMPLETED
+**Priority:** High (uses innerHTML with manual HTML escaping)  
+**Status:** ✅ DONE - Converted to Lit templates with reactive properties
 
-**Opportunities:**
-- Convert to `html` template (auto-escapes!)
-- Remove manual `escapeAttr()` function
-- Use reactive properties for events array
-- Simplify date selector event handling
+**Changes made:**
+- ✅ Removed `this._usesInnerHTML = true`
+- ✅ Removed manual HTML escaping with `escapeAttr()` function
+- ✅ Converted innerHTML to `html` template (auto-escaping!)
+- ✅ Added reactive `events` and `selectedDate` properties with `state: true`
+- ✅ Implemented `renderContent()` using `.map()` with Lit templates
+- ✅ Moved inline styles to `static styles` using Lit's `css`
+- ✅ Refactored helper functions to class methods:
+  - `filterEventsByDate()` - filters events by selected date
+  - `formatDate()` - formats date as "DD. Mon HH:MM"
+  - `getEventDescription()` - builds venue + date description
+  - `getEventUrl()` - generates trdevents.no URL
+- ✅ Moved `setupDateSelector()` to `firstUpdated()` lifecycle
+- ✅ Fully reactive - date changes trigger automatic re-filtering/re-rendering
 
 ---
 

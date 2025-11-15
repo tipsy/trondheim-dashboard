@@ -90,7 +90,7 @@ class WeatherRightNow extends BaseWidget {
 
     // Override BaseWidget methods
     getTitle() {
-        return 'Right Now';
+        return 'Weather Now';
     }
 
     getIcon() {

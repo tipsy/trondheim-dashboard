@@ -173,7 +173,7 @@ class BusWidget extends BaseWidget {
 
     // Override BaseWidget methods
     getTitle() {
-        return 'Upcoming Buses';
+        return 'Buses';
     }
 
     getIcon() {

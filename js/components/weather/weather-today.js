@@ -134,7 +134,7 @@ class WeatherToday extends BaseWidget {
 
     // Override BaseWidget methods
     getTitle() {
-        return 'Today';
+        return 'Weather Today';
     }
 
     getIcon() {

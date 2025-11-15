@@ -84,7 +84,7 @@ class PoliceWidget extends BaseWidget {
 
     // BaseWidget overrides
     getTitle() {
-        return 'Trøndelag Police Log';
+        return 'Police Log';
     }
 
     getIcon() {

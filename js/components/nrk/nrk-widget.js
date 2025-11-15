@@ -64,7 +64,7 @@ class NRKWidget extends BaseWidget {
 
     // BaseWidget overrides
     getTitle() {
-        return 'Trøndelag News';
+        return 'News';
     }
 
     getIcon() {
