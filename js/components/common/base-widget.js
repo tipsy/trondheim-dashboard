@@ -162,7 +162,6 @@ export class BaseWidget extends LitElement {
         adoptMDIStyles(this.shadowRoot);
         this.setupScrollListener();
         this.startPlaceholderTimer();
-        this.afterRender();
     }
 
     // Override these methods in child classes to provide widget-specific content
@@ -187,36 +186,8 @@ export class BaseWidget extends LitElement {
         return html``;
     }
 
-    updated(changedProperties) {
-        // For widgets using innerHTML, manually update the content div when state changes
-        // This is called AFTER render completes, so the DOM is stable
-        if (this._usesInnerHTML && (
-            changedProperties.has('isLoading') ||
-            changedProperties.has('errorMessage') ||
-            changedProperties.has('showPlaceholderState')
-        )) {
-            const content = this.shadowRoot.getElementById('content');
-            if (!content) return;
-
-            // Manually render loading/error/placeholder states using innerHTML
-            // This avoids Lit's DOM tracking issues
-            if (this.isLoading) {
-                content.innerHTML = '<div class="loading-container"><loading-spinner size="large"></loading-spinner></div>';
-            } else if (this.errorMessage) {
-                content.innerHTML = `<error-message message="${this.errorMessage}"></error-message>`;
-            } else if (this.showPlaceholderState) {
-                content.innerHTML = `<p class="placeholder">${this.getPlaceholderText()}</p>`;
-            }
-            // If none of the above, the widget's render method will set content via innerHTML
-        }
-    }
-
     render() {
-        // For vanilla widgets that use innerHTML, render an EMPTY content div
-        // The widget will populate it via innerHTML, and state changes are handled in updated()
-        // For Lit widgets, call renderContent()
-        const contentTemplate = this._usesInnerHTML ? html`` : (
-            this.isLoading ? html`
+        const contentTemplate = this.isLoading ? html`
                 <div class="loading-container">
                     <loading-spinner size="large"></loading-spinner>
                 </div>
@@ -224,8 +195,7 @@ export class BaseWidget extends LitElement {
                 <error-message message="${this.errorMessage}"></error-message>
             ` : this.showPlaceholderState ? html`
                 <p class="placeholder">${this.getPlaceholderText()}</p>
-            ` : this.renderContent()
-        );
+            ` : this.renderContent();
 
         return html`
             <div class="widget-container">
@@ -303,11 +273,6 @@ export class BaseWidget extends LitElement {
         }
     }
 
-    // Set up post-render hook for child classes
-    afterRender() {
-        // Child classes can override this
-    }
-
     // Utility methods for common widget operations
     showLoading(loading = true) {
         this.cancelPlaceholderTimer();
@@ -337,12 +302,5 @@ export class BaseWidget extends LitElement {
 
     hideError() {
         this.errorMessage = '';
-    }
-
-    // Helper to get the content element
-    getContentElement() {
-        // Mark that this widget uses innerHTML (vanilla widget pattern)
-        this._usesInnerHTML = true;
-        return this.shadowRoot.getElementById('content');
     }
 }
