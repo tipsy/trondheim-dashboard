@@ -40,26 +40,15 @@ class TrashWidget extends BaseWidget {
   }
 
   normalizeAddress(address) {
-    // addresses are given as "Nedre Kristianstens gate 18B, 7014 Trondheim"
-    // we need to extract "Nedre Kristianstens gate 18 B" (with space before letter)
-
-    // Get the street address part (before the comma)
+    // Extract street address part (before the comma)
+    // e.g., "Nedre Kristianstens gate 18B, 7014 Trondheim" -> "Nedre Kristianstens gate 18B"
     const streetAddress = address.split(",")[0].trim();
 
-    // Find the house number (last part that contains a digit)
+    // Find the last part containing a number (house number)
     const parts = streetAddress.split(" ");
-    let numberIndex = -1;
-
-    // Find the last part that contains a number
-    for (let i = parts.length - 1; i >= 0; i--) {
-      if (/\d/.test(parts[i])) {
-        numberIndex = i;
-        break;
-      }
-    }
+    const numberIndex = parts.findLastIndex(part => /\d/.test(part));
 
     if (numberIndex === -1) {
-      // No number found, return as-is
       return streetAddress.toUpperCase();
     }
 
@@ -68,9 +57,7 @@ class TrashWidget extends BaseWidget {
     let houseNumber = parts[numberIndex];
 
     // Add space before letter if needed (18B -> 18 B)
-    if (houseNumber.match(/\d+[A-Z]/i)) {
-      houseNumber = houseNumber.replace(/(\d+)([A-Z])/i, "$1 $2");
-    }
+    houseNumber = houseNumber.replace(/(\d+)([A-Z])/i, "$1 $2");
 
     return `${streetName} ${houseNumber}`.toUpperCase();
   }
@@ -121,7 +108,6 @@ class TrashWidget extends BaseWidget {
       const schedule = await TrashAPI.getTrashSchedule(this.addressId);
       this.processSchedule(schedule);
     } catch (error) {
-      console.error("Error loading trash schedule:", error);
       this.showError("Could not load trash schedule. Please try again.");
     } finally {
       this.showLoading(false);
@@ -129,65 +115,49 @@ class TrashWidget extends BaseWidget {
   }
 
   processSchedule(schedule) {
-    if (!schedule || !schedule.calendar) {
+    if (!schedule?.calendar) {
       this.showError("No schedule data available");
       return;
     }
 
-    // Parse and organize the schedule data
-    const collections = [];
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    schedule.calendar.forEach((item) => {
-      const date = new Date(item.dato);
-
-      // Only show future dates
-      if (date >= today) {
-        collections.push({
-          date: date,
-          type: item.fraksjon,
-          trashClass: this.getTrashClass(item.fraksjon),
-        });
-      }
-    });
-
-    // Sort by date
-    collections.sort((a, b) => a.date - b.date);
-
-    // Take only next 10 collections
-    this.collections = collections.slice(0, 10);
+    // Parse, filter future dates, sort, and take top 10
+    this.collections = schedule.calendar
+      .map((item) => ({
+        date: new Date(item.dato),
+        type: item.fraksjon,
+        trashClass: this.getTrashClass(item.fraksjon),
+      }))
+      .filter((item) => item.date >= today)
+      .sort((a, b) => a.date - b.date)
+      .slice(0, 10);
   }
 
   getTrashClass(type) {
     const typeLower = type.toLowerCase();
-    if (typeLower.includes("rest") || typeLower.includes("general"))
-      return "general";
-    if (
-      typeLower.includes("papp") ||
-      typeLower.includes("papir") ||
-      typeLower.includes("paper")
-    )
-      return "paper";
-    if (
-      typeLower.includes("plast") ||
-      typeLower.includes("plastic") ||
-      typeLower.includes("emballasje")
-    )
-      return "plastic";
-    if (
-      typeLower.includes("mat") ||
-      typeLower.includes("food") ||
-      typeLower.includes("bio")
-    )
-      return "food";
-    if (typeLower.includes("glass")) return "glass";
-    if (typeLower.includes("metal")) return "metal";
+
+    const classMap = [
+      { patterns: ["rest", "general"], class: "general" },
+      { patterns: ["papp", "papir", "paper"], class: "paper" },
+      { patterns: ["plast", "plastic", "emballasje"], class: "plastic" },
+      { patterns: ["mat", "food", "bio"], class: "food" },
+      { patterns: ["glass"], class: "glass" },
+      { patterns: ["metal"], class: "metal" },
+    ];
+
+    for (const { patterns, class: className } of classMap) {
+      if (patterns.some(pattern => typeLower.includes(pattern))) {
+        return className;
+      }
+    }
+
     return "other";
   }
 
   renderContent() {
-    if (!this.collections || this.collections.length === 0) {
+    if (!this.collections?.length) {
       return html`<p class="no-data">No upcoming collections found</p>`;
     }
 
