@@ -59,6 +59,7 @@ class WeatherToday extends BaseWidget {
                 flex-direction: column;
                 gap: var(--spacing-sm);
                 padding: var(--spacing-md) 0;
+                border-top: 1px solid var(--border-color);
             }
 
             .detail-row {
@@ -66,12 +67,11 @@ class WeatherToday extends BaseWidget {
                 grid-template-columns: 24px 1fr auto;
                 gap: var(--spacing-sm);
                 align-items: center;
-                color: var(--text-color);
             }
 
             .detail-row i {
-                font-size: 20px;
-                color: var(--text-alt, var(--text-color));
+                font-size: 24px;
+                color: var(--text-light);
             }
 
             .detail-label {
@@ -79,7 +79,8 @@ class WeatherToday extends BaseWidget {
             }
 
             .detail-value {
-                font-weight: 600;
+                font-weight: 400;
+                color: var(--text-light);
             }
         `
     ];

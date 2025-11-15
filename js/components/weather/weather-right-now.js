@@ -37,7 +37,7 @@ class WeatherRightNow extends BaseWidget {
             }
 
             .current-temp {
-                font-size: 48px;
+                font-size: 64px;
                 font-weight: 700;
                 color: var(--text-color);
             }
@@ -45,19 +45,21 @@ class WeatherRightNow extends BaseWidget {
             .current-details {
                 display: flex;
                 gap: var(--spacing-md);
-                padding: var(--spacing-sm) 0;
+                padding: var(--spacing-md) 0;
+                border-bottom: 1px solid var(--border-color);
             }
 
             .detail-item {
                 display: flex;
                 align-items: center;
                 gap: var(--spacing-xs);
-                color: var(--text-color);
+                color: var(--text-light);
+                font-weight: 400;
             }
 
             .detail-item i {
-                font-size: 20px;
-                color: var(--text-alt, var(--text-color));
+                font-size: 24px;
+                color: var(--text-light);
             }
 
             .hourly-forecast {
