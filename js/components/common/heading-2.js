@@ -9,7 +9,8 @@ class Heading2 extends LitElement {
     title: { type: String },
   };
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
   }
 
@@ -46,11 +47,9 @@ class Heading2 extends LitElement {
       .title-section i {
         font-size: 28px;
         flex-shrink: 0;
-        color: inherit;
-        margin-right: var(--spacing-xs);
       }
 
-      .actions {
+      ::slotted(*) {
         flex-shrink: 0;
       }
     `,
@@ -62,9 +61,7 @@ class Heading2 extends LitElement {
         ${this.icon ? html`<i class="mdi ${this.icon}"></i>` : ""}
         <h2>${this.title}</h2>
       </div>
-      <div class="actions">
-        <slot></slot>
-      </div>
+      <slot></slot>
     `;
   }
 }
