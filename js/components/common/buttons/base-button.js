@@ -1,6 +1,6 @@
 import { LitElement, html, css } from "lit";
-import { sharedStyles } from "../../utils/shared-styles.js";
-import { dispatchEvent } from "../../utils/event-helpers.js";
+import { sharedStyles } from "../../../utils/shared-styles.js";
+import { dispatchEvent } from "../../../utils/event-helpers.js";
 
 /**
  * Base Button Component

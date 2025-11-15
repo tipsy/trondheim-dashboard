@@ -1,12 +1,8 @@
 import { css } from "lit";
 import { BaseButton } from "./base-button.js";
-import { adoptMDIStyles } from "../../utils/shared-styles.js";
+import { adoptMDIStyles } from "../../../utils/shared-styles.js";
 
 export class SecondaryButton extends BaseButton {
-  static properties = {
-    ...BaseButton.properties,
-  };
-
   static styles = [
     ...BaseButton.styles,
     css`
@@ -22,7 +18,8 @@ export class SecondaryButton extends BaseButton {
     `,
   ];
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
   }
 }

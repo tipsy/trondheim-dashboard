@@ -3,9 +3,9 @@ import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 import { dispatchEvent } from "../../utils/event-helpers.js";
 import { GeocodingAPI } from "../../utils/geocoding-api.js";
 import "../common/input-field.js";
-import "../common/clear-button.js";
-import "../common/primary-button.js";
-import "../common/secondary-button.js";
+import "../common/buttons/icon-button.js";
+import "../common/buttons/primary-button.js";
+import "../common/buttons/secondary-button.js";
 import "../common/error-message.js";
 import "../common/heading-2.js";
 import "./address-suggestion-item.js";
@@ -75,6 +75,16 @@ class AddressInput extends LitElement {
         position: relative;
         flex: 1;
         width: 100%;
+      }
+
+      .clear-btn {
+        position: absolute;
+        right: 0;
+        top: 0;
+        z-index: 10;
+        --icon-btn-size: var(--input-height);
+        --icon-btn-color: var(--text-light, #999);
+        --icon-btn-radius: 50%;
       }
 
       .location-text {
@@ -387,10 +397,15 @@ class AddressInput extends LitElement {
                 @input-change=${(e) => this.handleInputChange(e.detail.value)}
                 @input-keydown=${this.handleInputKeydown}
               ></input-field>
-              <clear-button
+              <icon-button
+                class="clear-btn"
                 ?hidden=${!this.addressValue.trim()}
-                @clear=${this.handleClear}
-              ></clear-button>
+                @button-click=${this.handleClear}
+                title="Clear"
+                aria-label="Clear input"
+              >
+                <i class="mdi mdi-close"></i>
+              </icon-button>
             </div>
           </div>
           <div class="button-row">
