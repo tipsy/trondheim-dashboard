@@ -13,7 +13,6 @@ export class BaseWidget extends LitElement {
     icon: { type: String },
     isLoading: { type: Boolean, state: true },
     errorMessage: { type: String, state: true },
-    showPlaceholderState: { type: Boolean, state: true },
   };
 
   constructor() {
@@ -22,8 +21,12 @@ export class BaseWidget extends LitElement {
     this.icon = "mdi-square-outline";
     this.isLoading = false;
     this.errorMessage = "";
-    this.showPlaceholderState = false;
     this._placeholderTimerId = null;
+    this._showPlaceholder = false;
+  }
+
+  get showPlaceholder() {
+    return this._showPlaceholder && !this.isLoading && !this.errorMessage;
   }
 
   static styles = [
@@ -143,8 +146,12 @@ export class BaseWidget extends LitElement {
     `,
   ];
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
+  }
+
+  firstUpdated() {
     this.setupScrollListener();
     this.startPlaceholderTimer();
   }
@@ -173,7 +180,7 @@ export class BaseWidget extends LitElement {
         `
       : this.errorMessage
         ? html` <error-message message="${this.errorMessage}"></error-message> `
-        : this.showPlaceholderState
+        : this.showPlaceholder
           ? html` <p class="placeholder">${this.getPlaceholderText()}</p> `
           : this.renderContent();
 
@@ -232,12 +239,12 @@ export class BaseWidget extends LitElement {
   startPlaceholderTimer() {
     this.cancelPlaceholderTimer();
     this._placeholderTimerId = setTimeout(() => {
-      // Only show placeholder if the element is still connected
+      // Only show placeholder if still connected and content is empty
       if (!this.isConnected) return;
-      // Only show the placeholder if the content is still empty
       const content = this.shadowRoot.getElementById("content");
       if (content && content.children.length === 0) {
-        this.showPlaceholder();
+        this._showPlaceholder = true;
+        this.requestUpdate();
       }
     }, 1000);
   }
@@ -254,10 +261,9 @@ export class BaseWidget extends LitElement {
     this.cancelPlaceholderTimer();
     this.isLoading = loading;
     this.errorMessage = "";
-    this.showPlaceholderState = false;
+    this._showPlaceholder = false;
 
     if (!loading) {
-      // Start placeholder timer when loading stops
       this.startPlaceholderTimer();
     }
   }
@@ -266,17 +272,6 @@ export class BaseWidget extends LitElement {
     this.cancelPlaceholderTimer();
     this.isLoading = false;
     this.errorMessage = message;
-    this.showPlaceholderState = false;
-  }
-
-  showPlaceholder() {
-    this.cancelPlaceholderTimer();
-    this.isLoading = false;
-    this.errorMessage = "";
-    this.showPlaceholderState = true;
-  }
-
-  hideError() {
-    this.errorMessage = "";
+    this._showPlaceholder = false;
   }
 }
