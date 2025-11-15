@@ -43,7 +43,6 @@ class InputField extends LitElement {
         `
     ];
 
-
     handleInput(e) {
         this.value = e.target.value;
         dispatchEvent(this, 'input-change', { value: this.value });

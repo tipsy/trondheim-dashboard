@@ -24,6 +24,15 @@ class TrondheimDashboard extends LitElement {
         this.currentLocation = null;
     }
 
+    // Helper methods to access child elements
+    get addressInput() { return this.shadowRoot.querySelector('#address-input'); }
+    get themeSelector() { return this.shadowRoot.querySelector('theme-selector'); }
+    get busWidget() { return this.shadowRoot.querySelector('#bus-widget'); }
+    get weatherRightNow() { return this.shadowRoot.querySelector('#weather-right-now'); }
+    get weatherToday() { return this.shadowRoot.querySelector('#weather-today'); }
+    get energyWidget() { return this.shadowRoot.querySelector('#energy-widget'); }
+    get trashWidget() { return this.shadowRoot.querySelector('#trash-widget'); }
+
     static styles = [
         sharedStyles,
         css`
@@ -238,52 +247,45 @@ class TrondheimDashboard extends LitElement {
 
         // Handle theme parameter
         const theme = urlParams.get('theme');
-        if (theme) {
-            const themeSelector = this.shadowRoot.querySelector('theme-selector');
-            if (themeSelector) {
-                // Set theme directly
-                document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('trondheim-dashboard-theme', theme);
-                // Update the selector's property to reflect the theme
-                themeSelector.selectedTheme = theme;
-            }
+        if (theme && this.themeSelector) {
+            // Set theme directly
+            document.documentElement.setAttribute('data-theme', theme);
+            localStorage.setItem('trondheim-dashboard-theme', theme);
+            // Update the selector's property to reflect the theme
+            this.themeSelector.selectedTheme = theme;
         }
 
         // Handle address parameter
         const address = urlParams.get('address');
-        if (address) {
-            const addressInput = this.shadowRoot.getElementById('address-input');
-            if (addressInput) {
-                // Wait a bit for the address input to be fully initialized
-                setTimeout(() => {
-                    // Use loadFromURL which checks for saved coordinates first
-                    addressInput.loadFromURL(decodeURIComponent(address));
-                }, 200);
-            }
+        if (address && this.addressInput) {
+            // Wait a bit for the address input to be fully initialized
+            setTimeout(() => {
+                // Use loadFromURL which checks for saved coordinates first
+                this.addressInput.loadFromURL(decodeURIComponent(address));
+            }, 200);
         }
     }
 
     attachEventListeners() {
-        const addressInput = this.shadowRoot.getElementById('address-input');
-        const themeSelector = this.shadowRoot.querySelector('theme-selector');
-
         // Listen for location updates from address input
-        addressInput.addEventListener('location-updated', (event) => {
-            const { lat, lon, address } = event.detail;
+        if (this.addressInput) {
+            this.addressInput.addEventListener('location-updated', (event) => {
+                const { lat, lon, address } = event.detail;
 
-            // Store current location for auto-refresh
-            this.currentLocation = { lat, lon, address };
+                // Store current location for auto-refresh
+                this.currentLocation = { lat, lon, address };
 
-            // Update all widgets with the new location
-            this.updateAllWidgets(lat, lon, address);
+                // Update all widgets with the new location
+                this.updateAllWidgets(lat, lon, address);
 
-            // Update URL with address
-            this.updateURL({ address });
-        });
+                // Update URL with address
+                this.updateURL({ address });
+            });
+        }
 
         // Listen for theme changes
-        if (themeSelector) {
-            themeSelector.addEventListener('theme-changed', (event) => {
+        if (this.themeSelector) {
+            this.themeSelector.addEventListener('theme-changed', (event) => {
                 const { theme } = event.detail;
                 // Update URL with theme
                 this.updateURL({ theme });
@@ -316,31 +318,25 @@ class TrondheimDashboard extends LitElement {
     }
 
     updateAllWidgets(lat, lon, address) {
-        const busWidget = this.shadowRoot.getElementById('bus-widget');
-        const weatherRightNow = this.shadowRoot.getElementById('weather-right-now');
-        const weatherToday = this.shadowRoot.getElementById('weather-today');
-        const energyWidget = this.shadowRoot.getElementById('energy-widget');
-        const trashWidget = this.shadowRoot.getElementById('trash-widget');
-
-        if (busWidget) {
-            busWidget.updateLocation(lat, lon);
+        if (this.busWidget) {
+            this.busWidget.updateLocation(lat, lon);
         }
 
-        if (weatherRightNow) {
-            weatherRightNow.updateLocation(lat, lon);
+        if (this.weatherRightNow) {
+            this.weatherRightNow.updateLocation(lat, lon);
         }
 
-        if (weatherToday) {
-            weatherToday.updateLocation(lat, lon);
+        if (this.weatherToday) {
+            this.weatherToday.updateLocation(lat, lon);
         }
 
-        if (energyWidget) {
-            energyWidget.updateLocation(lat, lon);
+        if (this.energyWidget) {
+            this.energyWidget.updateLocation(lat, lon);
         }
 
         // Trash widget needs the address string
-        if (trashWidget && address) {
-            trashWidget.updateAddress(address);
+        if (this.trashWidget && address) {
+            this.trashWidget.updateAddress(address);
         }
     }
 

@@ -90,7 +90,9 @@ class ThemeSelector extends LitElement {
                         <i class="mdi mdi-palette-outline"></i>
                         Config
                     </h2>
-                    <refresh-button></refresh-button>
+                    <refresh-button>
+                        <i class="mdi mdi-refresh"></i>
+                    </refresh-button>
                 </div>
                 <custom-select
                     id="theme-select"

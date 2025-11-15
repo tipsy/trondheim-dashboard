@@ -66,7 +66,6 @@ class CustomSelect extends LitElement {
         }
     `];
 
-
     handleChange(e) {
         this.selected = e.target.value;
         dispatchEvent(this, 'change', { value: e.target.value });
