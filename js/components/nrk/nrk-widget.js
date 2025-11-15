@@ -26,15 +26,12 @@ class NRKWidget extends BaseWidget {
   }
 
   async loadStories() {
-    this.showLoading(true);
-
-    try {
-      const items = await NrkRssAPI.getTopTen("trondelag");
-      this.stories = items || [];
-    } catch (error) {
-      this.showError("Could not load news");
-    } finally {
-      this.showLoading(false);
+    const items = await this.fetchData(
+      () => NrkRssAPI.getTopTen("trondelag"),
+      "Could not load news"
+    );
+    if (items) {
+      this.stories = items;
     }
   }
 

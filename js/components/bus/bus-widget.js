@@ -23,7 +23,6 @@ class BusWidget extends BaseWidget {
     this.availableStops = [];
     this.selectedStopId = null;
     this.location = null;
-    this.refreshInterval = null;
   }
 
   get stopOptions() {
@@ -57,12 +56,6 @@ class BusWidget extends BaseWidget {
     `,
   ];
 
-  disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-    }
-  }
 
   async updateLocation(lat, lon) {
     this.location = { lat, lon };
@@ -72,50 +65,35 @@ class BusWidget extends BaseWidget {
   async loadBusStops() {
     if (!this.location) return;
 
-    this.showLoading(true);
+    const quays = await this.fetchData(
+      () => BusAPI.getClosestBusStops(this.location.lat, this.location.lon, 1000),
+      "Could not load bus stops"
+    );
 
-    try {
-      // Get nearby quays (each quay represents one direction at a stop)
-      const quays = await BusAPI.getClosestBusStops(
-        this.location.lat,
-        this.location.lon,
-        1000,
-      );
-
+    if (quays && quays.length > 0) {
       this.availableStops = quays;
 
-      if (quays.length > 0) {
-        // Try to restore saved quay, otherwise use first one
-        const savedQuayId = localStorage.getItem(
-          "trondheim-dashboard-bus-stop",
-        );
-        if (savedQuayId && quays.find((q) => q.id === savedQuayId)) {
-          this.selectedStopId = savedQuayId;
-        } else {
-          this.selectedStopId = quays[0].id;
-        }
-
-        await this.loadDepartures();
-        this.startAutoRefresh();
+      // Try to restore saved quay, otherwise use first one
+      const savedQuayId = localStorage.getItem("trondheim-dashboard-bus-stop");
+      if (savedQuayId && quays.find((q) => q.id === savedQuayId)) {
+        this.selectedStopId = savedQuayId;
       } else {
-        this.showError("No bus stops found nearby");
+        this.selectedStopId = quays[0].id;
       }
-    } catch (error) {
-      this.showError("Could not load bus stops");
-    } finally {
-      this.showLoading(false);
+
+      await this.loadDepartures();
+      this.setupAutoRefresh(() => this.loadDepartures(), 60000);
+    } else if (quays) {
+      // fetchData succeeded but returned empty array
+      this.showError("No bus stops found nearby");
     }
   }
 
   async loadDepartures() {
     if (!this.selectedStopId) return;
 
-    try {
-      const stopData = await BusAPI.getBusDepartures(this.selectedStopId, 10);
-      this.processDepartures(stopData);
-    } catch (error) {
-      this.showError("Could not load departures");
-    }
+    const stopData = await BusAPI.getBusDepartures(this.selectedStopId, 10);
+    this.processDepartures(stopData);
   }
 
   processDepartures(stopData) {
@@ -146,15 +124,6 @@ class BusWidget extends BaseWidget {
     });
   }
 
-  startAutoRefresh() {
-    if (this.refreshInterval) {
-      clearInterval(this.refreshInterval);
-    }
-    // Refresh every 60 seconds (1 minute)
-    this.refreshInterval = setInterval(() => {
-      this.loadDepartures();
-    }, 60000);
-  }
 
   handleStopChange(e) {
     this.selectedStopId = e.detail.value;

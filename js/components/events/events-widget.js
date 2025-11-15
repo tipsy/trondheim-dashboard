@@ -68,9 +68,7 @@ class EventsWidget extends BaseWidget {
   }
 
   async loadEventsForDate(date) {
-    this.showLoading(true);
-
-    try {
+    const result = await this.fetchData(async () => {
       // Fetch three pages to cover more events
       const [page0, page1, page2] = await Promise.all([
         EventsAPI.getUpcomingEvents(100, 0),
@@ -80,14 +78,12 @@ class EventsWidget extends BaseWidget {
 
       // Merge and dedupe by id
       const all = [...(page0 || []), ...(page1 || []), ...(page2 || [])];
-      const allEvents = [...new Map(all.filter(ev => ev?.id).map(ev => [ev.id, ev])).values()];
+      return [...new Map(all.filter(ev => ev?.id).map(ev => [ev.id, ev])).values()];
+    }, "Could not load events");
 
+    if (result) {
       // Filter events to the selected date
-      this.events = this.filterEventsByDate(allEvents, date);
-    } catch (error) {
-      this.showError("Could not load events");
-    } finally {
-      this.showLoading(false);
+      this.events = this.filterEventsByDate(result, date);
     }
   }
 

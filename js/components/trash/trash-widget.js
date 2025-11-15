@@ -26,7 +26,6 @@ class TrashWidget extends BaseWidget {
 
   async updateAddress(address) {
     if (!address) {
-      this.showPlaceholder();
       return;
     }
 
@@ -65,9 +64,7 @@ class TrashWidget extends BaseWidget {
   async loadTrashSchedule() {
     if (!this.address) return;
 
-    this.showLoading(true);
-
-    try {
+    const result = await this.fetchData(async () => {
       const normalizedAddress = this.normalizeAddress(this.address);
 
       // Try to search with the normalized address
@@ -94,10 +91,9 @@ class TrashWidget extends BaseWidget {
       }
 
       if (!searchResults || searchResults.length === 0) {
-        this.showError(
+        throw new Error(
           'Address not found in trash collection database. Try entering just the street name and number (e.g., "Persaunvegen 1C")',
         );
-        return;
       }
 
       // Use the first result
@@ -105,12 +101,11 @@ class TrashWidget extends BaseWidget {
       this.addressId = addressData.id;
 
       // Now get the actual schedule
-      const schedule = await TrashAPI.getTrashSchedule(this.addressId);
-      this.processSchedule(schedule);
-    } catch (error) {
-      this.showError("Could not load trash schedule. Please try again.");
-    } finally {
-      this.showLoading(false);
+      return await TrashAPI.getTrashSchedule(this.addressId);
+    }, "Could not load trash schedule. Please try again.");
+
+    if (result) {
+      this.processSchedule(result);
     }
   }
 

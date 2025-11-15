@@ -2,7 +2,6 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { adoptMDIStyles } from "../../utils/shared-styles.js";
 import { EnergyAPI } from "../../utils/energy-api.js";
 
 class EnergyWidget extends BaseWidget {
@@ -23,10 +22,6 @@ class EnergyWidget extends BaseWidget {
     this.location = null;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    adoptMDIStyles(this.shadowRoot);
-  }
 
   static styles = [
     ...BaseWidget.styles,
@@ -103,15 +98,13 @@ class EnergyWidget extends BaseWidget {
   }
 
   async loadEnergyPrices() {
-    this.showLoading(true);
+    const prices = await this.fetchData(
+      () => EnergyAPI.getEnergyPrices(this.priceArea),
+      "Could not load energy prices"
+    );
 
-    try {
-      const prices = await EnergyAPI.getEnergyPrices(this.priceArea);
+    if (prices) {
       await this.processPrices(prices);
-    } catch (error) {
-      this.showError("Could not load energy prices");
-    } finally {
-      this.showLoading(false);
     }
   }
 

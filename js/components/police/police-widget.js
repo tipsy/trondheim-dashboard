@@ -26,15 +26,12 @@ class PoliceWidget extends BaseWidget {
   }
 
   async loadMessages() {
-    this.showLoading(true);
-
-    try {
-      const messages = await PoliceAPI.getLatestMessages();
-      this.messages = messages || [];
-    } catch (error) {
-      this.showError("Could not load police log");
-    } finally {
-      this.showLoading(false);
+    const messages = await this.fetchData(
+      () => PoliceAPI.getLatestMessages(),
+      "Could not load police log"
+    );
+    if (messages) {
+      this.messages = messages;
     }
   }
 

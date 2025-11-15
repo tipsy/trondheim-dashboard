@@ -274,4 +274,48 @@ export class BaseWidget extends LitElement {
     this.errorMessage = message;
     this._showPlaceholder = false;
   }
+
+  // Utility method for managing auto-refresh intervals
+  setupAutoRefresh(callback, intervalMs = 60000) {
+    this.clearAutoRefresh();
+    this._refreshInterval = setInterval(() => {
+      if (this.isConnected) {
+        callback();
+      }
+    }, intervalMs);
+  }
+
+  clearAutoRefresh() {
+    if (this._refreshInterval) {
+      clearInterval(this._refreshInterval);
+      this._refreshInterval = null;
+    }
+  }
+
+  // Helper method to handle API data fetching with standard error handling
+  async fetchData(apiFn, errorMsg = "Could not load data") {
+    this.showLoading(true);
+    try {
+      return await apiFn();
+    } catch (error) {
+      console.error(errorMsg, error);
+      // Use the error message if it's more specific than the default
+      const displayMsg = error.message && error.message.length > 10 ? error.message : errorMsg;
+      this.showError(displayMsg);
+      return null;
+    } finally {
+      this.showLoading(false);
+    }
+  }
+
+  // Helper to validate array data is not empty
+  hasData(data) {
+    return Array.isArray(data) && data.length > 0;
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.clearAutoRefresh();
+    this.cancelPlaceholderTimer();
+  }
 }

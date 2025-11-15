@@ -2,7 +2,6 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { adoptMDIStyles } from "../../utils/shared-styles.js";
 import { WeatherAPI } from "../../utils/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import "./weather-hour.js";
@@ -23,10 +22,6 @@ class WeatherRightNow extends BaseWidget {
     this.location = null;
   }
 
-  connectedCallback() {
-    super.connectedCallback();
-    adoptMDIStyles(this.shadowRoot);
-  }
 
   static styles = [
     ...BaseWidget.styles,
@@ -90,18 +85,13 @@ class WeatherRightNow extends BaseWidget {
   async loadWeather() {
     if (!this.location) return;
 
-    this.showLoading(true);
+    const weatherData = await this.fetchData(
+      () => WeatherAPI.getWeatherForecast(this.location.lat, this.location.lon),
+      "Could not load weather data"
+    );
 
-    try {
-      const weatherData = await WeatherAPI.getWeatherForecast(
-        this.location.lat,
-        this.location.lon,
-      );
+    if (weatherData) {
       this.processWeather(weatherData);
-    } catch (error) {
-      this.showError("Could not load weather data");
-    } finally {
-      this.showLoading(false);
     }
   }
 
