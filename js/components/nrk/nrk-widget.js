@@ -1,87 +1,67 @@
-// filepath: /Users/david/git/trondheim-dashboard/js/components/nrk-widget.js
 // NRK Widget - displays top 10 NRK Trøndelag stories
 
-class NrkWidget extends BaseWidget {
-    constructor() {
-        super();
-        this.region = 'trondelag';
+import { BaseWidget } from "../common/base-widget.js";
+import { html } from "lit";
+import { NrkRssAPI } from "../../utils/nrk-rss-api.js";
+import { DateFormatter } from "../../utils/date-formatter.js";
+import "../common/widget-row.js";
+import "../common/widget-list.js";
+
+class NRKWidget extends BaseWidget {
+  static properties = {
+    ...BaseWidget.properties,
+    stories: { type: Array, state: true },
+  };
+
+  constructor() {
+    super();
+    this.title = "News";
+    this.icon = "mdi-newspaper-variant-outline";
+    this.stories = [];
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+    await this.loadStories();
+  }
+
+  async loadStories() {
+    this.showLoading(true);
+
+    try {
+      const items = await NrkRssAPI.getTopTen("trondelag");
+      this.stories = items || [];
+    } catch (error) {
+      this.showError("Could not load news");
+    } finally {
+      this.showLoading(false);
+    }
+  }
+
+  renderContent() {
+    if (!this.stories?.length) {
+      return html`<p class="no-data">No news available</p>`;
     }
 
-    async connectedCallback() {
-        // BaseWidget.connectedCallback calls render; we want to fetch after render
-        super.connectedCallback();
-        await this.loadStories();
-    }
+    return html`
+      <widget-list>
+        ${this.stories.map(
+          (story) => html`
+            <widget-row
+              title="${story.title || ""}"
+              description="${DateFormatter.formatToLocaleString(story.pubDate)}"
+              href="${story.link || ""}"
+            >
+            </widget-row>
+          `,
+        )}
+      </widget-list>
+    `;
+  }
 
-    async loadStories() {
-        this.showLoading(true);
-        this.hideError();
-
-        try {
-            const items = await NrkRssAPI.getTopTen(this.region);
-            this.renderStories(items);
-        } catch (error) {
-            this.showError('Could not load news');
-        } finally {
-            this.showLoading(false);
-        }
-    }
-
-    renderStories(items) {
-        const content = this.getContentElement();
-        if (!content) return;
-
-        if (!items || !items.length) {
-            content.innerHTML = '<p class="no-data">No news available</p>';
-            return;
-        }
-
-        // Declarative HTML generation: build a safe HTML string of widget-row elements
-        const escapeAttr = (s) => {
-            if (s === undefined || s === null) return '';
-            return String(s)
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&quot;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-        };
-
-        const formatDate = (dateString) => {
-            try {
-                const d = new Date(dateString);
-                return isNaN(d.getTime()) ? dateString : d.toLocaleString();
-            } catch (e) {
-                return dateString;
-            }
-        };
-
-        const rowsHtml = items.map(it => {
-            const title = escapeAttr(it.title || '');
-            const href = escapeAttr(it.link || '');
-            const displayDate = escapeAttr(formatDate(it.pubDate));
-
-            return `<widget-row title="${title}" description="${displayDate}" href="${href}"></widget-row>`;
-        }).join('');
-
-        content.innerHTML = `<div id="nrk-list" style="display:flex;flex-direction:column;gap:8px">${rowsHtml}</div>`;
-    }
-
-    // BaseWidget overrides
-    getTitle() {
-        return 'Trøndelag News';
-    }
-
-    getIcon() {
-        return '<i class="mdi mdi-newspaper"></i>';
-    }
-
-    getPlaceholderText() {
-        return 'Loading news...';
-    }
-
-    afterRender() {
-        // No-op; styles are in nrk-row
-    }
+  getPlaceholderText() {
+    return "Loading news...";
+  }
 }
 
-customElements.define('nrk-widget', NrkWidget);
+customElements.define("nrk-widget", NRKWidget);

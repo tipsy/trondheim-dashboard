@@ -1,86 +1,77 @@
 // Weather Hour Component - displays hourly weather forecast
 
-class WeatherHour extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
+import { LitElement, html, css } from "lit";
+import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
+import { IconLibrary } from "../../utils/icon-library.js";
 
-    static get observedAttributes() {
-        return ['time', 'temperature', 'symbol-code'];
-    }
+class WeatherHour extends LitElement {
+  static properties = {
+    time: { type: String },
+    temperature: { type: Number },
+    symbolCode: { type: String, attribute: "symbol-code" },
+  };
 
-    connectedCallback() {
-        this.render();
-    }
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: block;
+      }
 
-    attributeChangedCallback() {
-        this.render();
-    }
+      .hour-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-xs);
+        padding: var(--spacing-sm);
+        background-color: var(--alt-background);
+        border-radius: var(--border-radius);
+      }
 
-    get time() {
-        return this.getAttribute('time') || '';
-    }
+      .hour-time {
+        font-size: var(--font-size-sm);
+        color: var(--text-light);
+      }
 
-    get temperature() {
-        return this.getAttribute('temperature') || '';
-    }
+      .hour-icon {
+        display: inline-flex;
+        font-size: 32px;
+      }
 
-    get symbolCode() {
-        return this.getAttribute('symbol-code') || '';
-    }
+      .hour-temp {
+        font-size: var(--font-size-lg);
+        font-weight: bold;
+        color: var(--text-alt, var(--text-color));
+      }
+    `,
+  ];
 
-    formatTime(isoString) {
-        const date = new Date(isoString);
-        const hours = date.getHours().toString().padStart(2, '0');
-        return `${hours}:00`;
-    }
+  connectedCallback() {
+    super.connectedCallback();
+    adoptMDIStyles(this.shadowRoot);
+  }
 
-    render() {
-        const timeDisplay = this.formatTime(this.time);
-        const icon = IconLibrary.getWeatherIcon(this.symbolCode, 32);
+  formatTime(isoString) {
+    return new Date(isoString).toLocaleTimeString("no-NO", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
-        this.shadowRoot.innerHTML = `
-            <style>
-                ${IconLibrary.importCss}
-                :host {
-                    display: block;
-                }
+  render() {
+    const timeDisplay = this.formatTime(this.time);
+    const iconClass = IconLibrary.getWeatherIconClass(this.symbolCode);
 
-                .hour-item {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    gap: var(--spacing-xs);
-                    padding: var(--spacing-sm);
-                    background-color: var(--alt-background);
-                    border-radius: var(--border-radius);
-                }
-
-                .hour-time {
-                    font-size: var(--font-size-sm);
-                    color: var(--text-light);
-                }
-
-                .hour-icon {
-                    display: inline-flex;
-                    font-size: 32px;
-                }
-
-                .hour-temp {
-                    font-size: var(--font-size-lg);
-                    font-weight: bold;
-                    color: var(--text-alt, var(--text-color));
-                }
-            </style>
-
-            <div class="hour-item">
-                <div class="hour-time">${timeDisplay}</div>
-                <div class="hour-icon">${icon}</div>
-                <div class="hour-temp">${Math.round(this.temperature)}°</div>
-            </div>
-        `;
-    }
+    return html`
+      <div class="hour-item">
+        <div class="hour-time">${timeDisplay}</div>
+        <div class="hour-icon">
+          <i class="mdi ${iconClass}"></i>
+        </div>
+        <div class="hour-temp">${Math.round(this.temperature)}°</div>
+      </div>
+    `;
+  }
 }
 
-customElements.define('weather-hour', WeatherHour);
+customElements.define("weather-hour", WeatherHour);

@@ -1,102 +1,102 @@
-class ThemeSelector extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
+import { LitElement, html, css } from "lit";
+import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
+import { dispatchEvent } from "../../utils/event-helpers.js";
+import "../common/custom-select.js";
+import "../common/buttons/icon-button.js";
+import "../common/heading-2.js";
+
+class ThemeSelector extends LitElement {
+  static properties = {
+    selectedTheme: { type: String, state: true },
+  };
+
+  constructor() {
+    super();
+    this.selectedTheme =
+      localStorage.getItem("trondheim-dashboard-theme") || "midnight-blue";
+    this.setTheme(this.selectedTheme);
+  }
+
+  get themeOptions() {
+    return [
+      { value: "midnight-blue", label: "Midnight Blue" },
+      { value: "peach", label: "Peach Pink" },
+      { value: "solarized", label: "Solarized️" },
+      { value: "monokai", label: "Monokai" },
+      { value: "cat", label: "Cat" },
+      { value: "dark", label: "Dark" },
+      { value: "light", label: "Light" },
+    ];
+  }
+
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: block;
+        height: 100%;
+      }
+
+      .theme-container {
+        background-color: var(--card-background);
+        border-radius: var(--border-radius);
+        padding: var(--spacing-md);
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      heading-2 {
+        margin-bottom: var(--spacing-sm);
+      }
+    `,
+  ];
+
+  connectedCallback() {
+    super.connectedCallback();
+    adoptMDIStyles(this.shadowRoot);
+  }
+
+  handleThemeChange(e) {
+    this.selectedTheme = e.detail.value;
+    this.setTheme(this.selectedTheme);
+  }
+
+  handleRefresh() {
+    if (confirm("Clear all cached data and refresh the page?")) {
+      localStorage.clear();
+      window.location.reload();
     }
+  }
 
-    connectedCallback() {
-        this.render();
-        this.loadSavedTheme();
-        this.attachEventListeners();
-    }
+  setTheme(theme) {
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("trondheim-dashboard-theme", theme);
+    dispatchEvent(this, "theme-changed", { theme });
+  }
 
-    loadSavedTheme() {
-        const savedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'midnight-blue';
-        this.setTheme(savedTheme);
-        const select = this.shadowRoot.querySelector('custom-select');
-        if (select) {
-            select.setAttribute('selected', savedTheme);
-        }
-    }
-
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('trondheim-dashboard-theme', theme);
-
-        // Dispatch event for dashboard to update URL
-        this.dispatchEvent(new CustomEvent('theme-changed', {
-            detail: { theme },
-            bubbles: true,
-            composed: true
-        }));
-    }
-
-    render() {
-        this.shadowRoot.innerHTML = `
-            <style>
-                ${IconLibrary.importCss}
-                * {
-                    box-sizing: border-box;
-                }
-
-                :host {
-                    display: block;
-                    height: 100%;
-                }
-
-                .theme-container {
-                    background-color: var(--card-background);
-                    border-radius: var(--border-radius);
-                    padding: var(--spacing-md);
-                    box-shadow: var(--shadow);
-                    height: 100%;
-                    display: flex;
-                    flex-direction: column;
-                }
-
-                h2 {
-                    margin: 0 0 var(--spacing-sm) 0;
-                    color: var(--heading-color, var(--text-color));
-                    font-size: var(--font-size-lg);
-                    display: flex;
-                    align-items: center;
-                    gap: var(--spacing-xs);
-                }
-
-                h2 i {
-                    font-size: 28px;
-                }
-            </style>
-
-            <div class="theme-container">
-                <h2>
-                    <i class="mdi mdi-palette-outline"></i>
-                    Theme
-                </h2>
-                <custom-select id="theme-select"></custom-select>
-            </div>
-        `;
-    }
-
-    attachEventListeners() {
-        const select = this.shadowRoot.querySelector('custom-select');
-
-        // Set options
-        select.setOptions([
-            { value: 'midnight-blue', label: 'Midnight Blue' },
-            { value: 'peach', label: 'Peach Pink' },
-            { value: 'solarized', label: 'Solarized️' },
-            { value: 'monokai', label: 'Monokai' },
-            { value: 'cat', label: 'Cat' },
-            { value: 'dark', label: 'Dark' },
-            { value: 'light', label: 'Light' },
-        ]);
-
-        select.addEventListener('change', (e) => {
-            this.setTheme(e.detail.value);
-        });
-    }
+  render() {
+    return html`
+      <div class="theme-container">
+        <heading-2 icon="mdi-palette-outline" title="Config">
+          <icon-button
+            @button-click=${this.handleRefresh}
+            title="Clear cache and refresh"
+            aria-label="Clear cache and refresh"
+          >
+            <i class="mdi mdi-refresh"></i>
+          </icon-button>
+        </heading-2>
+        <custom-select
+          .options=${this.themeOptions}
+          .selected=${this.selectedTheme}
+          @change=${this.handleThemeChange}
+        >
+        </custom-select>
+      </div>
+    `;
+  }
 }
 
-customElements.define('theme-selector', ThemeSelector);
-
+customElements.define("theme-selector", ThemeSelector);

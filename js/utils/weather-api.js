@@ -1,7 +1,10 @@
 // Weather API utilities for Trondheim Dashboard
 // Using MET Norway Locationforecast API
 
-class WeatherAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+
+export class WeatherAPI extends APIBase {
     static async getWeatherForecast(lat, lon) {
         const apiUrl = `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat=${lat}&lon=${lon}`;
 

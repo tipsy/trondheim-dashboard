@@ -1,7 +1,10 @@
 // Energy Price API utilities for Trondheim Dashboard
 // Using hvakosterstrommen.no API
 
-class EnergyAPI extends APIBase {
+import { APIBase } from './api-base.js';
+import { CacheConfig } from './cache-config.js';
+
+export class EnergyAPI extends APIBase {
 
     static async getEnergyPrices(priceArea = 'NO3') {
         const today = new Date();

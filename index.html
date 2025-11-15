@@ -7,59 +7,18 @@
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <script type="importmap">
+        {
+            "imports": {
+                "lit": "https://cdn.jsdelivr.net/gh/lit/dist@3/core/lit-core.min.js"
+            }
+        }
+    </script>
 </head>
 <body>
     <trondheim-dashboard></trondheim-dashboard>
 
-    <!-- Utility Libraries (load first - no dependencies) -->
-    <script src="js/utils/icon-library.js"></script>
-    <script src="js/utils/date-formatter.js"></script>
-    <script src="js/utils/cache-config.js"></script>
-    <script src="js/utils/cache-client.js"></script>
-    <script src="js/utils/api-base.js"></script>
-
-    <!-- API Utilities -->
-    <script src="js/utils/bus-api.js"></script>
-    <script src="js/utils/weather-api.js"></script>
-    <script src="js/utils/trash-api.js"></script>
-    <script src="js/utils/energy-api.js"></script>
-    <script src="js/utils/geocoding-api.js"></script>
-    <script src="js/utils/nrk-rss-api.js"></script>
-    <script src="js/utils/police-api.js"></script>
-    <script src="js/utils/events-api.js"></script>
-
-    <!-- Common Components -->
-    <script src="js/components/common/base-widget.js"></script>
-    <script src="js/components/common/loading-spinner.js"></script>
-    <script src="js/components/common/error-message.js"></script>
-    <script src="js/components/common/icon-button.js"></script>
-    <script src="js/components/common/detail-item.js"></script>
-    <script src="js/components/common/custom-select.js"></script>
-
-    <!-- Address Components -->
-    <script src="js/components/address/address-suggestion-item.js"></script>
-    <script src="js/components/address/address-input.js"></script>
-
-    <!-- Sub-components -->
-    <script src="js/components/common/widget-row.js"></script>
-    <script src="js/components/bus/bus-row.js"></script>
-    <script src="js/components/trash/trash-row.js"></script>
-    <script src="js/components/weather/weather-hour.js"></script>
-    <script src="js/components/weather/weather-current.js"></script>
-    <script src="js/components/weather/weather-period.js"></script>
-
-    <!-- Widget Components -->
-    <script src="js/components/bus/bus-widget.js"></script>
-    <script src="js/components/weather/weather-right-now.js"></script>
-    <script src="js/components/weather/weather-today.js"></script>
-    <script src="js/components/energy/energy-widget.js"></script>
-    <script src="js/components/trash/trash-widget.js"></script>
-    <script src="js/components/police/police-widget.js"></script>
-    <script src="js/components/events/events-widget.js"></script>
-    <script src="js/components/nrk/nrk-widget.js"></script>
-
-    <!-- Config & Dashboard -->
-    <script src="js/components/config/theme-selector.js"></script>
-    <script src="js/components/dashboard.js"></script>
+    <!-- Main application entry point - imports all other modules -->
+    <script type="module" src="js/components/dashboard.js"></script>
 </body>
 </html>

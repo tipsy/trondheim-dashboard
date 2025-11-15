@@ -1,72 +1,62 @@
-class LoadingSpinner extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
+import { LitElement, html, css } from "lit";
+import { sharedStyles } from "../../utils/shared-styles.js";
 
-    static get observedAttributes() {
-        return ['size'];
-    }
+class LoadingSpinner extends LitElement {
+  static properties = {
+    size: { type: String },
+  };
 
-    connectedCallback() {
-        this.render();
-    }
+  constructor() {
+    super();
+    this.size = "medium";
+  }
 
-    attributeChangedCallback() {
-        this.render();
-    }
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
 
-    render() {
-        const size = this.getAttribute('size') || 'medium';
-        
-        const sizes = {
-            small: { width: '16px', height: '16px', border: '2px' },
-            medium: { width: '24px', height: '24px', border: '3px' },
-            large: { width: '40px', height: '40px', border: '4px' }
-        };
+      .spinner {
+        display: inline-block;
+        border: solid var(--border-color, #e0e0e0);
+        border-top-color: var(--primary-color, #0066cc);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
 
-        const dimensions = sizes[size] || sizes.medium;
+      .spinner.small {
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+      }
 
-        this.shadowRoot.innerHTML = `
-            <style>
-                * {
-                    box-sizing: border-box;
-                }
+      .spinner.medium {
+        width: 24px;
+        height: 24px;
+        border-width: 3px;
+      }
 
-                :host {
-                    display: inline-flex;
-                    align-items: center;
-                    justify-content: center;
-                }
+      .spinner.large {
+        width: 40px;
+        height: 40px;
+        border-width: 4px;
+      }
 
-                .spinner {
-                    display: inline-block;
-                    width: ${dimensions.width};
-                    height: ${dimensions.height};
-                    border: ${dimensions.border} solid var(--border-color, #e0e0e0);
-                    border-top-color: var(--primary-color, #0066cc);
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+    `,
+  ];
 
-                @keyframes spin {
-                    to { transform: rotate(360deg); }
-                }
-
-                .container {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    padding: var(--spacing-md, 16px);
-                }
-            </style>
-
-            <div class="container">
-                <div class="spinner"></div>
-            </div>
-        `;
-    }
+  render() {
+    return html`<div class="spinner ${this.size || 'medium'}"></div>`;
+  }
 }
 
-customElements.define('loading-spinner', LoadingSpinner);
-
+customElements.define("loading-spinner", LoadingSpinner);
