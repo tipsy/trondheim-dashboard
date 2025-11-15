@@ -10,6 +10,7 @@ class WeatherHour extends LitElement {
         symbolCode: { type: String, attribute: 'symbol-code' }
     };
 
+
     static styles = [
         sharedStyles,
         css`
@@ -45,12 +46,6 @@ class WeatherHour extends LitElement {
         `
     ];
 
-    constructor() {
-        super();
-        this.time = '';
-        this.temperature = 0;
-        this.symbolCode = '';
-    }
 
     connectedCallback() {
         super.connectedCallback();

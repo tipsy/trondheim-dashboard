@@ -36,12 +36,8 @@ class ErrorMessage extends LitElement {
             align-items: center;
             justify-content: center;
         }
-    `];
+        `];
 
-    constructor() {
-        super();
-        this.message = 'An error occurred';
-    }
 
     connectedCallback() {
         super.connectedCallback();

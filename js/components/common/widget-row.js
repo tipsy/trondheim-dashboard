@@ -80,13 +80,6 @@ class WidgetRow extends LitElement {
         }
     `];
 
-    constructor() {
-        super();
-        this.title = '';
-        this.description = '';
-        this.href = '';
-        this.borderColor = '';
-    }
 
     renderContent() {
         const hasAttributes = this.title || this.description;

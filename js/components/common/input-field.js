@@ -43,13 +43,6 @@ class InputField extends LitElement {
         `
     ];
 
-    constructor() {
-        super();
-        this.value = '';
-        this.placeholder = '';
-        this.disabled = false;
-        this.type = 'text';
-    }
 
     handleInput(e) {
         this.value = e.target.value;

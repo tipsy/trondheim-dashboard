@@ -10,6 +10,8 @@ class CustomSelect extends LitElement {
         options: { type: Array }
     };
 
+    placeholder = 'Select an option';
+
     static styles = [
         sharedStyles,
         css`
@@ -60,13 +62,6 @@ class CustomSelect extends LitElement {
         }
     `];
 
-    constructor() {
-        super();
-        this.label = '';
-        this.selected = '';
-        this.placeholder = 'Select an option';
-        this.options = [];
-    }
 
     async setOptions(options) {
         this.options = options;

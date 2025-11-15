@@ -76,11 +76,6 @@ export class BaseButton extends LitElement {
         `
     ];
 
-    constructor() {
-        super();
-        this.disabled = false;
-        this.loading = false;
-    }
 
     handleClick(e) {
         if (!this.disabled && !this.loading) {

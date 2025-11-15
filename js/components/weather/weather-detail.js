@@ -42,12 +42,6 @@ class WeatherDetail extends LitElement {
         }
     `];
 
-    constructor() {
-        super();
-        this.icon = '';
-        this.label = '';
-        this.value = '';
-    }
 
     getIcon(iconName) {
         const icons = {

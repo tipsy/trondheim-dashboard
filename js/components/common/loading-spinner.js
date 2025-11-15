@@ -51,12 +51,8 @@ class LoadingSpinner extends LitElement {
             justify-content: center;
             padding: var(--spacing-md, 16px);
         }
-    `];
+        `];
 
-    constructor() {
-        super();
-        this.size = 'medium';
-    }
 
     render() {
         return html`

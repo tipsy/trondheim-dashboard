@@ -53,10 +53,6 @@ class ClearButton extends LitElement {
         `
     ];
 
-    constructor() {
-        super();
-        this.visible = false;
-    }
 
     connectedCallback() {
         super.connectedCallback();

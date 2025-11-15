@@ -58,11 +58,6 @@ class AddressSuggestionItem extends LitElement {
         `
     ];
 
-    constructor() {
-        super();
-        this.displayName = '';
-        this.index = 0;
-    }
 
     handleClick() {
         dispatchEvent(this, 'select', { index: this.index });
