@@ -8,14 +8,17 @@ import "../common/heading-2.js";
 class ThemeSelector extends LitElement {
   static properties = {
     selectedTheme: { type: String, state: true },
-    themeOptions: { type: Array, state: true },
   };
 
   constructor() {
     super();
     this.selectedTheme =
       localStorage.getItem("trondheim-dashboard-theme") || "midnight-blue";
-    this.themeOptions = [
+    this.setTheme(this.selectedTheme);
+  }
+
+  get themeOptions() {
+    return [
       { value: "midnight-blue", label: "Midnight Blue" },
       { value: "peach", label: "Peach Pink" },
       { value: "solarized", label: "Solarized️" },
@@ -24,8 +27,6 @@ class ThemeSelector extends LitElement {
       { value: "dark", label: "Dark" },
       { value: "light", label: "Light" },
     ];
-    // Apply the saved theme immediately
-    this.setTheme(this.selectedTheme);
   }
 
   static styles = [
@@ -49,11 +50,6 @@ class ThemeSelector extends LitElement {
       heading-2 {
         margin-bottom: var(--spacing-sm);
       }
-
-      heading-2 i.mdi {
-        color: var(--primary-color);
-        font-size: 20px;
-      }
     `,
   ];
 
@@ -63,9 +59,8 @@ class ThemeSelector extends LitElement {
   }
 
   handleThemeChange(e) {
-    const theme = e.detail.value;
-    this.selectedTheme = theme;
-    this.setTheme(theme);
+    this.selectedTheme = e.detail.value;
+    this.setTheme(this.selectedTheme);
   }
 
   handleRefresh() {
@@ -86,7 +81,6 @@ class ThemeSelector extends LitElement {
       <div class="theme-container">
         <heading-2 icon="mdi-palette-outline" title="Config">
           <icon-button
-            class="refresh-btn"
             @button-click=${this.handleRefresh}
             title="Clear cache and refresh"
             aria-label="Clear cache and refresh"
@@ -95,7 +89,6 @@ class ThemeSelector extends LitElement {
           </icon-button>
         </heading-2>
         <custom-select
-          id="theme-select"
           .options=${this.themeOptions}
           .selected=${this.selectedTheme}
           @change=${this.handleThemeChange}
