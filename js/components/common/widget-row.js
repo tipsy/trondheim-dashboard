@@ -15,15 +15,15 @@ class WidgetRow extends LitElement {
   static styles = [
     sharedStyles,
     css`
-      :host {
-        display: block;
-      }
-
       .card {
         background-color: var(--alt-background);
         border-radius: var(--border-radius);
         padding: var(--spacing-md);
         overflow: hidden;
+      }
+
+      .card.bordered {
+        border-left: 4px solid var(--row-border-color);
       }
 
       a.card {
@@ -60,53 +60,28 @@ class WidgetRow extends LitElement {
         color: var(--text-light);
         margin-top: 4px;
       }
-
-      .title.responsive-text,
-      .description.responsive-text {
-        /* Responsive text handling via shared styles */
-      }
     `,
   ];
 
-  renderContent() {
-    const hasAttributes = this.title || this.description;
-    if (hasAttributes) {
-      return html`
-        <div class="content">
-          ${this.title ? html`<div class="title">${this.title}</div>` : ""}
-          ${this.description
-            ? html`<div class="description responsive-text">
-                ${this.description}
-              </div>`
-            : ""}
-        </div>
-      `;
-    }
-    return html`<slot></slot>`;
-  }
-
   render() {
-    const style = this.borderColor
-      ? `border-left: 4px solid ${this.borderColor};`
-      : "";
+    const content = (this.title || this.description)
+      ? html`
+          <div class="content">
+            ${this.title ? html`<div class="title">${this.title}</div>` : ""}
+            ${this.description ? html`<div class="description">${this.description}</div>` : ""}
+          </div>
+        `
+      : html`<slot></slot>`;
 
-    if (this.href) {
-      return html`
-        <a
-          class="card"
-          style=${style}
-          href=${this.href}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          ${this.renderContent()}
-        </a>
-      `;
+    const cardClass = `card ${this.borderColor ? 'bordered' : ''}`;
+
+    if (this.borderColor) {
+      this.style.setProperty('--row-border-color', this.borderColor);
     }
 
-    return html`
-      <div class="card" style=${style}>${this.renderContent()}</div>
-    `;
+    return this.href
+      ? html`<a class=${cardClass} href=${this.href} target="_blank" rel="noopener noreferrer">${content}</a>`
+      : html`<div class=${cardClass}>${content}</div>`;
   }
 }
 
