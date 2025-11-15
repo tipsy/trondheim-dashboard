@@ -8,15 +8,17 @@ Analyzed all 29 component files in the codebase and identified opportunities to 
 
 ## 🔴 High Priority - Major Simplification Opportunities
 
-### Widgets using innerHTML pattern (should convert to Lit templates)
+### Widgets using innerHTML pattern (should convert to Lit templates) ✅ ALL COMPLETED!
 
-1. **bus-widget.js** - Uses innerHTML + createElement, manual DOM manipulation, imperative event listeners
+1. ~~**bus-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 2. ~~**weather-right-now.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 3. ~~**weather-today.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 4. ~~**energy-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 5. ~~**trash-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 6. ~~**events-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 7. ~~**police-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
+
+🎉 **All 7 widgets have been converted from innerHTML to Lit templates!**
 
 ### Benefits of converting these:
 - ✅ Automatic HTML escaping (remove manual escapeAttr functions)
@@ -170,19 +172,24 @@ renderContent() {
 
 ---
 
-### Task 5: Review and optimize bus-widget.js
-**Priority:** High  
-**Issues:**
-- Uses `this._usesInnerHTML = true`
-- Manual `createElement()` and `appendChild()` for bus-row components
-- Imperative DOM manipulation in `renderDepartures()`
-- Manual interval cleanup
+### Task 5: Review and optimize bus-widget.js ✅ COMPLETED
+**Priority:** High (most complex widget)  
+**Status:** ✅ DONE - Converted to Lit templates with reactive properties
 
-**Opportunities:**
-- Convert to reactive properties for `departures` array
-- Use `html` template with `.map()` for bus rows
-- Use `renderContent()` instead of innerHTML
-- Review interval cleanup patterns
+**Changes made:**
+- ✅ Removed manual `createElement()` and `appendChild()` calls
+- ✅ Removed imperative DOM manipulation in `renderDepartures()`
+- ✅ Moved inline `<style>` to `static styles` using Lit's `css`
+- ✅ Added reactive properties:
+  - `departures` - array of departure objects
+  - `availableStops` - array of nearby bus stops
+  - `selectedStopId` - currently selected stop ID
+- ✅ Implemented `renderContent()` with declarative Lit templates
+- ✅ Refactored `renderDepartures()` to `processDepartures()` - now sets reactive state
+- ✅ Bus rows now rendered with `.map()` template
+- ✅ Used `updated()` lifecycle to sync selector state
+- ✅ Fully reactive - stop/departure updates trigger automatic re-rendering
+- ✅ Interval cleanup works with Lit lifecycle (disconnectedCallback)
 
 ---
 

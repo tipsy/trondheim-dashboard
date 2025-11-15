@@ -1,20 +1,54 @@
+// Bus Widget - displays real-time bus departures
+
 import { BaseWidget } from '../common/base-widget.js';
-import { html } from 'lit';
+import { html, css } from 'lit';
 import { BusAPI } from '../../utils/bus-api.js';
 import './bus-row.js';
 import '../common/custom-select.js';
 
 class BusWidget extends BaseWidget {
+    static properties = {
+        ...BaseWidget.properties,
+        departures: { type: Array, state: true },
+        availableStops: { type: Array, state: true },
+        selectedStopId: { type: String, state: true }
+    };
+
     constructor() {
         super();
-        this.location = null;
-        this.selectedStopId = null;
+        this.departures = [];
         this.availableStops = [];
+        this.selectedStopId = null;
+        this.location = null;
         this.refreshInterval = null;
-        this.isLoadingDepartures = false; // guard to avoid overlapping departure loads
+        this.isLoadingDepartures = false;
     }
 
+    static styles = [
+        ...BaseWidget.styles,
+        css`
+            .stop-selector-container {
+                flex: 1;
+                min-width: 0;
+            }
+
+            /* Desktop: limit width */
+            @media (min-width: 1025px) {
+                .stop-selector-container {
+                    max-width: 200px;
+                }
+            }
+
+            .departures-list {
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-sm);
+            }
+        `
+    ];
+
     disconnectedCallback() {
+        super.disconnectedCallback();
         if (this.refreshInterval) {
             clearInterval(this.refreshInterval);
         }
@@ -48,8 +82,7 @@ class BusWidget extends BaseWidget {
                 } else {
                     this.selectedStopId = quays[0].id;
                 }
-                this.ensureDeparturesContainer();
-                this.updateStopSelector();
+
                 await this.loadDepartures();
                 this.startAutoRefresh();
             } else {
@@ -57,6 +90,8 @@ class BusWidget extends BaseWidget {
             }
         } catch (error) {
             this.showError('Could not load bus stops');
+        } finally {
+            this.showLoading(false);
         }
     }
 
@@ -70,20 +105,38 @@ class BusWidget extends BaseWidget {
 
         this.isLoadingDepartures = true;
         try {
-            // Ensure container exists and show inline spinner so header/selector stay visible
-            this.ensureDeparturesContainer();
-            const container = this.shadowRoot.getElementById('departures-container');
-            if (container) {
-                container.innerHTML = '<div class="loading-container"><loading-spinner size="large"></loading-spinner></div>';
-            }
-
             const stopData = await BusAPI.getBusDepartures(this.selectedStopId, 10);
-            this.renderDepartures(stopData);
+            this.processDepartures(stopData);
         } catch (error) {
             this.showError('Could not load departures');
         } finally {
             this.isLoadingDepartures = false;
         }
+    }
+
+    processDepartures(stopData) {
+        if (!stopData || !stopData.estimatedCalls || stopData.estimatedCalls.length === 0) {
+            this.departures = [];
+            return;
+        }
+
+        this.departures = stopData.estimatedCalls.map(call => {
+            // Try to get the best destination name
+            let destination = call.destinationDisplay.frontText;
+
+            // If frontText looks like a code or is missing, try line name
+            if (!destination || destination.length < 3 || /^\d+$/.test(destination)) {
+                destination = call.serviceJourney.line.name || destination;
+            }
+
+            return {
+                lineNumber: call.serviceJourney.line.publicCode,
+                destination: destination,
+                aimedTime: call.aimedDepartureTime,
+                expectedTime: call.expectedDepartureTime,
+                realtime: call.realtime
+            };
+        });
     }
 
     startAutoRefresh() {
@@ -96,79 +149,88 @@ class BusWidget extends BaseWidget {
         }, 60000);
     }
 
-    async updateStopSelector() {
-        const selectorContainer = this.shadowRoot.querySelector('.stop-selector-container');
-        const selector = this.shadowRoot.querySelector('custom-select');
-        if (!selector || !selectorContainer) return;
+    getStopOptions() {
+        return this.availableStops.map(stop => {
+            // Build label with stop name, platform/direction info, and distance
+            let label = stop.name;
 
-        // Wait for the custom element to be upgraded
+            // Add platform number if available
+            if (stop.publicCode) {
+                label += ` (Platform ${stop.publicCode})`;
+            }
+
+            // Add description (direction/destination) if available
+            if (stop.description) {
+                label += ` - ${stop.description}`;
+            }
+
+            // Add distance
+            label += ` - ${Math.round(stop.distance)}m`;
+
+            return {
+                value: stop.id,
+                label: label
+            };
+        });
+    }
+
+    async firstUpdated() {
+        super.firstUpdated();
+        await this.setupStopSelector();
+    }
+
+    async setupStopSelector() {
+        // Wait for custom-select to be defined
         await customElements.whenDefined('custom-select');
 
-        if (this.availableStops.length > 0) {
-            const options = this.availableStops.map(stop => {
-                // Build label with stop name, platform/direction info, and distance
-                let label = stop.name;
+        const selector = this.shadowRoot.querySelector('#stop-selector');
+        if (!selector) return;
 
-                // Add platform number if available
-                if (stop.publicCode) {
-                    label += ` (Platform ${stop.publicCode})`;
-                }
+        // Listen for stop change
+        selector.addEventListener('change', async (e) => {
+            this.selectedStopId = e.detail.value;
+            localStorage.setItem('trondheim-dashboard-bus-stop', this.selectedStopId);
+            await this.loadDepartures();
+        });
+    }
 
-                // Add description (direction/destination) if available
-                if (stop.description) {
-                    label += ` - ${stop.description}`;
-                }
+    updated(changedProperties) {
+        super.updated(changedProperties);
 
-                // Add distance
-                label += ` - ${Math.round(stop.distance)}m`;
-
-                return {
-                    value: stop.id,
-                    label: label
-                };
-            });
-
-            selector.options = options;
-            selector.selected = this.selectedStopId;
-            selectorContainer.style.display = 'block';
-        } else {
-            selectorContainer.style.display = 'none';
+        // Update selector when stops or selection changes
+        if (changedProperties.has('availableStops') || changedProperties.has('selectedStopId')) {
+            this.updateStopSelector();
         }
     }
 
-    renderDepartures(stopData) {
-        const container = this.shadowRoot.getElementById('departures-container');
-        if (!container) return;
+    updateStopSelector() {
+        const selector = this.shadowRoot.querySelector('#stop-selector');
+        if (!selector) return;
 
-        if (!stopData || !stopData.estimatedCalls || stopData.estimatedCalls.length === 0) {
-            container.innerHTML = '<p class="no-data">No departures found</p>';
-            return;
+        if (this.availableStops.length > 0) {
+            selector.options = this.getStopOptions();
+            selector.selected = this.selectedStopId;
+        }
+    }
+
+    renderContent() {
+        if (!this.departures || this.departures.length === 0) {
+            return html`<p class="no-data">No departures found</p>`;
         }
 
-        // Clear container
-        container.innerHTML = '';
-
-        // Create bus-row components for each departure
-        stopData.estimatedCalls.forEach(call => {
-            const busRow = document.createElement('bus-row');
-            busRow.setAttribute('line-number', call.serviceJourney.line.publicCode);
-
-            // Try to get the best destination name
-            let destination = call.destinationDisplay.frontText;
-
-            // If frontText looks like a code or is missing, try line name
-            if (!destination || destination.length < 3 || /^\d+$/.test(destination)) {
-                destination = call.serviceJourney.line.name || destination;
-            }
-
-            busRow.setAttribute('destination', destination);
-            busRow.setAttribute('aimed-time', call.aimedDepartureTime);
-            busRow.setAttribute('expected-time', call.expectedDepartureTime);
-            if (call.realtime) {
-                busRow.setAttribute('realtime', '');
-            }
-            container.appendChild(busRow);
-        });
+        return html`
+            <div class="departures-list">
+                ${this.departures.map(departure => html`
+                    <bus-row
+                        line-number="${departure.lineNumber}"
+                        destination="${departure.destination}"
+                        aimed-time="${departure.aimedTime}"
+                        expected-time="${departure.expectedTime}"
+                        ?realtime="${departure.realtime}">
+                    </bus-row>
+                `)}
+            </div>
+        `;
     }
 
     // Override BaseWidget methods
@@ -182,20 +244,7 @@ class BusWidget extends BaseWidget {
 
     getHeaderContent() {
         return html`
-            <style>
-                .stop-selector-container {
-                    flex: 1;
-                    min-width: 0;
-                }
-
-                /* Desktop: limit width */
-                @media (min-width: 1025px) {
-                    .stop-selector-container {
-                        max-width: 200px;
-                    }
-                }
-            </style>
-            <div class="stop-selector-container" style="display: none;">
+            <div class="stop-selector-container" style="${this.availableStops.length > 0 ? 'display: block;' : 'display: none;'}">
                 <custom-select id="stop-selector"></custom-select>
             </div>
         `;
@@ -204,43 +253,7 @@ class BusWidget extends BaseWidget {
     getPlaceholderText() {
         return 'Enter address to see bus departures';
     }
-
-    afterRender() {
-        this.attachEventListeners();
-    }
-
-    attachEventListeners() {
-        const selector = this.shadowRoot.querySelector('custom-select');
-        if (selector) {
-            // Remove any previously attached handler (custom-select may have been re-rendered)
-            if (this._selectorChangeHandler) {
-                selector.removeEventListener('change', this._selectorChangeHandler);
-            }
-
-            this._selectorChangeHandler = async (e) => {
-                this.selectedStopId = e.detail.value;
-                localStorage.setItem('trondheim-dashboard-bus-stop', this.selectedStopId);
-                await this.loadDepartures();
-            };
-
-            selector.addEventListener('change', this._selectorChangeHandler);
-        }
-    }
-
-    hideError() {
-        const selectorContainer = this.shadowRoot.querySelector('.stop-selector-container');
-        if (this.availableStops.length > 0) {
-            selectorContainer.style.display = 'block';
-        }
-        this.ensureDeparturesContainer();
-    }
-
-    ensureDeparturesContainer() {
-        const content = this.shadowRoot.getElementById('content');
-        if (!content.querySelector('#departures-container')) {
-            content.innerHTML = '<div id="departures-container" style="display:flex;flex-direction:column;gap:8px"></div>';
-        }
-    }
 }
 
 customElements.define('bus-widget', BusWidget);
+
