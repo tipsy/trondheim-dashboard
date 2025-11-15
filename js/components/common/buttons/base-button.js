@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit";
-import { sharedStyles } from "../../../utils/shared-styles.js";
+import { sharedStyles, adoptMDIStyles } from "../../../utils/shared-styles.js";
 import { dispatchEvent } from "../../../utils/event-helpers.js";
 
 /**
@@ -79,6 +79,14 @@ export class BaseButton extends LitElement {
       }
     `,
   ];
+
+  connectedCallback() {
+    super.connectedCallback?.();
+    try { // Ensure MDI icon font styles are available inside the button's shadow root
+      adoptMDIStyles(this.shadowRoot);
+    } catch (e) { // ignore if adoptMDIStyles not available or fails
+    }
+  }
 
   handleClick(e) {
     if (!this.disabled && !this.loading) {

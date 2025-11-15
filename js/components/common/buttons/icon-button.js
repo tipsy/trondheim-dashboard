@@ -1,6 +1,5 @@
 import { css, html } from "lit";
 import { BaseButton } from "./base-button.js";
-import { adoptMDIStyles } from "../../../utils/shared-styles.js";
 
 /**
  * Icon Button Component
@@ -34,11 +33,6 @@ export class IconButton extends BaseButton {
     `,
   ];
 
-  connectedCallback() {
-    super.connectedCallback();
-    adoptMDIStyles(this.shadowRoot);
-  }
-
   render() {
     return html`
       <button
@@ -52,4 +46,3 @@ export class IconButton extends BaseButton {
 }
 
 customElements.define("icon-button", IconButton);
-

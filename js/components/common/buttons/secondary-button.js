@@ -1,6 +1,5 @@
 import { css } from "lit";
 import { BaseButton } from "./base-button.js";
-import { adoptMDIStyles } from "../../../utils/shared-styles.js";
 
 export class SecondaryButton extends BaseButton {
   static styles = [
@@ -17,11 +16,6 @@ export class SecondaryButton extends BaseButton {
       }
     `,
   ];
-
-  connectedCallback() {
-    super.connectedCallback();
-    adoptMDIStyles(this.shadowRoot);
-  }
 }
 
 customElements.define("secondary-button", SecondaryButton);
