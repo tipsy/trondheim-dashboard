@@ -63,11 +63,6 @@ class CustomSelect extends LitElement {
     `];
 
 
-    async setOptions(options) {
-        this.options = options;
-        await this.updateComplete;
-    }
-
     handleChange(e) {
         this.selected = e.target.value;
         dispatchEvent(this, 'change', { value: e.target.value });

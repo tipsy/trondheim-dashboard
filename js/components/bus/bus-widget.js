@@ -122,8 +122,8 @@ class BusWidget extends BaseWidget {
                 };
             });
 
-            await selector.setOptions(options);
-            selector.setAttribute('selected', this.selectedStopId);
+            selector.options = options;
+            selector.selected = this.selectedStopId;
             selectorContainer.style.display = 'block';
         } else {
             selectorContainer.style.display = 'none';

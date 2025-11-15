@@ -174,8 +174,8 @@ class EventsWidget extends BaseWidget {
         }
 
         // Set options on the custom-select
-        await select.setOptions(options);
-        select.setAttribute('selected', this.selectedDate);
+        select.options = options;
+        select.selected = this.selectedDate;
 
         // Remove previous handler if re-rendered
         if (this._dateChangeHandler) {
