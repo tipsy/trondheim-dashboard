@@ -10,6 +10,13 @@ class InputField extends LitElement {
     type: { type: String },
   };
 
+  constructor() {
+    super();
+    this.value = "";
+    this.placeholder = "";
+    this.type = "text";
+  }
+
   static styles = [
     sharedStyles,
     css`
@@ -60,13 +67,12 @@ class InputField extends LitElement {
   render() {
     return html`
       <input
-        type=${this.type}
-        .value=${this.value}
-        placeholder=${this.placeholder}
+        type="${this.type}"
+        .value="${this.value}"
+        placeholder="${this.placeholder}"
         ?disabled=${this.disabled}
         @input=${this.handleInput}
         @keydown=${this.handleKeydown}
-        autocomplete="off"
       />
     `;
   }

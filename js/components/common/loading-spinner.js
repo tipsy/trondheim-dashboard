@@ -6,6 +6,11 @@ class LoadingSpinner extends LitElement {
     size: { type: String },
   };
 
+  constructor() {
+    super();
+    this.size = "medium";
+  }
+
   static styles = [
     sharedStyles,
     css`
@@ -46,22 +51,11 @@ class LoadingSpinner extends LitElement {
           transform: rotate(360deg);
         }
       }
-
-      .container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        padding: var(--spacing-md, 16px);
-      }
     `,
   ];
 
   render() {
-    return html`
-      <div class="container">
-        <div class="spinner ${this.size}"></div>
-      </div>
-    `;
+    return html`<div class="spinner ${this.size || 'medium'}"></div>`;
   }
 }
 
