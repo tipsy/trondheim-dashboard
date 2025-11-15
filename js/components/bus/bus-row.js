@@ -10,8 +10,8 @@ class BusRow extends LitElement {
     destination: { type: String },
     aimedTime: { type: String, attribute: "aimed-time" },
     expectedTime: { type: String, attribute: "expected-time" },
-    realtime: { type: Boolean },
   };
+
 
   static styles = [
     sharedStyles,
@@ -61,11 +61,6 @@ class BusRow extends LitElement {
         gap: 2px;
       }
 
-      .time-actual {
-        font-weight: bold;
-        color: var(--primary-color);
-      }
-
       .time-original {
         font-size: var(--font-size-xs);
         color: var(--text-light);
@@ -108,16 +103,10 @@ class BusRow extends LitElement {
   render() {
     const aimedTimeDisplay = this.formatTime(this.aimedTime);
     const expectedTimeDisplay = this.formatTime(this.expectedTime);
-
-    const aimedDate = new Date(this.aimedTime);
-    const expectedDate = new Date(this.expectedTime);
-    const isDelayed = expectedDate > aimedDate;
-    const hasDelay = isDelayed && aimedTimeDisplay !== expectedTimeDisplay;
-
-    const isFlybuss =
-      this.destination?.toLowerCase().includes("flybus") ||
-      this.destination?.toLowerCase().includes("airport") ||
-      this.destination?.toLowerCase().includes("værnes");
+    const hasDelay = this.aimedTime && this.expectedTime &&
+      new Date(this.expectedTime) > new Date(this.aimedTime) &&
+      aimedTimeDisplay !== expectedTimeDisplay;
+    const isFlybuss = /flybus|airport|værnes/i.test(this.destination);
 
     return html`
       <widget-row>
@@ -126,13 +115,11 @@ class BusRow extends LitElement {
             <i class="mdi mdi-${isFlybuss ? "airplane" : "bus"}"></i>
             <span>${this.lineNumber}</span>
           </div>
-          <div class="destination">
-            <span>${this.destination}</span>
-          </div>
+          <div class="destination">${this.destination}</div>
           <div class="time">
             <div class="time-actual">${expectedTimeDisplay}</div>
             ${hasDelay
-              ? html` <div class="time-original">${aimedTimeDisplay}</div> `
+              ? html`<div class="time-original">${aimedTimeDisplay}</div>`
               : ""}
           </div>
         </div>
