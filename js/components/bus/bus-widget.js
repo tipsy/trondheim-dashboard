@@ -24,7 +24,6 @@ class BusWidget extends BaseWidget {
     this.selectedStopId = null;
     this.location = null;
     this.refreshInterval = null;
-    this.isLoadingDepartures = false;
   }
 
   static styles = [
@@ -97,19 +96,11 @@ class BusWidget extends BaseWidget {
   async loadDepartures() {
     if (!this.selectedStopId) return;
 
-    // Prevent overlapping loads
-    if (this.isLoadingDepartures) {
-      return;
-    }
-
-    this.isLoadingDepartures = true;
     try {
       const stopData = await BusAPI.getBusDepartures(this.selectedStopId, 10);
       this.processDepartures(stopData);
     } catch (error) {
       this.showError("Could not load departures");
-    } finally {
-      this.isLoadingDepartures = false;
     }
   }
 
@@ -137,7 +128,6 @@ class BusWidget extends BaseWidget {
         destination: destination,
         aimedTime: call.aimedDepartureTime,
         expectedTime: call.expectedDepartureTime,
-        realtime: call.realtime,
       };
     });
   }
@@ -154,25 +144,14 @@ class BusWidget extends BaseWidget {
 
   getStopOptions() {
     return this.availableStops.map((stop) => {
-      // Build label with stop name, platform/direction info, and distance
-      let label = stop.name;
-
-      // Add platform number if available
-      if (stop.publicCode) {
-        label += ` (Platform ${stop.publicCode})`;
-      }
-
-      // Add description (direction/destination) if available
-      if (stop.description) {
-        label += ` - ${stop.description}`;
-      }
-
-      // Add distance
-      label += ` - ${Math.round(stop.distance)}m`;
+      const parts = [stop.name];
+      if (stop.publicCode) parts.push(`(Platform ${stop.publicCode})`);
+      if (stop.description) parts.push(`- ${stop.description}`);
+      parts.push(`- ${Math.round(stop.distance)}m`);
 
       return {
         value: stop.id,
-        label: label,
+        label: parts.join(" "),
       };
     });
   }
@@ -233,7 +212,6 @@ class BusWidget extends BaseWidget {
               destination="${departure.destination}"
               aimed-time="${departure.aimedTime}"
               expected-time="${departure.expectedTime}"
-              ?realtime="${departure.realtime}"
             >
             </bus-row>
           `,
@@ -246,9 +224,7 @@ class BusWidget extends BaseWidget {
     return html`
       <div
         class="stop-selector-container"
-        style="${this.availableStops.length > 0
-          ? "display: block;"
-          : "display: none;"}"
+        ?hidden=${this.availableStops.length === 0}
       >
         <custom-select id="stop-selector"></custom-select>
       </div>
