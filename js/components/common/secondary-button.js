@@ -2,10 +2,11 @@ import { css } from 'lit';
 import { BaseButton } from './base-button.js';
 import { adoptMDIStyles } from '../../utils/shared-styles.js';
 
-class SecondaryButton extends BaseButton {
+export class SecondaryButton extends BaseButton {
     static properties = {
         ...BaseButton.properties
     };
+
 
     static styles = [
         ...BaseButton.styles,

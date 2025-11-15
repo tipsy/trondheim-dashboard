@@ -58,10 +58,12 @@ class TrondheimDashboard extends LitElement {
 
             .address-section address-input {
                 width: 100%;
+                height: 100%;
             }
 
             .address-section theme-selector {
                 width: 100%;
+                height: 100%;
             }
 
             .widgets-grid {

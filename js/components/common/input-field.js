@@ -20,8 +20,8 @@ class InputField extends LitElement {
 
             input {
                 width: 100%;
-                height: 40px;
-                padding: var(--spacing-sm) 40px var(--spacing-sm) var(--spacing-md);
+                height: var(--input-height);
+                padding: var(--spacing-sm) var(--spacing-md);
                 border: 1px solid var(--border-color);
                 border-radius: var(--border-radius);
                 font-size: var(--font-size-md);

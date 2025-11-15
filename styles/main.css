@@ -17,6 +17,11 @@
     box-sizing: border-box;
 }
 
+:root {
+    /* Global constants that don't change between themes */
+    --input-height: 40px;
+}
+
 html {
     /* Background image support - themes can override this */
     background-image: var(--background-image, none);

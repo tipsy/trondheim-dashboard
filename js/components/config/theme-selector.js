@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 import { dispatchEvent } from '../../utils/event-helpers.js';
 import '../common/custom-select.js';
+import '../common/refresh-button.js';
 
 class ThemeSelector extends LitElement {
     static properties = {
@@ -39,10 +40,18 @@ class ThemeSelector extends LitElement {
             box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
+            height: 100%;
+        }
+
+        .header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-sm);
         }
 
         h2 {
-            margin: 0 0 var(--spacing-sm) 0;
+            margin: 0;
             color: var(--heading-color, var(--text-color));
             font-size: var(--font-size-lg);
             display: flex;
@@ -74,6 +83,7 @@ class ThemeSelector extends LitElement {
         this.setTheme(theme);
     }
 
+
     setTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('trondheim-dashboard-theme', theme);
@@ -84,10 +94,15 @@ class ThemeSelector extends LitElement {
     render() {
         return html`
             <div class="theme-container">
-                <h2>
-                    <i class="mdi mdi-palette-outline"></i>
-                    Theme
-                </h2>
+                <div class="header-row">
+                    <h2>
+                        <i class="mdi mdi-palette-outline"></i>
+                        Config
+                    </h2>
+                    <refresh-button title="Clear all cached data and refresh">
+                        <i class="mdi mdi-refresh"></i>
+                    </refresh-button>
+                </div>
                 <custom-select
                     id="theme-select"
                     .options=${this.themeOptions}

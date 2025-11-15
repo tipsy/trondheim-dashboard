@@ -37,7 +37,7 @@ class CustomSelect extends LitElement {
 
         select {
             width: 100%;
-            height: 40px;
+            height: var(--input-height);
             padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
             border: 1px solid var(--border-color, #e0e0e0);
             border-radius: var(--border-radius, 8px);

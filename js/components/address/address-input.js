@@ -20,6 +20,20 @@ class AddressInput extends LitElement {
         inputDisabled: { type: Boolean, state: true }
     };
 
+    constructor() {
+        super();
+        this.addressValue = '';
+        this.suggestions = [];
+        this.showSuggestions = false;
+        this.errorMessage = '';
+        this.isLoading = false;
+        this.buttonsDisabled = false;
+        this.inputDisabled = false;
+        this.searchTimeout = null;
+        this.debounceDelay = 500;
+        this.isSearching = false;
+    }
+
     static styles = [
         sharedStyles,
         css`
@@ -35,6 +49,8 @@ class AddressInput extends LitElement {
             box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
             display: flex;
             flex-direction: column;
+            height: 100%;
+            gap: var(--spacing-sm);
         }
 
         h2 {
@@ -128,19 +144,6 @@ class AddressInput extends LitElement {
         }
     `];
 
-    constructor() {
-        super();
-        this.addressValue = '';
-        this.suggestions = [];
-        this.showSuggestions = false;
-        this.errorMessage = '';
-        this.isLoading = false;
-        this.buttonsDisabled = false;
-        this.inputDisabled = false;
-        this.searchTimeout = null;
-        this.debounceDelay = 500;
-        this.isSearching = false;
-    }
 
     connectedCallback() {
         super.connectedCallback();

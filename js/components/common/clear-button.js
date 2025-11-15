@@ -14,8 +14,8 @@ class ClearButton extends LitElement {
                 position: absolute;
                 right: 0;
                 top: 0;
-                height: 40px;
-                width: 40px;
+                height: var(--input-height);
+                width: var(--input-height);
                 z-index: 10;
             }
 

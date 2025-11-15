@@ -33,7 +33,7 @@ export class BaseButton extends LitElement {
                 display: inline-flex;
                 align-items: center;
                 justify-content: center;
-                min-height: 40px;
+                min-height: var(--input-height);
                 gap: var(--spacing-xs);
             }
 
