@@ -88,7 +88,7 @@ class CustomSelect extends LitElement {
                 ${this.label ? html`<label>${this.label}</label>` : ''}
                 <select id="select" @change=${this.handleChange}>
                     ${this.placeholder && !this.selected ? html`<option value="" disabled selected>${this.placeholder}</option>` : ''}
-                    ${this.options.map(option => html`
+                    ${this.options?.map(option => html`
                         <option value="${option.value}" ?selected=${option.value === this.selected}>
                             ${option.label}
                         </option>

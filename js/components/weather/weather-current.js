@@ -1,106 +1,102 @@
-class WeatherCurrent extends HTMLElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: 'open' });
-    }
+import { LitElement, html, css } from 'lit';
+import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 
-    static get observedAttributes() {
-        return ['temperature', 'symbol-code', 'precipitation', 'wind-speed', 'sunrise', 'sunset', 'daylight'];
-    }
+class WeatherCurrent extends LitElement {
+    static properties = {
+        temperature: { type: Number },
+        symbolCode: { type: String, attribute: 'symbol-code' },
+        precipitation: { type: Number },
+        windSpeed: { type: Number, attribute: 'wind-speed' },
+        sunrise: { type: String },
+        sunset: { type: String },
+        daylight: { type: String }
+    };
+
+    static styles = [
+        sharedStyles,
+        css`
+            :host {
+                display: block;
+            }
+
+            .current-weather {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: var(--spacing-md, 16px);
+                padding: var(--spacing-lg, 24px) 0;
+            }
+
+            .current-icon {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 96px;
+            }
+
+            .current-temp {
+                font-size: var(--font-size-xxl, 64px);
+                font-weight: bold;
+                color: var(--text-color);
+            }
+
+            .weather-details {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                gap: var(--spacing-md, 16px);
+                padding: var(--spacing-md, 16px);
+                background-color: var(--alt-background, #f9f9f9);
+                border-radius: var(--border-radius, 8px);
+                margin-bottom: var(--spacing-md, 16px);
+            }
+        `
+    ];
 
     connectedCallback() {
-        this.render();
-    }
-
-    attributeChangedCallback() {
-        this.render();
+        super.connectedCallback();
+        adoptMDIStyles(this.shadowRoot);
     }
 
     render() {
-        const temperature = this.getAttribute('temperature') || '0';
-        const symbolCode = this.getAttribute('symbol-code') || 'clearsky';
-        const precipitation = this.getAttribute('precipitation') || '0';
-        const windSpeed = this.getAttribute('wind-speed') || '0';
-        const sunrise = this.getAttribute('sunrise') || '';
-        const sunset = this.getAttribute('sunset') || '';
-        const daylight = this.getAttribute('daylight') || '';
+        const iconClass = IconLibrary.getWeatherIconClass(this.symbolCode);
 
-        this.shadowRoot.innerHTML = `
-            <style>
-                ${IconLibrary.importCss}
-                * {
-                    box-sizing: border-box;
-                }
-
-                :host {
-                    display: block;
-                }
-
-                .current-weather {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: var(--spacing-md, 16px);
-                    padding: var(--spacing-lg, 24px) 0;
-                }
-
-                .current-icon {
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                }
-
-                .current-temp {
-                    font-size: var(--font-size-xxl, 64px);
-                    font-weight: bold;
-                    color: var(--text-color);
-                }
-
-                .weather-details {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-                    gap: var(--spacing-md, 16px);
-                    padding: var(--spacing-md, 16px);
-                    background-color: var(--alt-background, #f9f9f9);
-                    border-radius: var(--border-radius, 8px);
-                    margin-bottom: var(--spacing-md, 16px);
-                }
-            </style>
-
+        return html`
             <div class="current-weather">
-                <div class="current-icon">${IconLibrary.getWeatherIcon(symbolCode, 96)}</div>
-                <div class="current-temp">${Math.round(parseFloat(temperature))}°C</div>
+                <div class="current-icon">
+                    <i class="mdi ${iconClass}"></i>
+                </div>
+                <div class="current-temp">${Math.round(this.temperature)}°C</div>
             </div>
             <div class="weather-details">
                 <weather-detail
                     icon="precipitation"
                     label="Precipitation"
-                    value="${precipitation} mm">
+                    value="${this.precipitation} mm">
                 </weather-detail>
                 <weather-detail
                     icon="wind"
                     label="Wind"
-                    value="${windSpeed} m/s">
+                    value="${this.windSpeed} m/s">
                 </weather-detail>
-                ${sunrise ? `
+                ${this.sunrise ? html`
                     <weather-detail
                         icon="sunrise"
                         label="Sunrise"
-                        value="${sunrise}">
+                        value="${this.sunrise}">
                     </weather-detail>
                 ` : ''}
-                ${sunset ? `
+                ${this.sunset ? html`
                     <weather-detail
                         icon="sunset"
                         label="Sunset"
-                        value="${sunset}">
+                        value="${this.sunset}">
                     </weather-detail>
                 ` : ''}
-                ${daylight ? `
+                ${this.daylight ? html`
                     <weather-detail
                         icon="daylight"
                         label="Daylight"
-                        value="${daylight}">
+                        value="${this.daylight}">
                     </weather-detail>
                 ` : ''}
             </div>
