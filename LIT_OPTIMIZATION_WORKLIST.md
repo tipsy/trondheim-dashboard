@@ -11,8 +11,8 @@ Analyzed all 29 component files in the codebase and identified opportunities to 
 ### Widgets using innerHTML pattern (should convert to Lit templates)
 
 1. **bus-widget.js** - Uses innerHTML + createElement, manual DOM manipulation, imperative event listeners
-2. **weather-right-now.js** - Uses innerHTML + createElement for weather-hour components
-3. **weather-today.js** - Uses innerHTML + manual style injection in afterRender()
+2. ~~**weather-right-now.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
+3. ~~**weather-today.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 4. ~~**energy-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 5. ~~**trash-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 6. ~~**events-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
@@ -186,31 +186,40 @@ renderContent() {
 
 ---
 
-### Task 6: Review and optimize weather-right-now.js
+### Task 6: Review and optimize weather-right-now.js ✅ COMPLETED
 **Priority:** High  
-**Issues:**
-- Uses `this._usesInnerHTML = true`
-- Manual `createElement()` for weather-hour components
-- innerHTML for main content
+**Status:** ✅ DONE - Converted to Lit templates with reactive properties
 
-**Opportunities:**
-- Store forecast data in reactive property
-- Use `html` template with `.map()` for hourly forecast
-- Convert to `renderContent()` pattern
+**Changes made:**
+- ✅ Removed `this._usesInnerHTML = true`
+- ✅ Removed manual `createElement()` for weather-hour components
+- ✅ Removed `afterRender()` style injection
+- ✅ Moved inline styles to `static styles` using Lit's `css`
+- ✅ Added reactive properties:
+  - `currentWeather` - current weather data object
+  - `hourlyForecast` - array of next 4 hours
+- ✅ Implemented `renderContent()` with declarative Lit templates
+- ✅ Refactored `renderWeather()` to `processWeather()` - now sets reactive state
+- ✅ Weather hours now rendered with `.map()` template
+- ✅ Fully reactive - weather updates trigger automatic re-rendering
 
 ---
 
-### Task 7: Review and optimize weather-today.js
+### Task 7: Review and optimize weather-today.js ✅ COMPLETED
 **Priority:** High  
-**Issues:**
-- Uses `this._usesInnerHTML = true`
-- Manual style injection in `afterRender()`
-- innerHTML with template strings
+**Status:** ✅ DONE - Converted to Lit templates with reactive properties
 
-**Opportunities:**
-- Move styles to `static styles`
-- Use `html` template for rendering
-- Store weather data in reactive properties
+**Changes made:**
+- ✅ Removed `this._usesInnerHTML = true`
+- ✅ Removed manual style injection in `afterRender()`
+- ✅ Moved inline styles to `static styles` using Lit's `css`
+- ✅ Added reactive properties:
+  - `todayData` - today's weather summary (min/max temps, symbol, precipitation)
+  - `sunData` - sunrise/sunset information
+- ✅ Implemented `renderContent()` with declarative Lit templates
+- ✅ Refactored `renderWeather()` to `processWeather()` - now sets reactive state
+- ✅ Fully reactive - weather updates trigger automatic re-rendering
+- ✅ Conditional rendering for sun data using Lit's `html` conditionals
 
 ---
 
