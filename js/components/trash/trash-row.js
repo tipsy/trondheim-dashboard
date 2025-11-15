@@ -141,31 +141,26 @@ class TrashRow extends LitElement {
     `,
   ];
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
   }
 
   getTrashIconClass(type) {
     const typeLower = type?.toLowerCase() || "";
 
-    if (typeLower.includes("matavfall")) return "mdi-food-apple-outline";
-    if (typeLower.includes("plast") && typeLower.includes("emballasje"))
-      return "mdi-bottle-soda-classic-outline";
-    if (typeLower.includes("restavfall")) return "mdi-trash-can-outline";
-    if (typeLower.includes("papp") || typeLower.includes("papir"))
-      return "mdi-package-variant";
+    const iconMap = [
+      { patterns: ["matavfall", "mat", "food", "bio"], icon: "mdi-food-apple-outline" },
+      { patterns: ["plast", "plastic", "emballasje"], icon: "mdi-bottle-soda-classic-outline" },
+      { patterns: ["restavfall", "rest", "general"], icon: "mdi-trash-can-outline" },
+      { patterns: ["papp", "papir", "paper"], icon: "mdi-package-variant" },
+    ];
 
-    if (
-      typeLower.includes("mat") ||
-      typeLower.includes("food") ||
-      typeLower.includes("bio")
-    )
-      return "mdi-food-apple-outline";
-    if (typeLower.includes("plast") || typeLower.includes("plastic"))
-      return "mdi-bottle-soda-classic-outline";
-    if (typeLower.includes("rest") || typeLower.includes("general"))
-      return "mdi-trash-can-outline";
-    if (typeLower.includes("paper")) return "mdi-package-variant";
+    for (const { patterns, icon } of iconMap) {
+      if (patterns.some(pattern => typeLower.includes(pattern))) {
+        return icon;
+      }
+    }
 
     return "mdi-trash-can-outline";
   }
