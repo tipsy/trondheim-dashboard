@@ -1,17 +1,9 @@
-import { LitElement, html, css } from 'lit';
-import { sharedStyles } from '../../utils/shared-styles.js';
-import { baseButtonStyles } from './base-button-styles.js';
-import { dispatchEvent } from '../../utils/event-helpers.js';
+import { css } from 'lit';
+import { BaseButton } from './base-button.js';
 
-class PrimaryButton extends LitElement {
-    static properties = {
-        disabled: { type: Boolean },
-        loading: { type: Boolean }
-    };
-
+class PrimaryButton extends BaseButton {
     static styles = [
-        sharedStyles,
-        baseButtonStyles,
+        ...BaseButton.styles,
         css`
             button {
                 background-color: var(--primary-color);
@@ -23,32 +15,6 @@ class PrimaryButton extends LitElement {
             }
         `
     ];
-
-    constructor() {
-        super();
-        this.disabled = false;
-        this.loading = false;
-    }
-
-    handleClick(e) {
-        if (!this.disabled && !this.loading) {
-            dispatchEvent(this, 'button-click');
-        }
-    }
-
-    render() {
-        return html`
-            <button
-                ?disabled=${this.disabled || this.loading}
-                @click=${this.handleClick}
-            >
-                <span class="button-content ${this.loading ? 'loading' : ''}">
-                    <slot></slot>
-                </span>
-                ${this.loading ? html`<span class="loading-spinner"></span>` : ''}
-            </button>
-        `;
-    }
 }
 
 customElements.define('primary-button', PrimaryButton);

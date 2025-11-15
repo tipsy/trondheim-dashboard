@@ -1,0 +1,105 @@
+import { LitElement, html, css } from 'lit';
+import { sharedStyles } from '../../utils/shared-styles.js';
+import { dispatchEvent } from '../../utils/event-helpers.js';
+
+/**
+ * Base Button Component
+ * Abstract base class for all button components
+ * Provides common styling and loading functionality
+ */
+export class BaseButton extends LitElement {
+    static properties = {
+        disabled: { type: Boolean },
+        loading: { type: Boolean }
+    };
+
+    static styles = [
+        sharedStyles,
+        css`
+            :host {
+                display: inline-block;
+            }
+
+            button {
+                position: relative;
+                padding: var(--spacing-sm) var(--spacing-md);
+                border: none;
+                border-radius: var(--border-radius);
+                cursor: pointer;
+                font-size: var(--font-size-md);
+                transition: background-color 0.2s, transform 0.1s;
+                font-family: var(--font-family, sans-serif);
+                white-space: nowrap;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                min-height: 40px;
+                gap: var(--spacing-xs);
+            }
+
+            button:active:not(:disabled) {
+                transform: scale(0.98);
+            }
+
+            button:disabled {
+                opacity: 0.5;
+                cursor: not-allowed;
+            }
+
+            .button-content {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-xs);
+            }
+
+            .button-content.loading {
+                visibility: hidden;
+            }
+
+            .loading-spinner {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                display: inline-block;
+                width: 16px;
+                height: 16px;
+                border: 2px solid var(--button-text);
+                border-top-color: transparent;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            @keyframes spin {
+                to { transform: translate(-50%, -50%) rotate(360deg); }
+            }
+        `
+    ];
+
+    constructor() {
+        super();
+        this.disabled = false;
+        this.loading = false;
+    }
+
+    handleClick(e) {
+        if (!this.disabled && !this.loading) {
+            dispatchEvent(this, 'button-click');
+        }
+    }
+
+    render() {
+        return html`
+            <button
+                ?disabled=${this.disabled || this.loading}
+                @click=${this.handleClick}
+            >
+                <span class="button-content ${this.loading ? 'loading' : ''}">
+                    <slot></slot>
+                </span>
+                ${this.loading ? html`<span class="loading-spinner"></span>` : ''}
+            </button>
+        `;
+    }
+}
+

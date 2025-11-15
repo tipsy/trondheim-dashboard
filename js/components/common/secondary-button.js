@@ -1,16 +1,14 @@
-import { LitElement, html, css } from 'lit';
-import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
-import { baseButtonStyles } from './base-button-styles.js';
-import { dispatchEvent } from '../../utils/event-helpers.js';
+import { css } from 'lit';
+import { BaseButton } from './base-button.js';
+import { adoptMDIStyles } from '../../utils/shared-styles.js';
 
-class SecondaryButton extends LitElement {
+class SecondaryButton extends BaseButton {
     static properties = {
-        disabled: { type: Boolean }
+        ...BaseButton.properties
     };
 
     static styles = [
-        sharedStyles,
-        baseButtonStyles,
+        ...BaseButton.styles,
         css`
             button {
                 background-color: var(--card-background);
@@ -24,31 +22,9 @@ class SecondaryButton extends LitElement {
         `
     ];
 
-    constructor() {
-        super();
-        this.disabled = false;
-    }
-
     connectedCallback() {
         super.connectedCallback();
         adoptMDIStyles(this.shadowRoot);
-    }
-
-    handleClick(e) {
-        if (!this.disabled) {
-            dispatchEvent(this, 'button-click');
-        }
-    }
-
-    render() {
-        return html`
-            <button
-                ?disabled=${this.disabled}
-                @click=${this.handleClick}
-            >
-                <slot></slot>
-            </button>
-        `;
     }
 }
 
