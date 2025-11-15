@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import { dispatchEvent } from '../../utils/event-helpers.js';
 
 class AddressInput extends LitElement {
     static properties = {
@@ -128,10 +129,6 @@ class AddressInput extends LitElement {
             .suggestions {
                 max-height: 400px;
             }
-        }
-
-        address-suggestion-item:last-child {
-            border-bottom: none;
         }
     `];
 
@@ -401,12 +398,7 @@ class AddressInput extends LitElement {
     }
 
     updateLocation(lat, lon, address) {
-        const event = new CustomEvent('location-updated', {
-            detail: { lat, lon, address },
-            bubbles: true,
-            composed: true
-        });
-        this.dispatchEvent(event);
+        dispatchEvent(this, 'location-updated', { lat, lon, address });
     }
 
     showErrorState(message) {

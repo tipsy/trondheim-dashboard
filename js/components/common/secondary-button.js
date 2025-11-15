@@ -1,6 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 import { baseButtonStyles } from './base-button-styles.js';
+import { dispatchEvent } from '../../utils/event-helpers.js';
 
 class SecondaryButton extends LitElement {
     static properties = {
@@ -35,10 +36,7 @@ class SecondaryButton extends LitElement {
 
     handleClick(e) {
         if (!this.disabled) {
-            this.dispatchEvent(new CustomEvent('button-click', {
-                bubbles: true,
-                composed: true
-            }));
+            dispatchEvent(this, 'button-click');
         }
     }
 

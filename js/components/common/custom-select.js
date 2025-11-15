@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles } from '../../utils/shared-styles.js';
+import { dispatchEvent } from '../../utils/event-helpers.js';
 
 class CustomSelect extends LitElement {
     static properties = {
@@ -74,11 +75,7 @@ class CustomSelect extends LitElement {
 
     handleChange(e) {
         this.selected = e.target.value;
-        this.dispatchEvent(new CustomEvent('change', {
-            bubbles: true,
-            composed: true,
-            detail: { value: e.target.value }
-        }));
+        dispatchEvent(this, 'change', { value: e.target.value });
     }
 
     get value() {

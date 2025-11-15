@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import { dispatchEvent } from '../../utils/event-helpers.js';
 
 class ThemeSelector extends LitElement {
     static properties = {
@@ -83,11 +84,7 @@ class ThemeSelector extends LitElement {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('trondheim-dashboard-theme', theme);
 
-        this.dispatchEvent(new CustomEvent('theme-changed', {
-            detail: { theme },
-            bubbles: true,
-            composed: true
-        }));
+        dispatchEvent(this, 'theme-changed', { theme });
     }
 
     render() {

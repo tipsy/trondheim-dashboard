@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
+import { dispatchEvent } from '../../utils/event-helpers.js';
 
 class ClearButton extends LitElement {
     static properties = {
@@ -64,10 +65,7 @@ class ClearButton extends LitElement {
 
     handleClick(e) {
         e.stopPropagation();
-        this.dispatchEvent(new CustomEvent('clear', {
-            bubbles: true,
-            composed: true
-        }));
+        dispatchEvent(this, 'clear');
     }
 
     render() {

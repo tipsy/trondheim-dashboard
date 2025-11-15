@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { sharedStyles } from '../../utils/shared-styles.js';
+import { dispatchEvent } from '../../utils/event-helpers.js';
 
 class InputField extends LitElement {
     static properties = {
@@ -52,19 +53,11 @@ class InputField extends LitElement {
 
     handleInput(e) {
         this.value = e.target.value;
-        this.dispatchEvent(new CustomEvent('input-change', {
-            detail: { value: this.value },
-            bubbles: true,
-            composed: true
-        }));
+        dispatchEvent(this, 'input-change', { value: this.value });
     }
 
     handleKeydown(e) {
-        this.dispatchEvent(new CustomEvent('input-keydown', {
-            detail: { key: e.key, event: e },
-            bubbles: true,
-            composed: true
-        }));
+        dispatchEvent(this, 'input-keydown', { key: e.key, event: e });
     }
 
     focus() {
