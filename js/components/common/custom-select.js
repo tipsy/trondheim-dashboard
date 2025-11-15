@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { sharedStyles } from '../../utils/shared-styles.js';
 
 class CustomSelect extends LitElement {
     static properties = {
@@ -8,7 +9,9 @@ class CustomSelect extends LitElement {
         options: { type: Array }
     };
 
-    static styles = css`
+    static styles = [
+        sharedStyles,
+        css`
         :host {
             display: block;
         }
@@ -53,7 +56,7 @@ class CustomSelect extends LitElement {
             opacity: 0.5;
             cursor: not-allowed;
         }
-    `;
+    `];
 
     constructor() {
         super();

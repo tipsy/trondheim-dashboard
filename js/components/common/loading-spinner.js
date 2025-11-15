@@ -1,11 +1,14 @@
 import { LitElement, html, css } from 'lit';
+import { sharedStyles } from '../../utils/shared-styles.js';
 
 class LoadingSpinner extends LitElement {
     static properties = {
         size: { type: String }
     };
 
-    static styles = css`
+    static styles = [
+        sharedStyles,
+        css`
         :host {
             display: inline-flex;
             align-items: center;
@@ -48,7 +51,7 @@ class LoadingSpinner extends LitElement {
             justify-content: center;
             padding: var(--spacing-md, 16px);
         }
-    `;
+    `];
 
     constructor() {
         super();

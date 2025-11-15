@@ -1,11 +1,14 @@
 import { LitElement, html, css } from 'lit';
+import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 
 class ThemeSelector extends LitElement {
     static properties = {
         selectedTheme: { type: String, state: true }
     };
 
-    static styles = css`
+    static styles = [
+        sharedStyles,
+        css`
 
         :host {
             display: block;
@@ -33,11 +36,16 @@ class ThemeSelector extends LitElement {
         h2 i {
             font-size: 28px;
         }
-    `;
+    `];
 
     constructor() {
         super();
         this.selectedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'midnight-blue';
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        adoptMDIStyles(this.shadowRoot);
     }
 
     async firstUpdated() {

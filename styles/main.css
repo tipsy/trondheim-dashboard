@@ -17,11 +17,6 @@
     box-sizing: border-box;
 }
 
-/* Material Design Icons baseline fix */
-i.mdi {
-    line-height: 1;
-}
-
 html {
     /* Background image support - themes can override this */
     background-image: var(--background-image, none);

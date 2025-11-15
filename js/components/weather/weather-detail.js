@@ -1,4 +1,5 @@
 import { LitElement, html, css } from 'lit';
+import { sharedStyles } from '../../utils/shared-styles.js';
 
 class WeatherDetail extends LitElement {
     static properties = {
@@ -7,7 +8,9 @@ class WeatherDetail extends LitElement {
         value: { type: String }
     };
 
-    static styles = css`
+    static styles = [
+        sharedStyles,
+        css`
 
         :host {
             display: block;
@@ -37,7 +40,7 @@ class WeatherDetail extends LitElement {
             font-weight: 600;
             color: var(--text-color, #333333);
         }
-    `;
+    `];
 
     constructor() {
         super();

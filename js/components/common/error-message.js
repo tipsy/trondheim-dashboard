@@ -1,11 +1,14 @@
 import { LitElement, html, css } from 'lit';
+import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
 
 class ErrorMessage extends LitElement {
     static properties = {
         message: { type: String }
     };
 
-    static styles = css`
+    static styles = [
+        sharedStyles,
+        css`
 
         :host {
             display: block;
@@ -33,15 +36,16 @@ class ErrorMessage extends LitElement {
             align-items: center;
             justify-content: center;
         }
-
-        .message-text {
-            flex: 1;
-        }
-    `;
+    `];
 
     constructor() {
         super();
         this.message = 'An error occurred';
+    }
+
+    connectedCallback() {
+        super.connectedCallback();
+        adoptMDIStyles(this.shadowRoot);
     }
 
     render() {

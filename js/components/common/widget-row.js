@@ -2,6 +2,7 @@
 // Simple card wrapper with either attributes or slot
 
 import { LitElement, html, css } from 'lit';
+import { sharedStyles } from '../../utils/shared-styles.js';
 
 class WidgetRow extends LitElement {
     static properties = {
@@ -11,7 +12,9 @@ class WidgetRow extends LitElement {
         borderColor: { type: String, attribute: 'border-color' }
     };
 
-    static styles = css`
+    static styles = [
+        sharedStyles,
+        css`
         :host {
             display: block;
         }
@@ -75,7 +78,7 @@ class WidgetRow extends LitElement {
                 white-space: nowrap;
             }
         }
-    `;
+    `];
 
     constructor() {
         super();
