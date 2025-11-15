@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { adoptMDIStyles } from "../../utils/shared-styles.js";
 import { WeatherAPI } from "../../utils/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
@@ -20,6 +21,11 @@ class WeatherToday extends BaseWidget {
     this.todayData = null;
     this.sunData = null;
     this.location = null;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    adoptMDIStyles(this.shadowRoot);
   }
 
   static styles = [
@@ -104,56 +110,41 @@ class WeatherToday extends BaseWidget {
       ]);
       this.processWeather(weatherData, sunData);
     } catch (error) {
-      console.error("Weather Today error:", error);
-      this.showError(`Could not load weather data: ${error.message || error}`);
+      this.showError("Could not load weather data");
     } finally {
       this.showLoading(false);
     }
   }
 
   processWeather(data, sunData) {
-    if (!data || !data.properties || !data.properties.timeseries) {
+    const timeseries = data?.properties?.timeseries;
+
+    if (!timeseries?.length) {
       this.todayData = null;
       this.sunData = null;
       return;
     }
 
-    const timeseries = data.properties.timeseries;
-
     // Get next 24 hours of data for full day overview
     const next24Hours = timeseries.slice(0, 24);
 
     // Calculate min/max from hourly data
-    const temps = next24Hours.map(
-      (h) => h.data.instant.details.air_temperature,
-    );
+    const temps = next24Hours.map((h) => h.data.instant.details.air_temperature);
     const minTemp = Math.min(...temps);
     const maxTemp = Math.max(...temps);
 
     // Get the most common weather symbol for the day
     const symbols = next24Hours
-      .map(
-        (h) =>
-          h.data.next_1_hours?.summary?.symbol_code ||
-          h.data.next_6_hours?.summary?.symbol_code,
-      )
-      .filter((s) => s);
+      .map((h) => h.data.next_1_hours?.summary?.symbol_code || h.data.next_6_hours?.summary?.symbol_code)
+      .filter(Boolean);
 
-    let symbolCode = "clearsky";
-    if (symbols.length > 0) {
-      const symbolCounts = {};
-      symbols.forEach((s) => {
-        symbolCounts[s] = (symbolCounts[s] || 0) + 1;
-      });
-      symbolCode = Object.keys(symbolCounts).reduce((a, b) =>
-        symbolCounts[a] > symbolCounts[b] ? a : b,
-      );
-    }
+    const symbolCode = this.getMostCommonSymbol(symbols) || "clearsky";
 
     // Sum precipitation for the day
-    const totalPrecipitation = next24Hours.reduce((sum, h) => {
-      return sum + (h.data.next_1_hours?.details?.precipitation_amount || 0);
-    }, 0);
+    const totalPrecipitation = next24Hours.reduce(
+      (sum, h) => sum + (h.data.next_1_hours?.details?.precipitation_amount || 0),
+      0
+    );
 
     this.todayData = {
       minTemp,
@@ -163,6 +154,17 @@ class WeatherToday extends BaseWidget {
     };
 
     this.sunData = sunData;
+  }
+
+  getMostCommonSymbol(symbols) {
+    if (!symbols.length) return null;
+
+    const counts = symbols.reduce((acc, symbol) => {
+      acc[symbol] = (acc[symbol] || 0) + 1;
+      return acc;
+    }, {});
+
+    return Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
   }
 
   renderContent() {
@@ -187,7 +189,7 @@ class WeatherToday extends BaseWidget {
     return html`
       <div class="today-overview">
         <div class="today-icon">
-          <i class="mdi ${iconClass}" style="font-size: 80px;"></i>
+          <i class="mdi ${iconClass}"></i>
         </div>
         <div class="today-temps">
           <div class="temp-high">${Math.round(this.todayData.maxTemp)}°</div>
@@ -198,9 +200,7 @@ class WeatherToday extends BaseWidget {
         <div class="detail-row">
           <i class="mdi mdi-weather-rainy"></i>
           <span class="detail-label">Precipitation</span>
-          <span class="detail-value"
-            >${this.todayData.totalPrecipitation.toFixed(1)} mm</span
-          >
+          <span class="detail-value">${this.todayData.totalPrecipitation.toFixed(1)} mm</span>
         </div>
         ${this.sunData
           ? html`

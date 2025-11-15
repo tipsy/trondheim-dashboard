@@ -1,5 +1,5 @@
 import { LitElement, html, css } from "lit";
-import { sharedStyles } from "../../utils/shared-styles.js";
+import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 
 class WeatherDetail extends LitElement {
   static properties = {
@@ -42,16 +42,21 @@ class WeatherDetail extends LitElement {
     `,
   ];
 
-  getIcon(iconName) {
+  connectedCallback() {
+    super.connectedCallback();
+    adoptMDIStyles(this.shadowRoot);
+  }
+
+  getIconClass(iconName) {
     const icons = {
-      precipitation: html`<i class="mdi mdi-water-outline"></i>`,
-      wind: html`<i class="mdi mdi-weather-windy"></i>`,
-      temperature: html`<i class="mdi mdi-thermometer"></i>`,
-      humidity: html`<i class="mdi mdi-water-percent"></i>`,
-      pressure: html`<i class="mdi mdi-gauge"></i>`,
-      sunrise: html`<i class="mdi mdi-weather-sunset-up"></i>`,
-      sunset: html`<i class="mdi mdi-weather-sunset-down"></i>`,
-      daylight: html`<i class="mdi mdi-clock-outline"></i>`,
+      precipitation: "mdi-water-outline",
+      wind: "mdi-weather-windy",
+      temperature: "mdi-thermometer",
+      humidity: "mdi-water-percent",
+      pressure: "mdi-gauge",
+      sunrise: "mdi-weather-sunset-up",
+      sunset: "mdi-weather-sunset-down",
+      daylight: "mdi-clock-outline",
     };
     return icons[iconName] || "";
   }
@@ -60,9 +65,7 @@ class WeatherDetail extends LitElement {
     return html`
       <div class="detail-item">
         <span class="detail-label">
-          ${this.icon
-            ? html`<span class="icon">${this.getIcon(this.icon)}</span>`
-            : ""}
+          ${this.icon ? html`<i class="mdi ${this.getIconClass(this.icon)}"></i>` : ""}
           ${this.label}
         </span>
         <span class="detail-value">${this.value}</span>

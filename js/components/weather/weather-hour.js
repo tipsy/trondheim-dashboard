@@ -46,14 +46,16 @@ class WeatherHour extends LitElement {
     `,
   ];
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
   }
 
   formatTime(isoString) {
-    const date = new Date(isoString);
-    const hours = date.getHours().toString().padStart(2, "0");
-    return `${hours}:00`;
+    return new Date(isoString).toLocaleTimeString("no-NO", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   render() {

@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { adoptMDIStyles } from "../../utils/shared-styles.js";
 import { WeatherAPI } from "../../utils/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import "./weather-hour.js";
@@ -20,6 +21,11 @@ class WeatherRightNow extends BaseWidget {
     this.currentWeather = null;
     this.hourlyForecast = [];
     this.location = null;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    adoptMDIStyles(this.shadowRoot);
   }
 
   static styles = [
@@ -93,33 +99,31 @@ class WeatherRightNow extends BaseWidget {
       );
       this.processWeather(weatherData);
     } catch (error) {
-      console.error("Weather Right Now error:", error);
-      this.showError(`Could not load weather data: ${error.message || error}`);
+      this.showError("Could not load weather data");
     } finally {
       this.showLoading(false);
     }
   }
 
   processWeather(data) {
-    if (!data || !data.properties || !data.properties.timeseries) {
+    const timeseries = data?.properties?.timeseries;
+
+    if (!timeseries?.length) {
       this.currentWeather = null;
       this.hourlyForecast = [];
       return;
     }
 
-    const timeseries = data.properties.timeseries;
     const currentData = timeseries[0];
 
     this.currentWeather = {
       temperature: currentData.data.instant.details.air_temperature,
-      symbolCode:
-        currentData.data.next_1_hours?.summary?.symbol_code || "clearsky",
-      precipitation:
-        currentData.data.next_1_hours?.details?.precipitation_amount || 0,
+      symbolCode: currentData.data.next_1_hours?.summary?.symbol_code || "clearsky",
+      precipitation: currentData.data.next_1_hours?.details?.precipitation_amount || 0,
       windSpeed: currentData.data.instant.details.wind_speed,
     };
 
-    // Get next 4 hours for detailed view (skip current hour)
+    // Get next 4 hours (skip current hour)
     this.hourlyForecast = timeseries.slice(1, 5).map((hour) => ({
       time: hour.time,
       temperature: hour.data.instant.details.air_temperature,
@@ -139,10 +143,10 @@ class WeatherRightNow extends BaseWidget {
     return html`
       <div class="current-weather">
         <div class="current-icon">
-          <i class="mdi ${iconClass}" style="font-size: 80px;"></i>
+          <i class="mdi ${iconClass}"></i>
         </div>
         <div class="current-temp">
-          ${Math.round(parseFloat(this.currentWeather.temperature))}°C
+          ${Math.round(this.currentWeather.temperature)}°C
         </div>
       </div>
       <div class="current-details">
