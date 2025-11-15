@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { adoptMDIStyles } from "../../utils/shared-styles.js";
 import { EnergyAPI } from "../../utils/energy-api.js";
 
 class EnergyWidget extends BaseWidget {
@@ -20,6 +21,11 @@ class EnergyWidget extends BaseWidget {
     this.nextHours = [];
     this.priceArea = "NO3"; // Default to Trondheim area
     this.location = null;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    adoptMDIStyles(this.shadowRoot);
   }
 
   static styles = [
@@ -110,7 +116,7 @@ class EnergyWidget extends BaseWidget {
   }
 
   async processPrices(prices) {
-    if (!prices || prices.length === 0) {
+    if (!prices?.length) {
       this.currentPrice = null;
       this.nextHours = [];
       return;
@@ -126,20 +132,15 @@ class EnergyWidget extends BaseWidget {
     });
 
     // Get remaining hours for today
-    let remainingPrices = prices.filter((p) => {
-      const start = new Date(p.time_start);
-      return start.getHours() >= currentHour;
-    });
+    let remainingPrices = prices.filter((p) =>
+      new Date(p.time_start).getHours() >= currentHour
+    );
 
-    // If we don't have enough remaining hours, try to fetch next day's prices
+    // If we don't have enough remaining hours, fetch next day's prices
     if (remainingPrices.length < 4) {
-      try {
-        const nextDayPrices = await this.fetchNextDayPrices();
-        if (nextDayPrices) {
-          remainingPrices = remainingPrices.concat(nextDayPrices);
-        }
-      } catch (e) {
-        console.warn("Failed to fetch next day energy prices", e);
+      const nextDayPrices = await this.fetchNextDayPrices().catch(() => null);
+      if (nextDayPrices) {
+        remainingPrices = [...remainingPrices, ...nextDayPrices];
       }
     }
 
@@ -157,42 +158,43 @@ class EnergyWidget extends BaseWidget {
     return await EnergyAPI.getEnergyPrices(this.priceArea, `${y}-${m}-${d}`);
   }
 
+  getTrend(currentValue, previousValue) {
+    if (previousValue === null || isNaN(previousValue)) return "none";
+    if (currentValue > previousValue) return "up";
+    if (currentValue < previousValue) return "down";
+    return "flat";
+  }
+
   calculateNextHours(nextFourRaw) {
     return nextFourRaw.map((p, idx) => {
       const start = new Date(p.time_start);
-      const hh = String(start.getHours()).padStart(2, "0");
-      const mm = String(start.getMinutes()).padStart(2, "0");
+      const timeLabel = start.toLocaleTimeString("no-NO", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
       const valueNum = Math.round(p.NOK_per_kWh * 100);
 
-      // Determine previous value for comparison
-      let prevVal = null;
-      if (idx === 0) {
-        if (this.currentPrice)
-          prevVal = Math.round(this.currentPrice.NOK_per_kWh * 100);
-      } else {
-        prevVal = Math.round(nextFourRaw[idx - 1].NOK_per_kWh * 100);
-      }
-
-      let trend = "none";
-      if (prevVal !== null && !isNaN(prevVal)) {
-        if (valueNum > prevVal) trend = "up";
-        else if (valueNum < prevVal) trend = "down";
-        else trend = "flat";
-      }
+      // Get previous value for comparison
+      const prevVal = idx === 0
+        ? this.currentPrice ? Math.round(this.currentPrice.NOK_per_kWh * 100) : null
+        : Math.round(nextFourRaw[idx - 1].NOK_per_kWh * 100);
 
       return {
-        label: `${hh}:${mm}`,
-        valueStr: valueNum + " øre",
-        trend,
+        label: timeLabel,
+        valueStr: `${valueNum} øre`,
+        trend: this.getTrend(valueNum, prevVal),
       };
     });
   }
 
+  getTrendIcon(trend) {
+    if (trend === "up") return "mdi-arrow-up";
+    if (trend === "down") return "mdi-arrow-down";
+    return "";
+  }
+
   renderContent() {
-    if (
-      !this.currentPrice &&
-      (!this.nextHours || this.nextHours.length === 0)
-    ) {
+    if (!this.currentPrice && !this.nextHours?.length) {
       return html`<p class="no-data">No energy price data available</p>`;
     }
 
@@ -216,13 +218,7 @@ class EnergyWidget extends BaseWidget {
                 ${h.trend !== "none"
                   ? html`
                       <div class="trend ${h.trend}">
-                        <i
-                          class="mdi ${h.trend === "up"
-                            ? "mdi-arrow-up"
-                            : h.trend === "down"
-                              ? "mdi-arrow-down"
-                              : ""}"
-                        ></i>
+                        <i class="mdi ${this.getTrendIcon(h.trend)}"></i>
                       </div>
                     `
                   : ""}
