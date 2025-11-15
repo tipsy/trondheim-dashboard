@@ -26,6 +26,29 @@ class EventsWidget extends BaseWidget {
     this.selectedDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
   }
 
+  get dateOptions() {
+    const options = [];
+    const today = new Date();
+    for (let i = 0; i < 14; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      const dayName = d.toLocaleDateString("no-NO", { weekday: "long" });
+      const monthDay = d.toLocaleDateString("no-NO", {
+        day: "numeric",
+        month: "short",
+      });
+      const label =
+        i === 0
+          ? `Today (${monthDay})`
+          : i === 1
+            ? `Tomorrow (${monthDay})`
+            : `${dayName} (${monthDay})`;
+      options.push({ value, label });
+    }
+    return options;
+  }
+
   static styles = [
     ...BaseWidget.styles,
     css`
@@ -123,57 +146,23 @@ class EventsWidget extends BaseWidget {
   renderHeaderActions() {
     return html`
       <div class="date-selector-container">
-        <custom-select id="events-date-select"></custom-select>
+        <custom-select
+          id="events-date-select"
+          .options=${this.dateOptions}
+          .selected=${this.selectedDate}
+          @change=${this.handleDateChange}
+        ></custom-select>
       </div>
     `;
   }
 
+  handleDateChange(e) {
+    this.selectedDate = e.detail.value;
+    this.loadEventsForDate(this.selectedDate);
+  }
+
   getPlaceholderText() {
     return "Loading events...";
-  }
-
-  async firstUpdated() {
-    super.firstUpdated();
-    await this.setupDateSelector();
-  }
-
-  async setupDateSelector() {
-    // Wait for custom-select to be defined
-    await customElements.whenDefined("custom-select");
-
-    const select = this.shadowRoot.querySelector("#events-date-select");
-    if (!select) return;
-
-    // Build date options
-    const dateOptions = [];
-    const today = new Date();
-    for (let i = 0; i < 14; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
-      const dayName = d.toLocaleDateString("no-NO", { weekday: "long" });
-      const monthDay = d.toLocaleDateString("no-NO", {
-        day: "numeric",
-        month: "short",
-      });
-      const label =
-        i === 0
-          ? `Today (${monthDay})`
-          : i === 1
-            ? `Tomorrow (${monthDay})`
-            : `${dayName} (${monthDay})`;
-      dateOptions.push({ value, label });
-    }
-
-    // Set options and selected value as properties (reactive)
-    select.options = dateOptions;
-    select.selected = this.selectedDate;
-
-    // Listen for date change
-    select.addEventListener("change", async (e) => {
-      this.selectedDate = e.detail.value;
-      await this.loadEventsForDate(this.selectedDate);
-    });
   }
 }
 

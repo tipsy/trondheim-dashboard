@@ -24,6 +24,8 @@ class ThemeSelector extends LitElement {
       { value: "dark", label: "Dark" },
       { value: "light", label: "Light" },
     ];
+    // Apply the saved theme immediately
+    this.setTheme(this.selectedTheme);
   }
 
   static styles = [
@@ -55,9 +57,9 @@ class ThemeSelector extends LitElement {
     `,
   ];
 
-  async firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
-    this.setTheme(this.selectedTheme);
   }
 
   handleThemeChange(e) {

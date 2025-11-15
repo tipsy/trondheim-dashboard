@@ -26,6 +26,20 @@ class BusWidget extends BaseWidget {
     this.refreshInterval = null;
   }
 
+  get stopOptions() {
+    return this.availableStops.map((stop) => {
+      const parts = [stop.name];
+      if (stop.publicCode) parts.push(`(Platform ${stop.publicCode})`);
+      if (stop.description) parts.push(`- ${stop.description}`);
+      parts.push(`- ${Math.round(stop.distance)}m`);
+
+      return {
+        value: stop.id,
+        label: parts.join(" "),
+      };
+    });
+  }
+
   static styles = [
     ...BaseWidget.styles,
     css`
@@ -142,60 +156,10 @@ class BusWidget extends BaseWidget {
     }, 60000);
   }
 
-  getStopOptions() {
-    return this.availableStops.map((stop) => {
-      const parts = [stop.name];
-      if (stop.publicCode) parts.push(`(Platform ${stop.publicCode})`);
-      if (stop.description) parts.push(`- ${stop.description}`);
-      parts.push(`- ${Math.round(stop.distance)}m`);
-
-      return {
-        value: stop.id,
-        label: parts.join(" "),
-      };
-    });
-  }
-
-  async firstUpdated() {
-    super.firstUpdated();
-    await this.setupStopSelector();
-  }
-
-  async setupStopSelector() {
-    // Wait for custom-select to be defined
-    await customElements.whenDefined("custom-select");
-
-    const selector = this.shadowRoot.querySelector("#stop-selector");
-    if (!selector) return;
-
-    // Listen for stop change
-    selector.addEventListener("change", async (e) => {
-      this.selectedStopId = e.detail.value;
-      localStorage.setItem("trondheim-dashboard-bus-stop", this.selectedStopId);
-      await this.loadDepartures();
-    });
-  }
-
-  updated(changedProperties) {
-    super.updated(changedProperties);
-
-    // Update selector when stops or selection changes
-    if (
-      changedProperties.has("availableStops") ||
-      changedProperties.has("selectedStopId")
-    ) {
-      this.updateStopSelector();
-    }
-  }
-
-  updateStopSelector() {
-    const selector = this.shadowRoot.querySelector("#stop-selector");
-    if (!selector) return;
-
-    if (this.availableStops.length > 0) {
-      selector.options = this.getStopOptions();
-      selector.selected = this.selectedStopId;
-    }
+  handleStopChange(e) {
+    this.selectedStopId = e.detail.value;
+    localStorage.setItem("trondheim-dashboard-bus-stop", this.selectedStopId);
+    this.loadDepartures();
   }
 
   renderContent() {
@@ -226,7 +190,12 @@ class BusWidget extends BaseWidget {
         class="stop-selector-container"
         ?hidden=${this.availableStops.length === 0}
       >
-        <custom-select id="stop-selector"></custom-select>
+        <custom-select
+          id="stop-selector"
+          .options=${this.stopOptions}
+          .selected=${this.selectedStopId}
+          @change=${this.handleStopChange}
+        ></custom-select>
       </div>
     `;
   }
