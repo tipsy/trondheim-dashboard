@@ -29,26 +29,22 @@ class ErrorMessage extends LitElement {
         border-color: var(--error-color, #d32f2f);
       }
 
-      .error-icon {
+      .message-container i {
         flex-shrink: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
       }
     `,
   ];
 
-  firstUpdated() {
+  connectedCallback() {
+    super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
   }
 
   render() {
     return html`
       <div class="message-container">
-        <div class="error-icon">
-          <i class="mdi mdi-alert-circle-outline"></i>
-        </div>
-        <div class="message-text">${this.message}</div>
+        <i class="mdi mdi-alert-circle-outline"></i>
+        <span>${this.message}</span>
       </div>
     `;
   }
