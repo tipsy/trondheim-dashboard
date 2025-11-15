@@ -20,26 +20,26 @@ class NRKWidget extends BaseWidget {
     this.stories = [];
   }
 
-  firstUpdated() {
-    super.firstUpdated();
-    this.loadStories(); // Load after first render
+  async connectedCallback() {
+    super.connectedCallback();
+    await this.loadStories();
   }
 
   async loadStories() {
     this.showLoading(true);
 
     try {
-      const items = await NrkRssAPI.getTopTen(this.region || "trondelag");
+      const items = await NrkRssAPI.getTopTen("trondelag");
       this.stories = items || [];
-      this.showLoading(false);
     } catch (error) {
-      console.error("NRK: Error loading stories:", error);
       this.showError("Could not load news");
+    } finally {
+      this.showLoading(false);
     }
   }
 
   renderContent() {
-    if (!this.stories || this.stories.length === 0) {
+    if (!this.stories?.length) {
       return html`<p class="no-data">No news available</p>`;
     }
 
