@@ -7,8 +7,7 @@ import { dispatchEvent } from "../../utils/event-helpers.js";
 
 class AddressSuggestionItem extends LitElement {
   static properties = {
-    displayName: { type: String, attribute: "display-name" },
-    index: { type: Number },
+    location: { type: Object },
   };
 
   static styles = [
@@ -49,29 +48,17 @@ class AddressSuggestionItem extends LitElement {
         color: var(--text-color, #000);
         font-size: var(--font-size-md, 16px);
       }
-
-      .address-details {
-        font-size: var(--font-size-sm, 14px);
-        color: var(--text-light, #666);
-        margin-top: 2px;
-      }
     `,
   ];
 
   handleClick() {
-    dispatchEvent(this, "select", { index: this.index });
+    dispatchEvent(this, "select", { location: this.location });
   }
 
   render() {
-    // For Norwegian format "Street Number, Postcode City"
-    // Just show the whole address as main, no details needed
-    const mainAddress = this.displayName;
-    const details = ""; // No additional details for clean Norwegian format
-
     return html`
       <div class="suggestion-item" @click=${this.handleClick}>
-        <div class="address-name">${mainAddress}</div>
-        ${details ? html`<div class="address-details">${details}</div>` : ""}
+        <div class="address-name">${this.location.displayName}</div>
       </div>
     `;
   }

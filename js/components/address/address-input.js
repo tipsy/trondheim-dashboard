@@ -368,10 +368,7 @@ class AddressInput extends LitElement {
   }
 
   handleSuggestionSelect(e) {
-    const index = e.detail.index;
-    if (this.suggestions[index]) {
-      this.selectLocation(this.suggestions[index]);
-    }
+    this.selectLocation(e.detail.location);
   }
 
   render() {
@@ -419,10 +416,9 @@ class AddressInput extends LitElement {
           style="display: ${this.showSuggestions ? "block" : "none"}"
         >
           ${this.suggestions.map(
-            (loc, index) => html`
+            (loc) => html`
               <address-suggestion-item
-                display-name=${loc.displayName}
-                index=${index}
+                .location=${loc}
                 @select=${this.handleSuggestionSelect}
               ></address-suggestion-item>
             `,
