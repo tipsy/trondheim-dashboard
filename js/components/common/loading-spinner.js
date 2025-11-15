@@ -1,67 +1,68 @@
-import { LitElement, html, css } from 'lit';
-import { sharedStyles } from '../../utils/shared-styles.js';
+import { LitElement, html, css } from "lit";
+import { sharedStyles } from "../../utils/shared-styles.js";
 
 class LoadingSpinner extends LitElement {
-    static properties = {
-        size: { type: String }
-    };
+  static properties = {
+    size: { type: String },
+  };
 
-    static styles = [
-        sharedStyles,
-        css`
-        :host {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .spinner {
+        display: inline-block;
+        border: solid var(--border-color, #e0e0e0);
+        border-top-color: var(--primary-color, #0066cc);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+
+      .spinner.small {
+        width: 16px;
+        height: 16px;
+        border-width: 2px;
+      }
+
+      .spinner.medium {
+        width: 24px;
+        height: 24px;
+        border-width: 3px;
+      }
+
+      .spinner.large {
+        width: 40px;
+        height: 40px;
+        border-width: 4px;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
+      }
 
-        .spinner {
-            display: inline-block;
-            border: solid var(--border-color, #e0e0e0);
-            border-top-color: var(--primary-color, #0066cc);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
+      .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-md, 16px);
+      }
+    `,
+  ];
 
-        .spinner.small {
-            width: 16px;
-            height: 16px;
-            border-width: 2px;
-        }
-
-        .spinner.medium {
-            width: 24px;
-            height: 24px;
-            border-width: 3px;
-        }
-
-        .spinner.large {
-            width: 40px;
-            height: 40px;
-            border-width: 4px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: var(--spacing-md, 16px);
-        }
-        `];
-
-
-    render() {
-        return html`
-            <div class="container">
-                <div class="spinner ${this.size}"></div>
-            </div>
-        `;
-    }
+  render() {
+    return html`
+      <div class="container">
+        <div class="spinner ${this.size}"></div>
+      </div>
+    `;
+  }
 }
 
-customElements.define('loading-spinner', LoadingSpinner);
-
+customElements.define("loading-spinner", LoadingSpinner);

@@ -1,81 +1,90 @@
 // Police Widget - displays latest police log messages from Trøndelag
 
-import { BaseWidget } from '../common/base-widget.js';
-import { html } from 'lit';
-import { PoliceAPI } from '../../utils/police-api.js';
-import { DateFormatter } from '../../utils/date-formatter.js';
-import '../common/widget-row.js';
-import '../common/widget-list.js';
+import { BaseWidget } from "../common/base-widget.js";
+import { html } from "lit";
+import { PoliceAPI } from "../../utils/police-api.js";
+import { DateFormatter } from "../../utils/date-formatter.js";
+import "../common/widget-row.js";
+import "../common/widget-list.js";
 
 class PoliceWidget extends BaseWidget {
-    static properties = {
-        ...BaseWidget.properties,
-        messages: { type: Array, state: true }
-    };
+  static properties = {
+    ...BaseWidget.properties,
+    messages: { type: Array, state: true },
+  };
 
-    constructor() {
-        super();
-        this.title = 'Police Log';
-        this.icon = 'mdi-car-emergency';
-        this.messages = [];
+  constructor() {
+    super();
+    this.title = "Police Log";
+    this.icon = "mdi-car-emergency";
+    this.messages = [];
+  }
+
+  async connectedCallback() {
+    super.connectedCallback();
+    await this.loadMessages();
+  }
+
+  async loadMessages() {
+    this.showLoading(true);
+
+    try {
+      const messages = await PoliceAPI.getLatestMessages();
+      this.messages = messages || [];
+    } catch (error) {
+      this.showError("Could not load police log");
+    } finally {
+      this.showLoading(false);
+    }
+  }
+
+  getLocation(msg) {
+    return [msg.municipality, msg.area].filter((x) => x).join(", ");
+  }
+
+  getDescription(msg) {
+    const location = this.getLocation(msg);
+    const locationDate = [
+      location,
+      DateFormatter.formatToNorwegianDateTime(msg.createdOn),
+    ]
+      .filter((x) => x)
+      .join(" • ");
+    return [msg.category, locationDate].filter((x) => x).join(" • ");
+  }
+
+  getThreadUrl(msg) {
+    if (!msg.id) return "";
+    const threadId = msg.id.split("-")[0];
+    return threadId
+      ? `https://www.politiet.no/politiloggen/hendelse/#/${threadId}/`
+      : "";
+  }
+
+  renderContent() {
+    if (!this.messages || this.messages.length === 0) {
+      return html`<p class="no-data">No police log messages available</p>`;
     }
 
-    async connectedCallback() {
-        super.connectedCallback();
-        await this.loadMessages();
-    }
+    return html`
+      <widget-list>
+        ${this.messages.map(
+          (msg) => html`
+            <widget-row
+              title="${msg.text || ""}"
+              description="${this.getDescription(msg)}"
+              href="${this.getThreadUrl(msg)}"
+            >
+            </widget-row>
+          `,
+        )}
+      </widget-list>
+    `;
+  }
 
-    async loadMessages() {
-        this.showLoading(true);
-
-        try {
-            const messages = await PoliceAPI.getLatestMessages();
-            this.messages = messages || [];
-        } catch (error) {
-            this.showError('Could not load police log');
-        } finally {
-            this.showLoading(false);
-        }
-    }
-
-    getLocation(msg) {
-        return [msg.municipality, msg.area].filter(x => x).join(', ');
-    }
-
-    getDescription(msg) {
-        const location = this.getLocation(msg);
-        const locationDate = [location, DateFormatter.formatToNorwegianDateTime(msg.createdOn)].filter(x => x).join(' • ');
-        return [msg.category, locationDate].filter(x => x).join(' • ');
-    }
-
-    getThreadUrl(msg) {
-        if (!msg.id) return '';
-        const threadId = msg.id.split('-')[0];
-        return threadId ? `https://www.politiet.no/politiloggen/hendelse/#/${threadId}/` : '';
-    }
-
-    renderContent() {
-        if (!this.messages || this.messages.length === 0) {
-            return html`<p class="no-data">No police log messages available</p>`;
-        }
-
-        return html`
-            <widget-list>
-                ${this.messages.map(msg => html`
-                    <widget-row
-                        title="${msg.text || ''}"
-                        description="${this.getDescription(msg)}"
-                        href="${this.getThreadUrl(msg)}">
-                    </widget-row>
-                `)}
-            </widget-list>
-        `;
-    }
-
-    getPlaceholderText() {
-        return 'Loading police log...';
-    }
+  getPlaceholderText() {
+    return "Loading police log...";
+  }
 }
 
-customElements.define('police-widget', PoliceWidget);
-
+customElements.define("police-widget", PoliceWidget);

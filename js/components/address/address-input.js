@@ -1,465 +1,485 @@
-import { LitElement, html, css } from 'lit';
-import { sharedStyles, adoptMDIStyles } from '../../utils/shared-styles.js';
-import { dispatchEvent } from '../../utils/event-helpers.js';
-import { GeocodingAPI } from '../../utils/geocoding-api.js';
-import '../common/input-field.js';
-import '../common/clear-button.js';
-import '../common/primary-button.js';
-import '../common/secondary-button.js';
-import '../common/error-message.js';
-import '../common/heading-2.js';
-import './address-suggestion-item.js';
+import { LitElement, html, css } from "lit";
+import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
+import { dispatchEvent } from "../../utils/event-helpers.js";
+import { GeocodingAPI } from "../../utils/geocoding-api.js";
+import "../common/input-field.js";
+import "../common/clear-button.js";
+import "../common/primary-button.js";
+import "../common/secondary-button.js";
+import "../common/error-message.js";
+import "../common/heading-2.js";
+import "./address-suggestion-item.js";
 
 class AddressInput extends LitElement {
-    static properties = {
-        addressValue: { type: String, state: true },
-        suggestions: { type: Array, state: true },
-        showSuggestions: { type: Boolean, state: true },
-        errorMessage: { type: String, state: true },
-        isLoading: { type: Boolean, state: true },
-        buttonsDisabled: { type: Boolean, state: true },
-        inputDisabled: { type: Boolean, state: true }
-    };
+  static properties = {
+    addressValue: { type: String, state: true },
+    suggestions: { type: Array, state: true },
+    showSuggestions: { type: Boolean, state: true },
+    errorMessage: { type: String, state: true },
+    isLoading: { type: Boolean, state: true },
+    buttonsDisabled: { type: Boolean, state: true },
+    inputDisabled: { type: Boolean, state: true },
+  };
 
-    constructor() {
-        super();
-        this.addressValue = '';
-        this.suggestions = [];
-        this.showSuggestions = false;
-        this.errorMessage = '';
-        this.isLoading = false;
-        this.buttonsDisabled = false;
-        this.inputDisabled = false;
-        this.searchTimeout = null;
-        this.debounceDelay = 500;
-        this.isSearching = false;
-    }
+  constructor() {
+    super();
+    this.addressValue = "";
+    this.suggestions = [];
+    this.showSuggestions = false;
+    this.errorMessage = "";
+    this.isLoading = false;
+    this.buttonsDisabled = false;
+    this.inputDisabled = false;
+    this.searchTimeout = null;
+    this.debounceDelay = 500;
+    this.isSearching = false;
+  }
 
-    static styles = [
-        sharedStyles,
-        css`
-        :host {
-            display: block;
-            height: 100%;
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: block;
+        height: 100%;
+      }
+
+      .address-container {
+        background-color: var(--card-background, #ffffff);
+        border-radius: var(--border-radius, 8px);
+        padding: var(--spacing-md, 16px);
+        box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+
+      heading-2 {
+        margin-bottom: var(--spacing-sm);
+      }
+
+      .input-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+      }
+
+      .input-row {
+        display: flex;
+        gap: var(--spacing-sm);
+      }
+
+      .button-row {
+        display: flex;
+        gap: var(--spacing-md);
+      }
+
+      .input-wrapper {
+        position: relative;
+        flex: 1;
+        width: 100%;
+      }
+
+      .location-text {
+        display: none;
+      }
+
+      @media (max-width: 767px) {
+        .button-row {
+          flex-direction: column;
         }
 
-        .address-container {
-            background-color: var(--card-background, #ffffff);
-            border-radius: var(--border-radius, 8px);
-            padding: var(--spacing-md, 16px);
-            box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+        primary-button,
+        secondary-button {
+          width: 100%;
         }
 
-        heading-2 {
-            margin-bottom: var(--spacing-sm);
+        .location-text {
+          display: inline;
+        }
+      }
+
+      @media (min-width: 768px) {
+        .location-text {
+          display: inline;
         }
 
         .input-group {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-md);
+          flex-direction: row;
+          align-items: stretch;
         }
 
         .input-row {
-            display: flex;
-            gap: var(--spacing-sm);
+          flex: 1;
         }
 
         .button-row {
-            display: flex;
-            gap: var(--spacing-md);
+          flex-shrink: 0;
         }
+      }
 
-        .input-wrapper {
-            position: relative;
-            flex: 1;
-            width: 100%;
-        }
+      .suggestions {
+        margin-top: var(--spacing-sm);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        background-color: var(--card-background);
+        max-height: 300px;
+        overflow-y: auto;
+        box-shadow: var(--shadow);
+      }
 
-
-        .location-text {
-            display: none;
-        }
-
-        @media (max-width: 767px) {
-            .button-row {
-                flex-direction: column;
-            }
-
-            primary-button,
-            secondary-button {
-                width: 100%;
-            }
-
-            .location-text {
-                display: inline;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .location-text {
-                display: inline;
-            }
-
-            .input-group {
-                flex-direction: row;
-                align-items: stretch;
-            }
-
-            .input-row {
-                flex: 1;
-            }
-
-            .button-row {
-                flex-shrink: 0;
-            }
-        }
-
+      @media (max-width: 767px) {
         .suggestions {
-            margin-top: var(--spacing-sm);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            background-color: var(--card-background);
-            max-height: 300px;
-            overflow-y: auto;
-            box-shadow: var(--shadow);
+          max-height: 400px;
         }
+      }
+    `,
+  ];
 
-        @media (max-width: 767px) {
-            .suggestions {
-                max-height: 400px;
-            }
+  connectedCallback() {
+    super.connectedCallback();
+
+    // Delay loading saved address to ensure parent listeners are attached
+    setTimeout(() => {
+      this.loadSavedAddress();
+    }, 100);
+
+    // Add click outside handler
+    this.clickOutsideHandler = (e) => {
+      try {
+        const path = e.composedPath();
+        if (!path.includes(this)) {
+          this.hideSuggestionsState();
         }
-    `];
+      } catch (error) {
+        console.error("Error in click outside handler:", error);
+      }
+    };
+    document.addEventListener("click", this.clickOutsideHandler);
+  }
 
+  firstUpdated() {
+    adoptMDIStyles(this.shadowRoot);
+  }
 
-    connectedCallback() {
-        super.connectedCallback();
-
-        // Delay loading saved address to ensure parent listeners are attached
-        setTimeout(() => {
-            this.loadSavedAddress();
-        }, 100);
-
-        // Add click outside handler
-        this.clickOutsideHandler = (e) => {
-            try {
-                const path = e.composedPath();
-                if (!path.includes(this)) {
-                    this.hideSuggestionsState();
-                }
-            } catch (error) {
-                console.error('Error in click outside handler:', error);
-            }
-        };
-        document.addEventListener('click', this.clickOutsideHandler);
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.cancelDebounce();
+    if (this.clickOutsideHandler) {
+      document.removeEventListener("click", this.clickOutsideHandler);
     }
+  }
 
-    firstUpdated() {
-        adoptMDIStyles(this.shadowRoot);
-    }
+  loadSavedAddress() {
+    const savedData = localStorage.getItem("trondheim-dashboard-location");
 
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        this.cancelDebounce();
-        if (this.clickOutsideHandler) {
-            document.removeEventListener('click', this.clickOutsideHandler);
+    if (savedData) {
+      try {
+        const { address, lat, lon } = JSON.parse(savedData);
+
+        if (address && lat && lon) {
+          this.addressValue = address;
+          this.updateLocation(lat, lon, address);
         }
+      } catch (error) {
+        console.error("Error loading saved address:", error);
+        localStorage.removeItem("trondheim-dashboard-location");
+      }
     }
+  }
 
-    loadSavedAddress() {
-        const savedData = localStorage.getItem('trondheim-dashboard-location');
+  saveLocation(address, lat, lon) {
+    const data = { address, lat, lon };
+    localStorage.setItem("trondheim-dashboard-location", JSON.stringify(data));
+  }
 
-        if (savedData) {
-            try {
-                const { address, lat, lon } = JSON.parse(savedData);
+  async loadFromURL(address) {
+    const savedData = localStorage.getItem("trondheim-dashboard-location");
 
-                if (address && lat && lon) {
-                    this.addressValue = address;
-                    this.updateLocation(lat, lon, address);
-                }
-            } catch (error) {
-                console.error('Error loading saved address:', error);
-                localStorage.removeItem('trondheim-dashboard-location');
-            }
+    if (savedData) {
+      try {
+        const { address: savedAddress, lat, lon } = JSON.parse(savedData);
+        if (savedAddress === address && lat && lon) {
+          this.addressValue = address;
+          this.updateLocation(lat, lon, address);
+          return;
         }
+      } catch (error) {
+        console.error("Error loading saved address:", error);
+      }
     }
 
-    saveLocation(address, lat, lon) {
-        const data = { address, lat, lon };
-        localStorage.setItem('trondheim-dashboard-location', JSON.stringify(data));
+    this.addressValue = address;
+    this.isLoading = true;
+    this.buttonsDisabled = true;
+    this.hideErrorState();
+
+    try {
+      const locations = await GeocodingAPI.geocodeAddress(address);
+
+      if (locations && locations.length > 0) {
+        this.selectLocation(locations[0]);
+      } else {
+        this.showErrorState(
+          "Could not find address from URL. Please search again.",
+        );
+      }
+    } catch (error) {
+      console.error("Error loading address from URL:", error);
+      this.showErrorState(
+        error.message ||
+          "Could not find address from URL. Please search again.",
+      );
+    } finally {
+      this.isLoading = false;
+      this.buttonsDisabled = false;
+      this.inputDisabled = false;
+    }
+  }
+
+  handleInputChange(value) {
+    this.addressValue = value;
+    this.cancelDebounce();
+
+    const trimmedValue = value.trim();
+
+    if (trimmedValue.length < 3) {
+      this.hideSuggestionsState();
+      this.hideErrorState();
+      return;
     }
 
-    async loadFromURL(address) {
-        const savedData = localStorage.getItem('trondheim-dashboard-location');
+    this.hideErrorState();
 
-        if (savedData) {
-            try {
-                const { address: savedAddress, lat, lon } = JSON.parse(savedData);
-                if (savedAddress === address && lat && lon) {
-                    this.addressValue = address;
-                    this.updateLocation(lat, lon, address);
-                    return;
-                }
-            } catch (error) {
-                console.error('Error loading saved address:', error);
-            }
+    this.searchTimeout = setTimeout(() => {
+      this.handleAddressSearch();
+    }, this.debounceDelay);
+  }
+
+  handleInputKeydown(e) {
+    const key = e.detail.key;
+    if (key === "Enter") {
+      this.cancelDebounce();
+      this.handleAddressSearch(true);
+    } else if (key === "Escape") {
+      this.hideSuggestionsState();
+      this.cancelDebounce();
+    }
+  }
+
+  handleClear() {
+    this.addressValue = "";
+    this.hideSuggestionsState();
+    this.cancelDebounce();
+    this.shouldFocusInput = true;
+  }
+
+  updated(changedProperties) {
+    super.updated(changedProperties);
+
+    if (this.shouldFocusInput) {
+      const inputField = this.shadowRoot.querySelector("input-field");
+      if (inputField) {
+        inputField.focus();
+        this.shouldFocusInput = false;
+      }
+    }
+  }
+
+  cancelDebounce() {
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+      this.searchTimeout = null;
+    }
+  }
+
+  async handleAddressSearch(disableInput = false) {
+    if (this.isSearching) {
+      console.log("Search already in progress, skipping...");
+      return;
+    }
+
+    const address = this.addressValue.trim();
+
+    if (!address) {
+      this.showErrorState("Please enter an address");
+      return;
+    }
+
+    const savedData = localStorage.getItem("trondheim-dashboard-location");
+    if (savedData) {
+      try {
+        const { address: savedAddress, lat, lon } = JSON.parse(savedData);
+        if (savedAddress === address && lat && lon) {
+          this.updateLocation(lat, lon, address);
+          this.hideSuggestionsState();
+          return;
         }
-
-        this.addressValue = address;
-        this.isLoading = true;
-        this.buttonsDisabled = true;
-        this.hideErrorState();
-
-        try {
-            const locations = await GeocodingAPI.geocodeAddress(address);
-
-            if (locations && locations.length > 0) {
-                this.selectLocation(locations[0]);
-            } else {
-                this.showErrorState('Could not find address from URL. Please search again.');
-            }
-        } catch (error) {
-            console.error('Error loading address from URL:', error);
-            this.showErrorState(error.message || 'Could not find address from URL. Please search again.');
-        } finally {
-            this.isLoading = false;
-            this.buttonsDisabled = false;
-            this.inputDisabled = false;
-        }
+      } catch (error) {
+        console.error("Error checking saved address:", error);
+      }
     }
 
-    handleInputChange(value) {
-        this.addressValue = value;
-        this.cancelDebounce();
+    this.isSearching = true;
+    this.isLoading = true;
+    this.buttonsDisabled = true;
+    this.inputDisabled = disableInput;
+    this.hideErrorState();
+    this.hideSuggestionsState();
 
-        const trimmedValue = value.trim();
+    try {
+      const locations = await GeocodingAPI.geocodeAddress(address);
+      this.showSuggestionsState(locations);
+    } catch (error) {
+      console.error("Address search error:", error);
+      this.showErrorState(
+        error.message || "Could not find address. Please try again.",
+      );
+    } finally {
+      this.isLoading = false;
+      this.buttonsDisabled = false;
+      this.inputDisabled = false;
+      this.isSearching = false;
+    }
+  }
 
-        if (trimmedValue.length < 3) {
-            this.hideSuggestionsState();
-            this.hideErrorState();
-            return;
-        }
+  selectLocation(location) {
+    const addressToSave = location.displayName;
+    this.addressValue = addressToSave;
+    this.saveLocation(addressToSave, location.lat, location.lon);
+    this.updateLocation(location.lat, location.lon, addressToSave);
+    this.hideSuggestionsState();
+  }
 
-        this.hideErrorState();
+  showSuggestionsState(locations) {
+    this.suggestions = locations;
+    this.showSuggestions = true;
+  }
 
-        this.searchTimeout = setTimeout(() => {
-            this.handleAddressSearch();
-        }, this.debounceDelay);
+  hideSuggestionsState() {
+    this.showSuggestions = false;
+    this.suggestions = [];
+  }
+
+  async handleCurrentLocation() {
+    if (this.isSearching) {
+      console.log("Location request already in progress, skipping...");
+      return;
     }
 
-    handleInputKeydown(e) {
-        const key = e.detail.key;
-        if (key === 'Enter') {
-            this.cancelDebounce();
-            this.handleAddressSearch(true);
-        } else if (key === 'Escape') {
-            this.hideSuggestionsState();
-            this.cancelDebounce();
-        }
+    this.isSearching = true;
+    this.isLoading = true;
+    this.buttonsDisabled = true;
+    this.inputDisabled = true;
+    this.hideErrorState();
+    this.hideSuggestionsState();
+
+    try {
+      const location = await GeocodingAPI.getCurrentLocation();
+      const address = await GeocodingAPI.reverseGeocode(
+        location.lat,
+        location.lon,
+      );
+      this.addressValue = address;
+      this.saveLocation(address, location.lat, location.lon);
+      this.updateLocation(location.lat, location.lon, address);
+    } catch (error) {
+      console.error("Current location error:", error);
+      this.showErrorState(
+        error.message || "Could not get your location. Check browser settings.",
+      );
+    } finally {
+      this.isLoading = false;
+      this.buttonsDisabled = false;
+      this.inputDisabled = false;
+      this.isSearching = false;
     }
+  }
 
-    handleClear() {
-        this.addressValue = '';
-        this.hideSuggestionsState();
-        this.cancelDebounce();
-        this.shouldFocusInput = true;
+  updateLocation(lat, lon, address) {
+    dispatchEvent(this, "location-updated", { lat, lon, address });
+  }
+
+  showErrorState(message) {
+    this.errorMessage = message;
+  }
+
+  hideErrorState() {
+    this.errorMessage = "";
+  }
+
+  handleSuggestionSelect(e) {
+    const index = e.detail.index;
+    if (this.suggestions[index]) {
+      this.selectLocation(this.suggestions[index]);
     }
+  }
 
-    updated(changedProperties) {
-        super.updated(changedProperties);
-
-        if (this.shouldFocusInput) {
-            const inputField = this.shadowRoot.querySelector('input-field');
-            if (inputField) {
-                inputField.focus();
-                this.shouldFocusInput = false;
-            }
-        }
-    }
-
-    cancelDebounce() {
-        if (this.searchTimeout) {
-            clearTimeout(this.searchTimeout);
-            this.searchTimeout = null;
-        }
-    }
-
-    async handleAddressSearch(disableInput = false) {
-        if (this.isSearching) {
-            console.log('Search already in progress, skipping...');
-            return;
-        }
-
-        const address = this.addressValue.trim();
-
-        if (!address) {
-            this.showErrorState('Please enter an address');
-            return;
-        }
-
-        const savedData = localStorage.getItem('trondheim-dashboard-location');
-        if (savedData) {
-            try {
-                const { address: savedAddress, lat, lon } = JSON.parse(savedData);
-                if (savedAddress === address && lat && lon) {
-                    this.updateLocation(lat, lon, address);
-                    this.hideSuggestionsState();
-                    return;
-                }
-            } catch (error) {
-                console.error('Error checking saved address:', error);
-            }
-        }
-
-        this.isSearching = true;
-        this.isLoading = true;
-        this.buttonsDisabled = true;
-        this.inputDisabled = disableInput;
-        this.hideErrorState();
-        this.hideSuggestionsState();
-
-        try {
-            const locations = await GeocodingAPI.geocodeAddress(address);
-            this.showSuggestionsState(locations);
-        } catch (error) {
-            console.error('Address search error:', error);
-            this.showErrorState(error.message || 'Could not find address. Please try again.');
-        } finally {
-            this.isLoading = false;
-            this.buttonsDisabled = false;
-            this.inputDisabled = false;
-            this.isSearching = false;
-        }
-    }
-
-    selectLocation(location) {
-        const addressToSave = location.displayName;
-        this.addressValue = addressToSave;
-        this.saveLocation(addressToSave, location.lat, location.lon);
-        this.updateLocation(location.lat, location.lon, addressToSave);
-        this.hideSuggestionsState();
-    }
-
-    showSuggestionsState(locations) {
-        this.suggestions = locations;
-        this.showSuggestions = true;
-    }
-
-    hideSuggestionsState() {
-        this.showSuggestions = false;
-        this.suggestions = [];
-    }
-
-    async handleCurrentLocation() {
-        if (this.isSearching) {
-            console.log('Location request already in progress, skipping...');
-            return;
-        }
-
-        this.isSearching = true;
-        this.isLoading = true;
-        this.buttonsDisabled = true;
-        this.inputDisabled = true;
-        this.hideErrorState();
-        this.hideSuggestionsState();
-
-        try {
-            const location = await GeocodingAPI.getCurrentLocation();
-            const address = await GeocodingAPI.reverseGeocode(location.lat, location.lon);
-            this.addressValue = address;
-            this.saveLocation(address, location.lat, location.lon);
-            this.updateLocation(location.lat, location.lon, address);
-        } catch (error) {
-            console.error('Current location error:', error);
-            this.showErrorState(error.message || 'Could not get your location. Check browser settings.');
-        } finally {
-            this.isLoading = false;
-            this.buttonsDisabled = false;
-            this.inputDisabled = false;
-            this.isSearching = false;
-        }
-    }
-
-    updateLocation(lat, lon, address) {
-        dispatchEvent(this, 'location-updated', { lat, lon, address });
-    }
-
-    showErrorState(message) {
-        this.errorMessage = message;
-    }
-
-    hideErrorState() {
-        this.errorMessage = '';
-    }
-
-    handleSuggestionSelect(e) {
-        const index = e.detail.index;
-        if (this.suggestions[index]) {
-            this.selectLocation(this.suggestions[index]);
-        }
-    }
-
-    render() {
-        return html`
-            <div class="address-container">
-                <heading-2 icon="mdi-map-marker-outline" title="Your Address"></heading-2>
-                <div class="input-group">
-                    <div class="input-row">
-                        <div class="input-wrapper">
-                            <input-field
-                                .value=${this.addressValue}
-                                placeholder="Start typing an address..."
-                                ?disabled=${this.inputDisabled}
-                                @input-change=${(e) => this.handleInputChange(e.detail.value)}
-                                @input-keydown=${this.handleInputKeydown}
-                            ></input-field>
-                            <clear-button
-                                ?hidden=${!this.addressValue.trim()}
-                                @clear=${this.handleClear}
-                            ></clear-button>
-                        </div>
-                    </div>
-                    <div class="button-row">
-                        <primary-button
-                            ?disabled=${this.buttonsDisabled}
-                            ?loading=${this.isLoading}
-                            @button-click=${() => this.handleAddressSearch(true)}
-                        >
-                            Search
-                        </primary-button>
-                        <secondary-button
-                            ?disabled=${this.buttonsDisabled}
-                            title="Use my location"
-                            @button-click=${this.handleCurrentLocation}
-                        >
-                            <i class="mdi mdi-crosshairs-gps"></i>
-                            <span class="location-text">Use Location</span>
-                        </secondary-button>
-                    </div>
-                </div>
-                <div class="suggestions" style="display: ${this.showSuggestions ? 'block' : 'none'}">
-                    ${this.suggestions.map((loc, index) => html`
-                        <address-suggestion-item
-                            display-name=${loc.displayName}
-                            index=${index}
-                            @select=${this.handleSuggestionSelect}
-                        ></address-suggestion-item>
-                    `)}
-                </div>
-                ${this.errorMessage ? html`
-                    <error-message
-                        message=${this.errorMessage}
-                        style="margin-top: var(--spacing-sm);"
-                    ></error-message>
-                ` : ''}
+  render() {
+    return html`
+      <div class="address-container">
+        <heading-2
+          icon="mdi-map-marker-outline"
+          title="Your Address"
+        ></heading-2>
+        <div class="input-group">
+          <div class="input-row">
+            <div class="input-wrapper">
+              <input-field
+                .value=${this.addressValue}
+                placeholder="Start typing an address..."
+                ?disabled=${this.inputDisabled}
+                @input-change=${(e) => this.handleInputChange(e.detail.value)}
+                @input-keydown=${this.handleInputKeydown}
+              ></input-field>
+              <clear-button
+                ?hidden=${!this.addressValue.trim()}
+                @clear=${this.handleClear}
+              ></clear-button>
             </div>
-        `;
-    }
+          </div>
+          <div class="button-row">
+            <primary-button
+              ?disabled=${this.buttonsDisabled}
+              ?loading=${this.isLoading}
+              @button-click=${() => this.handleAddressSearch(true)}
+            >
+              Search
+            </primary-button>
+            <secondary-button
+              ?disabled=${this.buttonsDisabled}
+              title="Use my location"
+              @button-click=${this.handleCurrentLocation}
+            >
+              <i class="mdi mdi-crosshairs-gps"></i>
+              <span class="location-text">Use Location</span>
+            </secondary-button>
+          </div>
+        </div>
+        <div
+          class="suggestions"
+          style="display: ${this.showSuggestions ? "block" : "none"}"
+        >
+          ${this.suggestions.map(
+            (loc, index) => html`
+              <address-suggestion-item
+                display-name=${loc.displayName}
+                index=${index}
+                @select=${this.handleSuggestionSelect}
+              ></address-suggestion-item>
+            `,
+          )}
+        </div>
+        ${this.errorMessage
+          ? html`
+              <error-message
+                message=${this.errorMessage}
+                style="margin-top: var(--spacing-sm);"
+              ></error-message>
+            `
+          : ""}
+      </div>
+    `;
+  }
 }
 
-customElements.define('address-input', AddressInput);
-
+customElements.define("address-input", AddressInput);

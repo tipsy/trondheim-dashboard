@@ -1,352 +1,366 @@
-import { LitElement, html, css } from 'lit';
-import { sharedStyles } from '../utils/shared-styles.js';
+import { LitElement, html, css } from "lit";
+import { sharedStyles } from "../utils/shared-styles.js";
 
 // Import all components used in the template
-import './address/address-input.js';
-import './config/theme-selector.js';
-import './bus/bus-widget.js';
-import './events/events-widget.js';
-import './weather/weather-right-now.js';
-import './weather/weather-today.js';
-import './energy/energy-widget.js';
-import './trash/trash-widget.js';
-import './police/police-widget.js';
-import './nrk/nrk-widget.js';
+import "./address/address-input.js";
+import "./config/theme-selector.js";
+import "./bus/bus-widget.js";
+import "./events/events-widget.js";
+import "./weather/weather-right-now.js";
+import "./weather/weather-today.js";
+import "./energy/energy-widget.js";
+import "./trash/trash-widget.js";
+import "./police/police-widget.js";
+import "./nrk/nrk-widget.js";
 
 class TrondheimDashboard extends LitElement {
-    static properties = {
-        currentLocation: { type: Object, state: true }
-    };
+  static properties = {
+    currentLocation: { type: Object, state: true },
+  };
 
-    constructor() {
-        super();
-        this.refreshInterval = null;
-        this.currentLocation = null;
+  constructor() {
+    super();
+    this.refreshInterval = null;
+    this.currentLocation = null;
+  }
+
+  // Helper methods to access child elements
+  get addressInput() {
+    return this.shadowRoot.querySelector("#address-input");
+  }
+  get themeSelector() {
+    return this.shadowRoot.querySelector("theme-selector");
+  }
+  get busWidget() {
+    return this.shadowRoot.querySelector("#bus-widget");
+  }
+  get weatherRightNow() {
+    return this.shadowRoot.querySelector("#weather-right-now");
+  }
+  get weatherToday() {
+    return this.shadowRoot.querySelector("#weather-today");
+  }
+  get energyWidget() {
+    return this.shadowRoot.querySelector("#energy-widget");
+  }
+  get trashWidget() {
+    return this.shadowRoot.querySelector("#trash-widget");
+  }
+
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .dashboard-content {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: var(--spacing-sm, 8px);
+        gap: var(--spacing-sm, 8px);
+      }
+
+      /* Larger padding on desktop */
+      @media (min-width: 768px) {
+        .dashboard-content {
+          padding: var(--spacing-md, 16px);
+          gap: var(--spacing-md, 16px);
+        }
+      }
+
+      .address-section {
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md, 16px);
+      }
+
+      .address-section address-input {
+        width: 100%;
+        height: 100%;
+      }
+
+      .address-section theme-selector {
+        width: 100%;
+        height: 100%;
+      }
+
+      .widgets-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md, 16px);
+      }
+
+      .bus-column,
+      .weather-column,
+      .right-column,
+      .news-column {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md, 16px);
+      }
+
+      /* Desktop layout */
+      @media (min-width: 1025px) {
+        :host {
+          height: 100vh;
+          overflow: hidden;
+        }
+
+        .dashboard-content {
+          overflow: hidden;
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+          grid-template-rows: auto 1fr;
+          gap: var(--spacing-md, 16px);
+        }
+
+        .address-section {
+          grid-column: 1 / -1;
+          display: grid;
+          grid-template-columns: 2fr 1fr;
+          gap: var(--spacing-md, 16px);
+          align-items: stretch;
+        }
+
+        .widgets-grid {
+          grid-column: 1 / -1;
+          display: grid;
+          grid-template-columns: 25fr 20fr 30fr 25fr;
+          gap: var(--spacing-md, 16px);
+          min-height: 0;
+        }
+
+        .widgets-grid > * {
+          height: 100%;
+          overflow: hidden;
+        }
+
+        .bus-column,
+        .weather-column,
+        .right-column,
+        .news-column {
+          height: 100%;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .weather-column > weather-right-now {
+          flex: 0 0 auto;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .weather-column > weather-today {
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .right-column > energy-widget {
+          flex: 0 0 auto;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .right-column > trash-widget {
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .news-column > police-widget {
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .news-column > nrk-widget {
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .bus-column > bus-widget {
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .bus-column > events-widget {
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+      }
+
+      /* Tablet layout */
+      @media (min-width: 768px) and (max-width: 1024px) {
+        .widgets-grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+    `,
+  ];
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.startAutoRefresh();
+  }
+
+  firstUpdated() {
+    this.attachEventListeners();
+    this.loadURLParameters();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    // Clean up interval when component is removed
+    if (this.refreshInterval) {
+      clearInterval(this.refreshInterval);
+      this.refreshInterval = null;
+    }
+  }
+
+  render() {
+    return html`
+      <div class="dashboard-content">
+        <div class="address-section">
+          <address-input id="address-input"></address-input>
+          <theme-selector></theme-selector>
+        </div>
+
+        <div class="widgets-grid">
+          <div class="bus-column">
+            <bus-widget id="bus-widget"></bus-widget>
+            <events-widget id="events-widget"></events-widget>
+          </div>
+          <div class="weather-column">
+            <weather-right-now id="weather-right-now"></weather-right-now>
+            <weather-today id="weather-today"></weather-today>
+          </div>
+          <div class="right-column">
+            <energy-widget id="energy-widget"></energy-widget>
+            <trash-widget id="trash-widget"></trash-widget>
+          </div>
+          <div class="news-column">
+            <police-widget id="police-widget"></police-widget>
+            <nrk-widget id="nrk-widget"></nrk-widget>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  loadURLParameters() {
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // Handle theme parameter
+    const theme = urlParams.get("theme");
+    if (theme && this.themeSelector) {
+      // Set theme directly
+      document.documentElement.setAttribute("data-theme", theme);
+      localStorage.setItem("trondheim-dashboard-theme", theme);
+      // Update the selector's property to reflect the theme
+      this.themeSelector.selectedTheme = theme;
     }
 
-    // Helper methods to access child elements
-    get addressInput() { return this.shadowRoot.querySelector('#address-input'); }
-    get themeSelector() { return this.shadowRoot.querySelector('theme-selector'); }
-    get busWidget() { return this.shadowRoot.querySelector('#bus-widget'); }
-    get weatherRightNow() { return this.shadowRoot.querySelector('#weather-right-now'); }
-    get weatherToday() { return this.shadowRoot.querySelector('#weather-today'); }
-    get energyWidget() { return this.shadowRoot.querySelector('#energy-widget'); }
-    get trashWidget() { return this.shadowRoot.querySelector('#trash-widget'); }
+    // Handle address parameter
+    const address = urlParams.get("address");
+    if (address && this.addressInput) {
+      // Wait a bit for the address input to be fully initialized
+      setTimeout(() => {
+        // Use loadFromURL which checks for saved coordinates first
+        this.addressInput.loadFromURL(decodeURIComponent(address));
+      }, 200);
+    }
+  }
 
-    static styles = [
-        sharedStyles,
-        css`
-            :host {
-                display: flex;
-                flex-direction: column;
-                min-height: 100vh;
-            }
+  attachEventListeners() {
+    // Listen for location updates from address input
+    if (this.addressInput) {
+      this.addressInput.addEventListener("location-updated", (event) => {
+        const { lat, lon, address } = event.detail;
 
-            .dashboard-content {
-                display: flex;
-                flex-direction: column;
-                flex: 1;
-                padding: var(--spacing-sm, 8px);
-                gap: var(--spacing-sm, 8px);
-            }
+        // Store current location for auto-refresh
+        this.currentLocation = { lat, lon, address };
 
-            /* Larger padding on desktop */
-            @media (min-width: 768px) {
-                .dashboard-content {
-                    padding: var(--spacing-md, 16px);
-                    gap: var(--spacing-md, 16px);
-                }
-            }
+        // Update all widgets with the new location
+        this.updateAllWidgets(lat, lon, address);
 
-            .address-section {
-                flex-shrink: 0;
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-md, 16px);
-            }
-
-            .address-section address-input {
-                width: 100%;
-                height: 100%;
-            }
-
-            .address-section theme-selector {
-                width: 100%;
-                height: 100%;
-            }
-
-            .widgets-grid {
-                display: grid;
-                grid-template-columns: 1fr;
-                gap: var(--spacing-md, 16px);
-            }
-
-            .bus-column,
-            .weather-column,
-            .right-column,
-            .news-column {
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-md, 16px);
-            }
-
-            /* Desktop layout */
-            @media (min-width: 1025px) {
-                :host {
-                    height: 100vh;
-                    overflow: hidden;
-                }
-
-                .dashboard-content {
-                    overflow: hidden;
-                    display: grid;
-                    grid-template-columns: 1fr 1fr 1fr 1fr;
-                    grid-template-rows: auto 1fr;
-                    gap: var(--spacing-md, 16px);
-                }
-
-                .address-section {
-                    grid-column: 1 / -1;
-                    display: grid;
-                    grid-template-columns: 2fr 1fr;
-                    gap: var(--spacing-md, 16px);
-                    align-items: stretch;
-                }
-
-                .widgets-grid {
-                    grid-column: 1 / -1;
-                    display: grid;
-                    grid-template-columns: 25fr 20fr 30fr 25fr;
-                    gap: var(--spacing-md, 16px);
-                    min-height: 0;
-                }
-
-                .widgets-grid > * {
-                    height: 100%;
-                    overflow: hidden;
-                }
-
-                .bus-column,
-                .weather-column,
-                .right-column,
-                .news-column {
-                    height: 100%;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .weather-column > weather-right-now {
-                    flex: 0 0 auto;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .weather-column > weather-today {
-                    flex: 1;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .right-column > energy-widget {
-                    flex: 0 0 auto;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .right-column > trash-widget {
-                    flex: 1;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .news-column > police-widget {
-                    flex: 1;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .news-column > nrk-widget {
-                    flex: 1;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .bus-column > bus-widget {
-                    flex: 1;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-
-                .bus-column > events-widget {
-                    flex: 1;
-                    min-height: 0;
-                    overflow: hidden;
-                }
-            }
-
-            /* Tablet layout */
-            @media (min-width: 768px) and (max-width: 1024px) {
-                .widgets-grid {
-                    grid-template-columns: 1fr 1fr;
-                }
-            }
-        `
-    ];
-
-    connectedCallback() {
-        super.connectedCallback();
-        this.startAutoRefresh();
+        // Update URL with address
+        this.updateURL({ address });
+      });
     }
 
-    firstUpdated() {
-        this.attachEventListeners();
-        this.loadURLParameters();
+    // Listen for theme changes
+    if (this.themeSelector) {
+      this.themeSelector.addEventListener("theme-changed", (event) => {
+        const { theme } = event.detail;
+        // Update URL with theme
+        this.updateURL({ theme });
+      });
+    }
+  }
+
+  updateURL(params) {
+    const url = new URL(window.location);
+
+    // Update or add parameters
+    if (params.address !== undefined) {
+      if (params.address) {
+        url.searchParams.set("address", encodeURIComponent(params.address));
+      } else {
+        url.searchParams.delete("address");
+      }
     }
 
-    disconnectedCallback() {
-        super.disconnectedCallback();
-        // Clean up interval when component is removed
-        if (this.refreshInterval) {
-            clearInterval(this.refreshInterval);
-            this.refreshInterval = null;
-        }
+    if (params.theme !== undefined) {
+      if (params.theme) {
+        url.searchParams.set("theme", params.theme);
+      } else {
+        url.searchParams.delete("theme");
+      }
     }
 
-    render() {
-        return html`
-            <div class="dashboard-content">
-                <div class="address-section">
-                    <address-input id="address-input"></address-input>
-                    <theme-selector></theme-selector>
-                </div>
+    // Update URL without reloading the page
+    window.history.pushState({}, "", url);
+  }
 
-                <div class="widgets-grid">
-                    <div class="bus-column">
-                        <bus-widget id="bus-widget"></bus-widget>
-                        <events-widget id="events-widget"></events-widget>
-                    </div>
-                    <div class="weather-column">
-                        <weather-right-now id="weather-right-now"></weather-right-now>
-                        <weather-today id="weather-today"></weather-today>
-                    </div>
-                    <div class="right-column">
-                        <energy-widget id="energy-widget"></energy-widget>
-                        <trash-widget id="trash-widget"></trash-widget>
-                    </div>
-                    <div class="news-column">
-                        <police-widget id="police-widget"></police-widget>
-                        <nrk-widget id="nrk-widget"></nrk-widget>
-                    </div>
-                </div>
-            </div>
-        `;
+  updateAllWidgets(lat, lon, address) {
+    if (this.busWidget) {
+      this.busWidget.updateLocation(lat, lon);
     }
 
-    loadURLParameters() {
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // Handle theme parameter
-        const theme = urlParams.get('theme');
-        if (theme && this.themeSelector) {
-            // Set theme directly
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('trondheim-dashboard-theme', theme);
-            // Update the selector's property to reflect the theme
-            this.themeSelector.selectedTheme = theme;
-        }
-
-        // Handle address parameter
-        const address = urlParams.get('address');
-        if (address && this.addressInput) {
-            // Wait a bit for the address input to be fully initialized
-            setTimeout(() => {
-                // Use loadFromURL which checks for saved coordinates first
-                this.addressInput.loadFromURL(decodeURIComponent(address));
-            }, 200);
-        }
+    if (this.weatherRightNow) {
+      this.weatherRightNow.updateLocation(lat, lon);
     }
 
-    attachEventListeners() {
-        // Listen for location updates from address input
-        if (this.addressInput) {
-            this.addressInput.addEventListener('location-updated', (event) => {
-                const { lat, lon, address } = event.detail;
-
-                // Store current location for auto-refresh
-                this.currentLocation = { lat, lon, address };
-
-                // Update all widgets with the new location
-                this.updateAllWidgets(lat, lon, address);
-
-                // Update URL with address
-                this.updateURL({ address });
-            });
-        }
-
-        // Listen for theme changes
-        if (this.themeSelector) {
-            this.themeSelector.addEventListener('theme-changed', (event) => {
-                const { theme } = event.detail;
-                // Update URL with theme
-                this.updateURL({ theme });
-            });
-        }
+    if (this.weatherToday) {
+      this.weatherToday.updateLocation(lat, lon);
     }
 
-    updateURL(params) {
-        const url = new URL(window.location);
-
-        // Update or add parameters
-        if (params.address !== undefined) {
-            if (params.address) {
-                url.searchParams.set('address', encodeURIComponent(params.address));
-            } else {
-                url.searchParams.delete('address');
-            }
-        }
-
-        if (params.theme !== undefined) {
-            if (params.theme) {
-                url.searchParams.set('theme', params.theme);
-            } else {
-                url.searchParams.delete('theme');
-            }
-        }
-
-        // Update URL without reloading the page
-        window.history.pushState({}, '', url);
+    if (this.energyWidget) {
+      this.energyWidget.updateLocation(lat, lon);
     }
 
-    updateAllWidgets(lat, lon, address) {
-        if (this.busWidget) {
-            this.busWidget.updateLocation(lat, lon);
-        }
-
-        if (this.weatherRightNow) {
-            this.weatherRightNow.updateLocation(lat, lon);
-        }
-
-        if (this.weatherToday) {
-            this.weatherToday.updateLocation(lat, lon);
-        }
-
-        if (this.energyWidget) {
-            this.energyWidget.updateLocation(lat, lon);
-        }
-
-        // Trash widget needs the address string
-        if (this.trashWidget && address) {
-            this.trashWidget.updateAddress(address);
-        }
+    // Trash widget needs the address string
+    if (this.trashWidget && address) {
+      this.trashWidget.updateAddress(address);
     }
+  }
 
-    startAutoRefresh() {
-        // Reload the entire page every 5 minutes to get new app versions
-        this.refreshInterval = setInterval(() => {
-            console.log('Auto-refreshing dashboard to get latest version...');
-            location.reload();
-        }, 300000); // 5 minutes
-    }
+  startAutoRefresh() {
+    // Reload the entire page every 5 minutes to get new app versions
+    this.refreshInterval = setInterval(() => {
+      console.log("Auto-refreshing dashboard to get latest version...");
+      location.reload();
+    }, 300000); // 5 minutes
+  }
 }
 
-customElements.define('trondheim-dashboard', TrondheimDashboard);
+customElements.define("trondheim-dashboard", TrondheimDashboard);

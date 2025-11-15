@@ -1,76 +1,75 @@
-import { LitElement, html, css } from 'lit';
-import { sharedStyles } from '../../utils/shared-styles.js';
-import { dispatchEvent } from '../../utils/event-helpers.js';
+import { LitElement, html, css } from "lit";
+import { sharedStyles } from "../../utils/shared-styles.js";
+import { dispatchEvent } from "../../utils/event-helpers.js";
 
 class InputField extends LitElement {
-    static properties = {
-        value: { type: String },
-        placeholder: { type: String },
-        disabled: { type: Boolean },
-        type: { type: String }
-    };
+  static properties = {
+    value: { type: String },
+    placeholder: { type: String },
+    disabled: { type: Boolean },
+    type: { type: String },
+  };
 
-    static styles = [
-        sharedStyles,
-        css`
-            :host {
-                display: block;
-                flex: 1;
-            }
+  static styles = [
+    sharedStyles,
+    css`
+      :host {
+        display: block;
+        flex: 1;
+      }
 
-            input {
-                width: 100%;
-                height: var(--input-height);
-                padding: var(--spacing-sm) var(--spacing-md);
-                border: 1px solid var(--border-color);
-                border-radius: var(--border-radius);
-                font-size: var(--font-size-md);
-                background-color: var(--input-background);
-                color: var(--text-color);
-                font-family: var(--font-family, sans-serif);
-                transition: border-color 0.2s;
-            }
+      input {
+        width: 100%;
+        height: var(--input-height);
+        padding: var(--spacing-sm) var(--spacing-md);
+        border: 1px solid var(--border-color);
+        border-radius: var(--border-radius);
+        font-size: var(--font-size-md);
+        background-color: var(--input-background);
+        color: var(--text-color);
+        font-family: var(--font-family, sans-serif);
+        transition: border-color 0.2s;
+      }
 
-            input:focus {
-                outline: none;
-                border-color: var(--primary-color);
-            }
+      input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+      }
 
-            input:disabled {
-                opacity: 0.5;
-                cursor: not-allowed;
-            }
-        `
-    ];
+      input:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    `,
+  ];
 
-    handleInput(e) {
-        this.value = e.target.value;
-        dispatchEvent(this, 'input-change', { value: this.value });
-    }
+  handleInput(e) {
+    this.value = e.target.value;
+    dispatchEvent(this, "input-change", { value: this.value });
+  }
 
-    handleKeydown(e) {
-        dispatchEvent(this, 'input-keydown', { key: e.key, event: e });
-    }
+  handleKeydown(e) {
+    dispatchEvent(this, "input-keydown", { key: e.key, event: e });
+  }
 
-    focus() {
-        const input = this.shadowRoot.querySelector('input');
-        if (input) input.focus();
-    }
+  focus() {
+    const input = this.shadowRoot.querySelector("input");
+    if (input) input.focus();
+  }
 
-    render() {
-        return html`
-            <input
-                type=${this.type}
-                .value=${this.value}
-                placeholder=${this.placeholder}
-                ?disabled=${this.disabled}
-                @input=${this.handleInput}
-                @keydown=${this.handleKeydown}
-                autocomplete="off"
-            />
-        `;
-    }
+  render() {
+    return html`
+      <input
+        type=${this.type}
+        .value=${this.value}
+        placeholder=${this.placeholder}
+        ?disabled=${this.disabled}
+        @input=${this.handleInput}
+        @keydown=${this.handleKeydown}
+        autocomplete="off"
+      />
+    `;
+  }
 }
 
-customElements.define('input-field', InputField);
-
+customElements.define("input-field", InputField);
