@@ -67,22 +67,14 @@ class CustomSelect extends LitElement {
     dispatchEvent(this, "change", { value: e.target.value });
   }
 
-  get value() {
-    const select = this.shadowRoot.querySelector("select");
-    return select ? select.value : "";
-  }
-
-  set value(val) {
-    this.selected = val;
-  }
 
   render() {
     return html`
       <div class="select-container">
         ${this.label ? html`<label>${this.label}</label>` : ""}
-        <select id="select" @change=${this.handleChange}>
-          ${this.placeholder && !this.selected
-            ? html`<option value="" disabled selected>
+        <select @change=${this.handleChange}>
+          ${this.placeholder
+            ? html`<option value="" disabled ?selected=${!this.selected}>
                 ${this.placeholder}
               </option>`
             : ""}
