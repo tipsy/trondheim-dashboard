@@ -1,16 +1,36 @@
+// Trash Widget - displays trash collection schedule
+
 import { BaseWidget } from '../common/base-widget.js';
-import { html } from 'lit';
+import { html, css } from 'lit';
 import { TrashAPI } from '../../utils/trash-api.js';
 import { DateFormatter } from '../../utils/date-formatter.js';
 import './trash-row.js';
 
 class TrashWidget extends BaseWidget {
+    static properties = {
+        ...BaseWidget.properties,
+        collections: { type: Array, state: true },
+        address: { type: String, state: true }
+    };
+
     constructor() {
         super();
-        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
+        this.collections = [];
         this.address = null;
         this.addressId = null;
     }
+
+    static styles = [
+        ...BaseWidget.styles,
+        css`
+            .schedule-list {
+                display: flex;
+                flex-direction: column;
+                gap: var(--spacing-sm);
+                max-width: 100%;
+            }
+        `
+    ];
 
     async updateAddress(address) {
         if (!address) {
@@ -67,7 +87,6 @@ class TrashWidget extends BaseWidget {
         if (!this.address) return;
 
         this.showLoading(true);
-        this.hideError();
 
         try {
             const normalizedAddress = this.normalizeAddress(this.address);
@@ -100,7 +119,7 @@ class TrashWidget extends BaseWidget {
 
             // Now get the actual schedule
             const schedule = await TrashAPI.getTrashSchedule(this.addressId);
-            this.renderSchedule(schedule, addressData);
+            this.processSchedule(schedule);
         } catch (error) {
             console.error('Error loading trash schedule:', error);
             this.showError('Could not load trash schedule. Please try again.');
@@ -109,9 +128,7 @@ class TrashWidget extends BaseWidget {
         }
     }
 
-    renderSchedule(schedule, addressData) {
-        const content = this.getContentElement();
-
+    processSchedule(schedule) {
         if (!schedule || !schedule.calendar) {
             this.showError('No schedule data available');
             return;
@@ -129,7 +146,8 @@ class TrashWidget extends BaseWidget {
             if (date >= today) {
                 collections.push({
                     date: date,
-                    type: item.fraksjon
+                    type: item.fraksjon,
+                    trashClass: this.getTrashClass(item.fraksjon)
                 });
             }
         });
@@ -138,30 +156,7 @@ class TrashWidget extends BaseWidget {
         collections.sort((a, b) => a.date - b.date);
 
         // Take only next 10 collections
-        const upcomingCollections = collections.slice(0, 10);
-
-        if (upcomingCollections.length === 0) {
-            content.innerHTML = '<p class="no-data">No upcoming collections found</p>';
-            return;
-        }
-
-        content.innerHTML = `
-            <div class="schedule-list" id="schedule-list"></div>
-        `;
-
-        // Create trash-row components for each collection
-        const scheduleList = content.querySelector('#schedule-list');
-        upcomingCollections.forEach(item => {
-            const trashRow = document.createElement('trash-row');
-            trashRow.setAttribute('trash-type', item.type);
-            trashRow.setAttribute('collection-date', item.date.toISOString());
-            trashRow.setAttribute('trash-class', this.getTrashClass(item.type));
-            scheduleList.appendChild(trashRow);
-        });
-    }
-
-    formatDate(date) {
-        return DateFormatter.formatLongDate(date);
+        this.collections = collections.slice(0, 10);
     }
 
     getTrashClass(type) {
@@ -175,7 +170,23 @@ class TrashWidget extends BaseWidget {
         return 'other';
     }
 
+    renderContent() {
+        if (!this.collections || this.collections.length === 0) {
+            return html`<p class="no-data">No upcoming collections found</p>`;
+        }
 
+        return html`
+            <div class="schedule-list">
+                ${this.collections.map(item => html`
+                    <trash-row
+                        trash-type="${item.type}"
+                        collection-date="${item.date.toISOString()}"
+                        trash-class="${item.trashClass}">
+                    </trash-row>
+                `)}
+            </div>
+        `;
+    }
 
     // Override BaseWidget methods
     getTitle() {
@@ -188,20 +199,6 @@ class TrashWidget extends BaseWidget {
 
     getPlaceholderText() {
         return 'Enter address to see trash collection schedule';
-    }
-
-    afterRender() {
-        // Add trash-specific styles to the shadow DOM
-        const style = document.createElement('style');
-        style.textContent = `
-            .schedule-list {
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-sm);
-                max-width: 100%;
-            }
-        `;
-        this.shadowRoot.appendChild(style);
     }
 }
 

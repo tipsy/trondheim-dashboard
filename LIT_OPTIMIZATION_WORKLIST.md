@@ -14,7 +14,7 @@ Analyzed all 29 component files in the codebase and identified opportunities to 
 2. **weather-right-now.js** - Uses innerHTML + createElement for weather-hour components
 3. **weather-today.js** - Uses innerHTML + manual style injection in afterRender()
 4. ~~**energy-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
-5. **trash-widget.js** - Uses innerHTML + createElement, manual style injection
+5. ~~**trash-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 6. ~~**events-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 7. ~~**police-widget.js**~~ - ✅ **COMPLETED** - Converted to Lit templates
 
@@ -236,17 +236,23 @@ renderContent() {
 
 ---
 
-### Task 9: Review and optimize trash-widget.js
+### Task 9: Review and optimize trash-widget.js ✅ COMPLETED
 **Priority:** High  
-**Issues:**
-- Uses `this._usesInnerHTML = true`
-- Manual `createElement()` and `appendChild()` for trash-row components
-- Manual style injection in `afterRender()`
+**Status:** ✅ DONE - Converted to Lit templates with reactive properties
 
-**Opportunities:**
-- Store schedule in reactive property
-- Use `html` template with `.map()`
-- Move styles to `static styles`
+**Changes made:**
+- ✅ Removed `this._usesInnerHTML = true`
+- ✅ Removed manual `createElement()` and `appendChild()` calls
+- ✅ Removed manual style injection in `afterRender()`
+- ✅ Moved inline styles to `static styles` using Lit's `css`
+- ✅ Added reactive properties:
+  - `collections` - array of upcoming collection items
+  - `address` - current address string
+- ✅ Implemented `renderContent()` with declarative Lit templates
+- ✅ Refactored `renderSchedule()` to `processSchedule()` - now sets reactive state
+- ✅ Collections are now rendered with `.map()` template
+- ✅ Fully reactive - schedule updates trigger automatic re-rendering
+- ✅ No more manual DOM manipulation
 
 ---
 
