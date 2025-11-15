@@ -20,10 +20,14 @@ class EventsWidget extends BaseWidget {
     this.title = "Events";
     this.icon = "mdi-calendar-star";
     this.events = [];
-    // Default to today's date in YYYY-MM-DD (local date, not UTC)
-    const today = new Date();
-    const pad = (n) => String(n).padStart(2, "0");
-    this.selectedDate = `${today.getFullYear()}-${pad(today.getMonth() + 1)}-${pad(today.getDate())}`;
+    this.selectedDate = this.formatDate(new Date());
+  }
+
+  formatDate(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
   }
 
   get dateOptions() {
@@ -32,7 +36,7 @@ class EventsWidget extends BaseWidget {
     for (let i = 0; i < 14; i++) {
       const d = new Date(today);
       d.setDate(today.getDate() + i);
-      const value = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+      const value = this.formatDate(d);
       const dayName = d.toLocaleDateString("no-NO", { weekday: "long" });
       const monthDay = d.toLocaleDateString("no-NO", {
         day: "numeric",
@@ -67,7 +71,7 @@ class EventsWidget extends BaseWidget {
     this.showLoading(true);
 
     try {
-      // Fetch three pages to cover more events (page 0, 1 and 2)
+      // Fetch three pages to cover more events
       const [page0, page1, page2] = await Promise.all([
         EventsAPI.getUpcomingEvents(100, 0),
         EventsAPI.getUpcomingEvents(100, 1),
@@ -76,14 +80,9 @@ class EventsWidget extends BaseWidget {
 
       // Merge and dedupe by id
       const all = [...(page0 || []), ...(page1 || []), ...(page2 || [])];
-      const byId = new Map();
-      all.forEach((ev) => {
-        if (!ev || !ev.id) return;
-        if (!byId.has(ev.id)) byId.set(ev.id, ev);
-      });
-      const allEvents = Array.from(byId.values());
+      const allEvents = [...new Map(all.filter(ev => ev?.id).map(ev => [ev.id, ev])).values()];
 
-      // Filter events to the selected date using local date comparison
+      // Filter events to the selected date
       this.events = this.filterEventsByDate(allEvents, date);
     } catch (error) {
       this.showError("Could not load events");
@@ -93,17 +92,17 @@ class EventsWidget extends BaseWidget {
   }
 
   filterEventsByDate(events, date) {
-    const [selY, selM, selD] = (date || "")
-      .split("-")
-      .map((s) => parseInt(s, 10));
-    return (events || []).filter((ev) => {
-      if (!ev.startDate) return false;
+    const [selY, selM, selD] = date.split("-").map(Number);
+
+    return events.filter((ev) => {
+      if (!ev?.startDate) return false;
+
       const evDateObj = new Date(ev.startDate);
       if (isNaN(evDateObj.getTime())) {
-        // fallback to naive string compare if parsing fails
-        const evDate = String(ev.startDate).split("T")[0];
-        return evDate === date;
+        // Fallback to string comparison if parsing fails
+        return ev.startDate.split("T")[0] === date;
       }
+
       return (
         evDateObj.getFullYear() === selY &&
         evDateObj.getMonth() + 1 === selM &&
@@ -123,7 +122,7 @@ class EventsWidget extends BaseWidget {
   }
 
   renderContent() {
-    if (!this.events || this.events.length === 0) {
+    if (!this.events?.length) {
       return html`<p class="no-data">No events for the selected date</p>`;
     }
 
@@ -147,7 +146,6 @@ class EventsWidget extends BaseWidget {
     return html`
       <div class="date-selector-container">
         <custom-select
-          id="events-date-select"
           .options=${this.dateOptions}
           .selected=${this.selectedDate}
           @change=${this.handleDateChange}
