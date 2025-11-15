@@ -1,104 +1,419 @@
 # Trondheim Dashboard
 
-A small, client-side web dashboard built with vanilla Web Components (Custom Elements + Shadow DOM).
-It aggregates local, real-time information useful for Trondheim residents:
-bus departures, weather, trash collection, electricity prices and more.
+A modern, client-side web dashboard built with vanilla Web Components and Lit for Trondheim residents. It aggregates real-time local information including bus departures, weather forecasts, trash collection schedules, electricity prices, police logs, news, and events — all in a customizable, themeable interface.
 
-Live demo: https://trondheim-dashboard.com
+**Live demo:** https://trondheim-dashboard.com
 
-This repository is intentionally lightweight — just static HTML, CSS and JavaScript — so it can be served from any static host.
+This repository is intentionally lightweight — just static HTML, CSS and JavaScript with no build process required — so it can be served from any static host.
 
-Quick start
-1. Clone the repository:
+## ✨ Features
 
+- **📍 Location-based widgets** - Enter any address in Trondheim/Trøndelag to get personalized information
+- **🚌 Real-time bus departures** - Live ATB/Entur data with nearest stops and platform selection
+- **🌤️ Weather forecasts** - Current conditions, hourly forecast, and 5-day outlook from MET Norway
+- **⚡ Electricity prices** - Current and upcoming hourly prices by Norwegian price area
+- **🗑️ Trash collection** - Personalized waste pickup schedule from TRV
+- **👮 Police log** - Latest incidents from Politiet (Trøndelag district)
+- **📰 News** - Top stories from NRK Trøndelag
+- **🎭 Events** - Upcoming events in Trondheim with date filtering
+- **🎨 7 themes** - Midnight Blue, Peach Pink, Solarized, Monokai, Cat, Dark, and Light
+- **🔗 URL state** - Shareable links with address and theme parameters
+- **♻️ Auto-refresh** - Dashboard reloads every 5 minutes to get latest data and app updates
+- **📱 Responsive** - Optimized layouts for desktop (grid with scrollable widgets) and mobile/tablet (stacked)
+
+## 🚀 Quick Start
+
+1. **Clone the repository:**
+   ```bash
    git clone https://github.com/your-user/trondheim-dashboard.git
    cd trondheim-dashboard
+   ```
 
-2. Serve the directory with any static server and open http://localhost:8000
-
+2. **Serve with any static server:**
+   ```bash
    # Python 3 built-in server
    python -m http.server 8000
 
    # Node (http-server)
    npx http-server
 
-   # Or open index.html directly in the browser (some APIs may require a server due to CORS)
+   # Or simply open index.html in a browser
+   ```
 
-What you'll find
-- index.html — main page that composes the dashboard
-- styles/ — global stylesheet and theme CSS files
-- img/ — background and other static assets
-- js/ — all JavaScript source code, split into `components/` and `utils/`
+3. **Open in browser:** Navigate to `http://localhost:8000`
 
-Project structure (important files)
+No build process, no dependencies to install — just serve and go!
 
-js/
-├─ components/
-│  ├─ dashboard.js          # Main dashboard component (composes widgets, handles URL state)
-│  ├─ base-widget.js        # Base class for widgets (layout, loading / error handling)
-│  ├─ address/              # Address input and suggestion components
-│  ├─ bus/                  # Bus widget + row component
-│  ├─ weather/              # Weather widgets
-│  ├─ trash/                # Trash collection widget
-│  ├─ police/               # Police log widget
-│  └─ common/               # Shared UI building blocks (spinner, error message, etc.)
-└─ utils/
-   ├─ api-base.js           # Lightweight fetch wrapper / caching helper
-   ├─ bus-api.js            # Entur/ATB integration
-   ├─ weather-api.js        # MET Norway integration
-   ├─ trash-api.js          # TRV integration
-   ├─ energy-api.js         # Electricity price API
-   └─ geocoding-api.js      # Nominatim address lookup
+## 📁 Project Structure
 
-Integrations (detailed)
-Below is a comprehensive list of all external integrations used by the app (endpoints discovered in `js/utils/` and components). Each entry shows what the integration provides and any important notes (CORS, headers, caching).
+```
+trondheim-dashboard/
+├── index.html              # Main entry point
+├── favicon.svg             # Dashboard favicon
+├── CNAME                   # GitHub Pages custom domain
+├── styles/
+│   ├── main.css            # Global styles and layout
+│   └── themes/             # 7 theme CSS files
+│       ├── midnight-blue.css
+│       ├── peach.css
+│       ├── solarized.css
+│       ├── monokai.css
+│       ├── cat.css
+│       ├── dark.css
+│       └── light.css
+├── img/
+│   └── example-background.jpg
+└── js/
+    ├── components/         # Web Components (Lit-based)
+    │   ├── dashboard.js    # Main dashboard orchestrator
+    │   ├── address/        # Address input with autocomplete
+    │   │   ├── address-input.js
+    │   │   └── address-suggestion-item.js
+    │   ├── bus/            # Bus departure widget
+    │   │   ├── bus-widget.js
+    │   │   └── bus-row.js
+    │   ├── weather/        # Weather widgets (4 components)
+    │   │   ├── weather-right-now.js    # Current + next 4 hours
+    │   │   ├── weather-today.js        # 5-day forecast
+    │   │   ├── weather-current.js
+    │   │   ├── weather-detail.js
+    │   │   └── weather-hour.js
+    │   ├── energy/         # Electricity price widget
+    │   │   └── energy-widget.js
+    │   ├── trash/          # Trash collection widget
+    │   │   ├── trash-widget.js
+    │   │   └── trash-row.js
+    │   ├── police/         # Police log widget
+    │   │   └── police-widget.js
+    │   ├── nrk/            # News widget
+    │   │   └── nrk-widget.js
+    │   ├── events/         # Events widget
+    │   │   └── events-widget.js
+    │   ├── config/         # Configuration components
+    │   │   └── theme-selector.js
+    │   └── common/         # Reusable UI components
+    │       ├── base-widget.js          # Base class for all widgets
+    │       ├── widget-list.js
+    │       ├── widget-row.js
+    │       ├── heading-2.js
+    │       ├── input-field.js
+    │       ├── custom-select.js
+    │       ├── loading-spinner.js
+    │       ├── error-message.js
+    │       └── buttons/
+    │           ├── base-button.js
+    │           ├── icon-button.js
+    │           ├── primary-button.js
+    │           └── secondary-button.js
+    └── utils/              # API clients and helpers
+        ├── api-base.js              # Fetch wrapper with caching
+        ├── cache-client.js          # localStorage-based cache
+        ├── cache-config.js          # Cache TTL configuration
+        ├── bus-api.js               # Entur GraphQL client
+        ├── weather-api.js           # MET Norway client
+        ├── energy-api.js            # Electricity price client
+        ├── trash-api.js             # TRV wasteplan client
+        ├── geocoding-api.js         # Nominatim geocoding client
+        ├── police-api.js            # Politiet API client
+        ├── nrk-rss-api.js          # NRK RSS parser
+        ├── events-api.js            # TrdEvents GraphQL client
+        ├── icon-library.js          # Weather icon mapping
+        ├── date-formatter.js        # Norwegian date formatting
+        ├── shared-styles.js         # Lit shared CSS
+        └── event-helpers.js         # Custom event utilities
+```
 
-- Entur / Journey Planner (GraphQL)
-  - Endpoint: `https://api.entur.io/journey-planner/v3/graphql`
-  - Purpose: Nearest stop search, quay details and real-time departures (used by `js/utils/bus-api.js`).
-  - Notes: GraphQL POST requests; the code sets an `ET-Client-Name` header. Real-time data is treated as dynamic (background refresh).
+## 🏗️ Architecture
 
-- MET Norway (locationforecast)
-  - Endpoint: `https://api.met.no/weatherapi/locationforecast/2.0/complete?lat={lat}&lon={lon}`
-  - Purpose: Weather forecast and current conditions (used by `js/utils/weather-api.js`).
-  - Notes: Requests include a `User-Agent` header. Code may use a CORS proxy for this endpoint.
+### Technology Stack
 
-- Sunrise-Sunset
-  - Endpoint: `https://api.sunrise-sunset.org/json?lat={lat}&lng={lon}&date={date}&formatted=0`
-  - Purpose: Sunrise, sunset and day-length times (used by `js/utils/weather-api.js`).
+- **Lit 3** - Lightweight reactive Web Components library (loaded via CDN)
+- **Material Design Icons** - Icon font (loaded via CDN)
+- **Vanilla CSS** - No preprocessors, CSS variables for theming
+- **ES Modules** - Native browser modules, no bundler needed
+- **Custom Elements v1** - Web Components standard with Shadow DOM
 
-- TRV (Trondheim Renholdsverk) Wasteplan
-  - Endpoints:
-    - Search: `https://trv.no/wp-json/wasteplan/v2/adress?s={query}`
-    - Calendar: `https://trv.no/wp-json/wasteplan/v2/calendar/{addressId}`
-  - Purpose: Address lookup and trash collection schedule (used by `js/utils/trash-api.js`).
-  - Notes: Search and calendar responses are cached for 24 hours in the app.
+### Component Architecture
 
-- HvaKosterStrommen (Electricity prices)
-  - Endpoint pattern: `https://www.hvakosterstrommen.no/api/v1/prices/{year}/{month}-{day}_{priceArea}.json`
-  - Purpose: Current daily electricity prices by price area (used by `js/utils/energy-api.js`).
-  - Notes: Cached for 1 hour by default. The app maps coordinates to a simplified price-area (NO1-NO5).
+All widgets extend `BaseWidget`, which provides:
+- Standard layout (header with title/icon, scrollable content area)
+- Loading state management with spinner
+- Error state management with error messages
+- Placeholder state for widgets awaiting user input
+- Scroll detection for header border effects
+- Responsive behavior (fixed height on desktop, natural height on mobile)
 
-- OpenStreetMap Nominatim (Geocoding)
-  - Endpoints:
-    - Search: `https://nominatim.openstreetmap.org/search?q={query}&format=json&limit={limit}&countrycodes=no&addressdetails=1`
-    - Reverse: `https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json`
-  - Purpose: Address autocomplete, reverse geocoding, and address formatting (used by `js/utils/geocoding-api.js`).
-  - Notes: The app adds `Trøndelag, Norway` to searches when appropriate, filters results to addresses with house numbers, and sets a custom `User-Agent` header.
+```javascript
+// Typical widget structure
+class MyWidget extends BaseWidget {
+  constructor() {
+    super();
+    this.title = "Widget Title";
+    this.icon = "mdi-icon-name";
+  }
 
-- Politiet / Politiloggen
-  - Endpoint: `https://api.politiet.no/politiloggen/v1/messages?Districts=Tr%C3%B8ndelag&Take=10`
-  - Purpose: Latest police log messages for Trøndelag (used by `js/utils/police-api.js`).
-  - Notes: The code uses a CORS proxy for this endpoint and treats data as dynamic.
+  async connectedCallback() {
+    super.connectedCallback();
+    await this.loadData();
+  }
 
-- NRK RSS
-  - Endpoint pattern: `https://www.nrk.no/{region}/siste.rss` (e.g., `trondelag`)
-  - Purpose: Fetch latest news RSS feed and parse into JSON objects (used by `js/utils/nrk-rss-api.js`).
-  - Notes: RSS is XML; the app parses XML in the browser and caches results (short TTL by default).
+  renderContent() {
+    // Widget-specific rendering
+  }
+}
+```
 
-- TrdEvents (third-party GraphQL for Trondheim events)
-  - Endpoint: `https://trdevents-224613.web.app/graphQL`
-  - Purpose: Fetch upcoming local events (used by `js/utils/events-api.js`).
+### State Management
+
+- **Component-level state** - Each widget manages its own data using Lit's reactive properties
+- **URL parameters** - Address and theme persisted in URL for sharing
+- **localStorage** - Theme preference and API cache storage
+- **Event-driven updates** - Components communicate via custom events:
+  - `location-updated` - Fired when address changes
+  - `theme-changed` - Fired when theme changes
+
+### Caching Strategy
+
+Smart caching with configurable TTLs (defined in `cache-config.js`):
+
+| Data Type | TTL | Rationale |
+|-----------|-----|-----------|
+| Weather | 4 minutes | Slightly below 5-min dashboard refresh |
+| Bus stops (metadata) | 6 hours | Stop locations change infrequently |
+| Bus departures | 0 (no cache) | Real-time data |
+| Energy prices | 1 hour | Updated hourly |
+| Trash schedule | 24 hours | Daily granularity |
+| News (NRK RSS) | 4 minutes | Fresh news on each dashboard cycle |
+| Police log | 4 minutes | Recent incidents |
+| Events | 24 hours | Relatively static |
+| Geocoding | 1 hour | Respect rate limits |
+
+## 🔌 External Integrations
+
+### 1. Entur Journey Planner (Bus Data)
+- **Endpoint:** `https://api.entur.io/journey-planner/v3/graphql`
+- **Type:** GraphQL API
+- **Purpose:** Real-time bus departures, stop searches, and platform information
+- **Headers:** `ET-Client-Name` for API identification
+- **Used by:** `bus-api.js` → `bus-widget.js`
+
+### 2. MET Norway Weather API
+- **Endpoint:** `https://api.met.no/weatherapi/locationforecast/2.0/complete`
+- **Type:** REST API (JSON)
+- **Purpose:** Weather forecasts and current conditions
+- **Headers:** `User-Agent` required
+- **Used by:** `weather-api.js` → `weather-right-now.js`, `weather-today.js`
+
+### 3. Sunrise-Sunset API
+- **Endpoint:** `https://api.sunrise-sunset.org/json`
+- **Type:** REST API (JSON)
+- **Purpose:** Sunrise/sunset times and day length
+- **Used by:** `weather-api.js` → `weather-today.js`
+
+### 4. TRV Wasteplan API
+- **Endpoints:**
+  - Search: `https://trv.no/wp-json/wasteplan/v2/adress`
+  - Calendar: `https://trv.no/wp-json/wasteplan/v2/calendar/{id}`
+- **Type:** WordPress REST API
+- **Purpose:** Trash collection schedules for Trondheim addresses
+- **Cache:** 24 hours
+- **Used by:** `trash-api.js` → `trash-widget.js`
+
+### 5. HvaKosterStrommen (Electricity Prices)
+- **Endpoint:** `https://www.hvakosterstrommen.no/api/v1/prices/{year}/{month}-{day}_{area}.json`
+- **Type:** REST API (JSON)
+- **Purpose:** Hourly electricity prices by Norwegian price area (NO1-NO5)
+- **Cache:** 1 hour
+- **Used by:** `energy-api.js` → `energy-widget.js`
+
+### 6. OpenStreetMap Nominatim (Geocoding)
+- **Endpoints:**
+  - Search: `https://nominatim.openstreetmap.org/search`
+  - Reverse: `https://nominatim.openstreetmap.org/reverse`
+- **Type:** REST API (JSON)
+- **Purpose:** Address autocomplete and geocoding
+- **Headers:** Custom `User-Agent`
+- **Features:** Filters to Norway, prioritizes Trøndelag, requires house numbers
+- **Used by:** `geocoding-api.js` → `address-input.js`
+
+### 7. Politiet API (Police Log)
+- **Endpoint:** `https://api.politiet.no/politiloggen/v1/messages`
+- **Type:** REST API (JSON)
+- **Purpose:** Latest police incidents in Trøndelag
+- **Notes:** May require CORS proxy
+- **Cache:** 4 minutes
+- **Used by:** `police-api.js` → `police-widget.js`
+
+### 8. NRK RSS Feed (News)
+- **Endpoint:** `https://www.nrk.no/trondelag/siste.rss`
+- **Type:** RSS/XML
+- **Purpose:** Top 10 news stories from NRK Trøndelag
+- **Parsing:** XML parsed in-browser to JSON
+- **Cache:** 4 minutes
+- **Used by:** `nrk-rss-api.js` → `nrk-widget.js`
+
+### 9. TrdEvents GraphQL (Events)
+- **Endpoint:** `https://trdevents-224613.web.app/graphQL`
+- **Type:** GraphQL API
+- **Purpose:** Upcoming events in Trondheim
+- **Cache:** 24 hours
+- **Used by:** `events-api.js` → `events-widget.js`
+
+## 🎨 Theming
+
+The dashboard uses CSS variables for theming. Each theme file defines:
+
+```css
+[data-theme="theme-name"] {
+  /* Core colors */
+  --background-color: ...;
+  --card-background: ...;
+  --text-color: ...;
+  --text-light: ...;
+  --heading-color: ...;
+  
+  /* Interactive elements */
+  --primary-color: ...;
+  --secondary-color: ...;
+  --button-text: ...;
+  
+  /* Borders and dividers */
+  --border-color: ...;
+  
+  /* Optional: background image */
+  --background-image: url(...);
+  
+  /* Typography */
+  --font-family: ...;
+}
+```
+
+**Available themes:**
+- `midnight-blue` (default) - Deep blue with cyan accents
+- `peach` - Warm peach with salmon highlights
+- `solarized` - Classic Solarized color palette
+- `monokai` - Developer-friendly dark theme
+- `cat` - Playful cat-themed design
+- `dark` - Clean dark theme
+- `light` - Classic light theme
+
+## 🌐 URL Parameters
+
+Share configured dashboards via URL:
+
+```
+https://trondheim-dashboard.com/?address=Nidarosdomen%2C%20Trondheim&theme=midnight-blue
+```
+
+**Parameters:**
+- `address` - Address string (URL-encoded)
+- `theme` - Theme name (lowercase, hyphenated)
+
+## 📱 Responsive Design
+
+### Desktop (≥1025px)
+- Fixed viewport height (no page scroll)
+- 4-column grid layout
+- Widgets have fixed height with internal scrolling
+- Scroll indicators on widget headers
+
+### Tablet (768-1024px)
+- 2-column grid
+- Natural widget heights
+- Page scrolls naturally
+
+### Mobile (<768px)
+- Single column stack
+- Full-width widgets
+- Touch-optimized spacing
+
+## 🛠️ Development
+
+### Adding a New Widget
+
+1. **Create widget component** in `js/components/your-widget/`
+   ```javascript
+   import { BaseWidget } from "../common/base-widget.js";
+   
+   class YourWidget extends BaseWidget {
+     constructor() {
+       super();
+       this.title = "Your Widget";
+       this.icon = "mdi-your-icon";
+     }
+     
+     renderContent() {
+       return html`<p>Your content</p>`;
+     }
+   }
+   
+   customElements.define("your-widget", YourWidget);
+   ```
+
+2. **Import in dashboard.js**
+   ```javascript
+   import "./your-widget/your-widget.js";
+   ```
+
+3. **Add to template** in `dashboard.js`
+   ```html
+   <your-widget id="your-widget"></your-widget>
+   ```
+
+4. **Update grid layout** in dashboard.js styles if needed
+
+### Adding a New API Integration
+
+1. **Create API client** in `js/utils/your-api.js`
+   ```javascript
+   import { APIBase } from "./api-base.js";
+   
+   export class YourAPI {
+     static async getData() {
+       return APIBase.cachedFetch(
+         "https://api.example.com/data",
+         { ttl: 60 * 60 * 1000 } // 1 hour
+       );
+     }
+   }
+   ```
+
+2. **Use in widget** via async methods
+3. **Configure caching** in `cache-config.js`
+
+### Creating a New Theme
+
+1. **Create theme file** in `styles/themes/your-theme.css`
+2. **Import in main.css**
+   ```css
+   @import url('themes/your-theme.css');
+   ```
+3. **Add to theme selector** in `theme-selector.js`
+   ```javascript
+   { value: "your-theme", label: "Your Theme" }
+   ```
+
+## 🐛 Known Issues & Limitations
+
+- Some APIs may require CORS proxies in certain hosting environments
+- Nominatim has usage limits - consider self-hosting for high traffic
+- MET Norway API requires User-Agent header
+- Dashboard auto-refreshes every 5 minutes (hard reload)
+
+## 📄 License
+
+MIT License - feel free to use, modify, and distribute.
+
+## 🤝 Contributing
+
+Contributions welcome! Please feel free to submit pull requests or open issues.
+
+## 🙏 Acknowledgments
+
+- Weather data from [MET Norway](https://api.met.no/)
+- Bus data from [Entur](https://entur.org/)
+- Icons from [Material Design Icons](https://materialdesignicons.com/)
+- Powered by [Lit](https://lit.dev/)
   - Notes: GraphQL endpoint; results are cached (24h) by default.
 
 - External assets and helpers

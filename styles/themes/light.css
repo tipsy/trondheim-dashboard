@@ -1,5 +1,5 @@
-/* Light theme (default) */
-:root, :root[data-theme="light"] {
+/* Light theme */
+:root[data-theme="light"] {
     --background-image: url("/img/example-background.jpg");
     /* Colors */
     --primary-color: #0066cc;

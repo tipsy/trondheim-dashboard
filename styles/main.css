@@ -20,6 +20,8 @@
 :root {
     /* Global constants that don't change between themes */
     --input-height: 40px;
+    /* Prevent background image from showing before theme loads */
+    --background-image: none;
 }
 
 html {

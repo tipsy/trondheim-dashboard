@@ -12,7 +12,7 @@ export class IconButton extends BaseButton {
     css`
       button {
         background-color: transparent;
-        color: var(--icon-btn-color, var(--text-color));
+        color: var(--icon-btn-color, var(--heading-color, var(--text-color)));
         border: none;
         border-radius: var(--icon-btn-radius, var(--border-radius));
         width: var(--icon-btn-size, 32px);
