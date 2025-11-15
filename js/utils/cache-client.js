@@ -2,9 +2,27 @@
 // Centralized caching with TTL support
 
 import { CacheConfig } from './cache-config.js';
+import storage from './storage.js';
 
 export class CacheClient {
-    static CACHE_KEY_PREFIX = 'trondheim-cache-';
+    // Normalize arguments for get/set APIs. Supports:
+    // - (key, ttl)
+    // - ({ key, ttl, data })
+    static _normalizeArgs(arg1, arg2 = null) {
+        if (typeof arg1 === 'string') {
+            return { key: arg1 || '', ttl: arg2 === undefined ? null : arg2 };
+        }
+
+        if (arg1 && typeof arg1 === 'object') {
+            return {
+                key: arg1.key || arg1.url || '',
+                ttl: arg1.hasOwnProperty('ttl') ? arg1.ttl : null,
+                data: arg1.data
+            };
+        }
+
+        return { key: '', ttl: null };
+    }
 
     /**
      * Generate a cache key from a URL or arbitrary key string
@@ -21,7 +39,7 @@ export class CacheClient {
         }
         // Convert to base36 for a shorter string and make it positive
         const hashStr = Math.abs(hash).toString(36);
-        return `${this.CACHE_KEY_PREFIX}${hashStr}`;
+        return `${storage.CACHE_KEY_PREFIX}${hashStr}`;
     }
 
     /**
@@ -31,30 +49,18 @@ export class CacheClient {
      */
     static get(arg1, arg2 = null) {
         try {
-            // Backwards compatibility: get(key, ttl)
-            let key;
-            let ttl;
-            if (typeof arg1 === 'string') {
-                key = arg1;
-                ttl = arg2 === undefined ? null : arg2;
-            } else if (arg1 && typeof arg1 === 'object') {
-                // New signature: get({ key, ttl })
-                key = arg1.key || arg1.url || '';
-                ttl = arg1.hasOwnProperty('ttl') ? arg1.ttl : null;
-            } else {
-                return null;
-            }
+            const { key, ttl } = this._normalizeArgs(arg1, arg2);
 
             // If ttl is explicitly 0, treat this as "no cache" and return null immediately.
             // Do NOT treat null as "no cache"; null means "use cached value even if stale" (dynamic background-refresh semantics handled by caller).
             if (ttl === 0) return null;
 
             const cacheKey = this.getCacheKey(key);
-            const cached = localStorage.getItem(cacheKey);
+            const cached = storage.loadResponse(cacheKey);
 
             if (!cached) return null;
 
-            const cachedData = JSON.parse(cached);
+            const cachedData = cached;
 
             // If TTL is specified (number), check if cache is still valid
             if (ttl !== null && ttl !== undefined) {
@@ -82,12 +88,9 @@ export class CacheClient {
         try {
             const key = (typeof arg === 'string') ? arg : (arg && (arg.key || arg.url)) || '';
             const cacheKey = this.getCacheKey(key);
-            const cached = localStorage.getItem(cacheKey);
-            
+            const cached = storage.loadResponse(cacheKey);
             if (!cached) return null;
-            
-            const cachedData = JSON.parse(cached);
-            return Date.now() - cachedData.timestamp;
+            return Date.now() - cached.timestamp;
         } catch (error) {
             return null;
         }
@@ -138,7 +141,7 @@ export class CacheClient {
                 data: data
             };
 
-            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+            storage.saveResponse(cacheKey, data);
         } catch (error) {
             console.error('[Cache] SET error:', error);
         }

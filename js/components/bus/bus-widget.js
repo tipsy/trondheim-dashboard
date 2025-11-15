@@ -6,6 +6,7 @@ import { BusAPI } from "../../utils/bus-api.js";
 import "./bus-row.js";
 import "../common/widget-list.js";
 import "../common/custom-select.js";
+import storage from "../../utils/storage.js";
 
 class BusWidget extends BaseWidget {
   static properties = {
@@ -74,7 +75,7 @@ class BusWidget extends BaseWidget {
       this.availableStops = quays;
 
       // Try to restore saved quay, otherwise use first one
-      const savedQuayId = localStorage.getItem("trondheim-dashboard-bus-stop");
+      const savedQuayId = storage.loadBusStop();
       if (savedQuayId && quays.find((q) => q.id === savedQuayId)) {
         this.selectedStopId = savedQuayId;
       } else {
@@ -127,7 +128,7 @@ class BusWidget extends BaseWidget {
 
   handleStopChange(e) {
     this.selectedStopId = e.detail.value;
-    localStorage.setItem("trondheim-dashboard-bus-stop", this.selectedStopId);
+    storage.saveBusStop(this.selectedStopId);
     this.loadDepartures();
   }
 

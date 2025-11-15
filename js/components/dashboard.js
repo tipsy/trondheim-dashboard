@@ -1,5 +1,6 @@
 import { LitElement, html, css } from "lit";
 import { sharedStyles } from "../utils/shared-styles.js";
+import storage from "../utils/storage.js";
 
 // Import all components used in the template
 import "./address/address-input.js";
@@ -252,7 +253,7 @@ class TrondheimDashboard extends LitElement {
     const theme = urlParams.get("theme");
     if (theme) {
       document.documentElement.setAttribute("data-theme", theme);
-      localStorage.setItem("trondheim-dashboard-theme", theme);
+      storage.saveTheme(theme);
       const themeSelector = this.shadowRoot.querySelector("theme-selector");
       if (themeSelector) {
         themeSelector.selectedTheme = theme;

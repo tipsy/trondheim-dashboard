@@ -2,6 +2,7 @@ import { LitElement, html, css } from "lit";
 import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 import { dispatchEvent } from "../../utils/event-helpers.js";
 import { GeocodingAPI } from "../../utils/geocoding-api.js";
+import storage from "../../utils/storage.js";
 import "../common/input-field.js";
 import "../common/buttons/icon-button.js";
 import "../common/buttons/primary-button.js";
@@ -178,41 +179,29 @@ class AddressInput extends LitElement {
   }
 
   loadSavedAddress() {
-    const savedData = localStorage.getItem("trondheim-dashboard-location");
-
+    const savedData = storage.loadLocation();
     if (savedData) {
-      try {
-        const { address, lat, lon } = JSON.parse(savedData);
-
-        if (address && lat && lon) {
-          this.addressValue = address;
-          this.updateLocation(lat, lon, address);
-        }
-      } catch (error) {
-        console.error("Error loading saved address:", error);
-        localStorage.removeItem("trondheim-dashboard-location");
+      const { address, lat, lon } = savedData;
+      if (address && lat && lon) {
+        this.addressValue = address;
+        this.updateLocation(lat, lon, address);
       }
     }
   }
 
   saveLocation(address, lat, lon) {
     const data = { address, lat, lon };
-    localStorage.setItem("trondheim-dashboard-location", JSON.stringify(data));
+    storage.saveLocation(data);
   }
 
   async loadFromURL(address) {
-    const savedData = localStorage.getItem("trondheim-dashboard-location");
-
+    const savedData = storage.loadLocation();
     if (savedData) {
-      try {
-        const { address: savedAddress, lat, lon } = JSON.parse(savedData);
-        if (savedAddress === address && lat && lon) {
-          this.addressValue = address;
-          this.updateLocation(lat, lon, address);
-          return;
-        }
-      } catch (error) {
-        console.error("Error loading saved address:", error);
+      const { address: savedAddress, lat, lon } = savedData;
+      if (savedAddress === address && lat && lon) {
+        this.addressValue = address;
+        this.updateLocation(lat, lon, address);
+        return;
       }
     }
 
@@ -305,17 +294,13 @@ class AddressInput extends LitElement {
       return;
     }
 
-    const savedData = localStorage.getItem("trondheim-dashboard-location");
+    const savedData = storage.loadLocation();
     if (savedData) {
-      try {
-        const { address: savedAddress, lat, lon } = JSON.parse(savedData);
-        if (savedAddress === address && lat && lon) {
-          this.updateLocation(lat, lon, address);
-          this.suggestions = [];
-          return;
-        }
-      } catch (error) {
-        console.error("Error checking saved address:", error);
+      const { address: savedAddress, lat, lon } = savedData;
+      if (savedAddress === address && lat && lon) {
+        this.updateLocation(lat, lon, address);
+        this.suggestions = [];
+        return;
       }
     }
 

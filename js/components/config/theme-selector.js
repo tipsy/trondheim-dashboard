@@ -1,6 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 import { dispatchEvent } from "../../utils/event-helpers.js";
+import storage from "../../utils/storage.js";
 import "../common/custom-select.js";
 import "../common/buttons/icon-button.js";
 import "../common/heading-2.js";
@@ -12,8 +13,7 @@ class ThemeSelector extends LitElement {
 
   constructor() {
     super();
-    this.selectedTheme =
-      localStorage.getItem("trondheim-dashboard-theme") || "midnight-blue";
+    this.selectedTheme = storage.loadTheme();
     this.setTheme(this.selectedTheme);
   }
 
@@ -72,7 +72,7 @@ class ThemeSelector extends LitElement {
 
   setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("trondheim-dashboard-theme", theme);
+    storage.saveTheme(theme);
     dispatchEvent(this, "theme-changed", { theme });
   }
 
