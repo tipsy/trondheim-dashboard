@@ -1,9 +1,13 @@
 // filepath: /Users/david/git/trondheim-dashboard/js/components/events-widget.js
 // Events Widget - displays upcoming events in Trondheim
 
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
 class EventsWidget extends BaseWidget {
     constructor() {
         super();
+        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
         // default to today's date in YYYY-MM-DD (local date, not UTC)
         const today = new Date();
         const pad = (n) => String(n).padStart(2, '0');
@@ -118,12 +122,11 @@ class EventsWidget extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-calendar-star"></i>';
+        return html`<i class="mdi mdi-calendar-star"></i>`;
     }
 
     getHeaderContent() {
-        // Add a date selector in the header; we'll populate it after render
-        return `
+        return html`
             <style>
                 .date-selector-container { min-width: 180px; }
             </style>

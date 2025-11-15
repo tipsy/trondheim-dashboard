@@ -52,8 +52,7 @@ class WeatherCurrent extends LitElement {
         `
     ];
 
-    connectedCallback() {
-        super.connectedCallback();
+    firstUpdated() {
         adoptMDIStyles(this.shadowRoot);
     }
 

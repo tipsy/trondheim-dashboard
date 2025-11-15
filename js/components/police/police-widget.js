@@ -1,9 +1,13 @@
 // filepath: /Users/david/git/trondheim-dashboard/js/components/police-widget.js
 // Police Widget - displays latest police log messages from Trøndelag
 
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
 class PoliceWidget extends BaseWidget {
     constructor() {
         super();
+        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
     }
 
     async connectedCallback() {
@@ -87,7 +91,7 @@ class PoliceWidget extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-car-emergency"></i>';
+        return html`<i class="mdi mdi-car-emergency"></i>`;
     }
 
     getPlaceholderText() {

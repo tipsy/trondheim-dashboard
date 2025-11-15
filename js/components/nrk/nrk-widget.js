@@ -1,69 +1,63 @@
 // filepath: /Users/david/git/trondheim-dashboard/js/components/nrk-widget.js
 // NRK Widget - displays top 10 NRK Trøndelag stories
 
-class NrkWidget extends BaseWidget {
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
+class NRKWidget extends BaseWidget {
+    static properties = {
+        ...BaseWidget.properties,
+        stories: { type: Array, state: true }
+    };
+
     constructor() {
         super();
-        this.region = 'trondelag';
+        this.stories = [];
     }
 
-    async connectedCallback() {
-        // BaseWidget.connectedCallback calls render; we want to fetch after render
-        super.connectedCallback();
-        await this.loadStories();
+    firstUpdated() {
+        super.firstUpdated();
+        this.loadStories(); // Load after first render
     }
 
     async loadStories() {
         this.showLoading(true);
-        this.hideError();
 
         try {
-            const items = await NrkRssAPI.getTopTen(this.region);
-            this.renderStories(items);
-        } catch (error) {
-            this.showError('Could not load news');
-        } finally {
+            const items = await NrkRssAPI.getTopTen(this.region || 'trondelag');
+            this.stories = items || [];
             this.showLoading(false);
+        } catch (error) {
+            console.error('NRK: Error loading stories:', error);
+            this.showError('Could not load news');
         }
     }
 
-    renderStories(items) {
-        const content = this.getContentElement();
-        if (!content) return;
+    formatDate(dateString) {
+        try {
+            const d = new Date(dateString);
+            return isNaN(d.getTime()) ? dateString : d.toLocaleString();
+        } catch (e) {
+            return dateString;
+        }
+    }
 
-        if (!items || !items.length) {
-            content.innerHTML = '<p class="no-data">No news available</p>';
-            return;
+    renderContent() {
+        if (!this.stories || this.stories.length === 0) {
+            return html`<p class="no-data">No news available</p>`;
         }
 
-        // Declarative HTML generation: build a safe HTML string of widget-row elements
-        const escapeAttr = (s) => {
-            if (s === undefined || s === null) return '';
-            return String(s)
-                .replace(/&/g, '&amp;')
-                .replace(/"/g, '&quot;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;');
-        };
-
-        const formatDate = (dateString) => {
-            try {
-                const d = new Date(dateString);
-                return isNaN(d.getTime()) ? dateString : d.toLocaleString();
-            } catch (e) {
-                return dateString;
-            }
-        };
-
-        const rowsHtml = items.map(it => {
-            const title = escapeAttr(it.title || '');
-            const href = escapeAttr(it.link || '');
-            const displayDate = escapeAttr(formatDate(it.pubDate));
-
-            return `<widget-row title="${title}" description="${displayDate}" href="${href}"></widget-row>`;
-        }).join('');
-
-        content.innerHTML = `<div id="nrk-list" style="display:flex;flex-direction:column;gap:8px">${rowsHtml}</div>`;
+        return html`
+            <div id="nrk-list" style="display:flex;flex-direction:column;gap:8px">
+                ${this.stories.map(story => html`
+                    <widget-row
+                        title="${story.title || ''}"
+                        description="${this.formatDate(story.pubDate)}"
+                        href="${story.link || ''}">
+                    </widget-row>
+                `)}
+            </div>
+        `;
     }
 
     // BaseWidget overrides
@@ -72,16 +66,12 @@ class NrkWidget extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-newspaper"></i>';
+        return html`<i class="mdi mdi-newspaper"></i>`;
     }
 
     getPlaceholderText() {
         return 'Loading news...';
     }
-
-    afterRender() {
-        // No-op; styles are in nrk-row
-    }
 }
 
-customElements.define('nrk-widget', NrkWidget);
+customElements.define('nrk-widget', NRKWidget);

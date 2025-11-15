@@ -1,8 +1,12 @@
 // Weather Right Now Widget - shows current weather and next 4 hours
 
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
 class WeatherRightNow extends BaseWidget {
     constructor() {
         super();
+        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
         this.location = null;
     }
 
@@ -29,7 +33,7 @@ class WeatherRightNow extends BaseWidget {
     }
 
     renderWeather(data) {
-        const content = this.shadowRoot.getElementById('content');
+        const content = this.getContentElement();
         if (!content) return;
 
         if (!data || !data.properties || !data.properties.timeseries) {
@@ -87,7 +91,7 @@ class WeatherRightNow extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-weather-partly-cloudy"></i>';
+        return html`<i class="mdi mdi-weather-partly-cloudy"></i>`;
     }
 
     getPlaceholderText() {

@@ -1,6 +1,10 @@
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
 class TrashWidget extends BaseWidget {
     constructor() {
         super();
+        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
         this.address = null;
         this.addressId = null;
     }
@@ -103,7 +107,7 @@ class TrashWidget extends BaseWidget {
     }
 
     renderSchedule(schedule, addressData) {
-        const content = this.shadowRoot.getElementById('content');
+        const content = this.getContentElement();
 
         if (!schedule || !schedule.calendar) {
             this.showError('No schedule data available');
@@ -176,7 +180,7 @@ class TrashWidget extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-trash-can-outline"></i>';
+        return html`<i class="mdi mdi-trash-can-outline"></i>`;
     }
 
     getPlaceholderText() {

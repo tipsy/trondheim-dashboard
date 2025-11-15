@@ -10,7 +10,10 @@ class TrashRow extends LitElement {
         trashClass: { type: String, attribute: 'trash-class' }
     };
 
-    trashClass = 'other';
+    constructor() {
+        super();
+        this.trashClass = 'other';
+    }
 
     static styles = [
         sharedStyles,
@@ -132,8 +135,7 @@ class TrashRow extends LitElement {
         `
     ];
 
-    connectedCallback() {
-        super.connectedCallback();
+    firstUpdated() {
         adoptMDIStyles(this.shadowRoot);
     }
 

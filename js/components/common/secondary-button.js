@@ -22,8 +22,7 @@ class SecondaryButton extends BaseButton {
         `
     ];
 
-    connectedCallback() {
-        super.connectedCallback();
+    firstUpdated() {
         adoptMDIStyles(this.shadowRoot);
     }
 }

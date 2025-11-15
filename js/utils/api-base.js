@@ -149,9 +149,13 @@ class APIBase {
 
         // If caching is explicitly disabled (cacheTTL === 0), fetch directly and don't cache
         if (cacheTTL === 0) {
-            console.log(`🌐 [${apiName}] Fetching (no cache) - ${this.truncateUrl(originalUrl)}`);
+            if (CacheConfig.ENABLE_LOGGING) {
+                console.log(`🌐 [${apiName}] Fetching (no cache) - ${this.truncateUrl(originalUrl)}`);
+            }
             const data = await this.fetchJSONDirect(apiName, url, options, timeout);
-            console.log(`✅ [${apiName}] Received - ${this.truncateUrl(originalUrl)}`);
+            if (CacheConfig.ENABLE_LOGGING) {
+                console.log(`✅ [${apiName}] Received - ${this.truncateUrl(originalUrl)}`);
+            }
             return data;
         }
 
@@ -161,17 +165,23 @@ class APIBase {
         // Check cache first - use named parameter object
         const cached = CacheClient.get({ key: cacheKey, ttl: cacheTTL });
         if (cached !== null) {
-            const age = CacheClient.getAge({ key: cacheKey });
-            const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
-            console.log(`📦 [${apiName}] CACHE HIT (${ageStr}) - ${this.truncateUrl(originalUrl)}`);
+            if (CacheConfig.ENABLE_LOGGING) {
+                const age = CacheClient.getAge({ key: cacheKey });
+                const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
+                console.log(`📦 [${apiName}] CACHE HIT (${ageStr}) - ${this.truncateUrl(originalUrl)}`);
+            }
             return cached;
         }
 
         // No valid cache available, fetch and cache result
-        console.log(`❌ [${apiName}] CACHE MISS - Fetching - ${this.truncateUrl(originalUrl)}`);
+        if (CacheConfig.ENABLE_LOGGING) {
+            console.log(`❌ [${apiName}] CACHE MISS - Fetching - ${this.truncateUrl(originalUrl)}`);
+        }
         const data = await this.fetchJSONDirect(apiName, url, options, timeout);
         CacheClient.set({ key: cacheKey, data: data });
-        console.log(`✅ [${apiName}] Received & cached - ${this.truncateUrl(originalUrl)}`);
+        if (CacheConfig.ENABLE_LOGGING) {
+            console.log(`✅ [${apiName}] Received & cached - ${this.truncateUrl(originalUrl)}`);
+        }
         return data;
     }
 
@@ -235,26 +245,36 @@ class APIBase {
 
         // If caching is explicitly disabled (cacheTTL === 0), fetch directly and don't cache
         if (cacheTTL === 0) {
-            console.log(`🌐 [${apiName}] GraphQL (no cache) - ${this.truncateUrl(url)}`);
+            if (CacheConfig.ENABLE_LOGGING) {
+                console.log(`🌐 [${apiName}] GraphQL (no cache) - ${this.truncateUrl(url)}`);
+            }
             const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
-            console.log(`✅ [${apiName}] GraphQL received - ${this.truncateUrl(url)}`);
+            if (CacheConfig.ENABLE_LOGGING) {
+                console.log(`✅ [${apiName}] GraphQL received - ${this.truncateUrl(url)}`);
+            }
             return data;
         }
 
         // Check cache first
         const cached = CacheClient.get({ key: cacheKey, ttl: cacheTTL });
         if (cached !== null) {
-            const age = CacheClient.getAge({ key: cacheKey });
-            const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
-            console.log(`📦 [${apiName}] GraphQL CACHE HIT (${ageStr}) - ${this.truncateUrl(url)}`);
+            if (CacheConfig.ENABLE_LOGGING) {
+                const age = CacheClient.getAge({ key: cacheKey });
+                const ageStr = age ? `${Math.round(age / 1000)}s old` : 'unknown age';
+                console.log(`📦 [${apiName}] GraphQL CACHE HIT (${ageStr}) - ${this.truncateUrl(url)}`);
+            }
             return cached;
         }
 
         // No valid cache available, fetch and cache
-        console.log(`❌ [${apiName}] GraphQL CACHE MISS - Fetching - ${this.truncateUrl(url)}`);
+        if (CacheConfig.ENABLE_LOGGING) {
+            console.log(`❌ [${apiName}] GraphQL CACHE MISS - Fetching - ${this.truncateUrl(url)}`);
+        }
         const data = await this.fetchGraphQLDirect(apiName, url, query, variables, headers, timeout);
         CacheClient.set({ key: cacheKey, data: data });
-        console.log(`✅ [${apiName}] GraphQL received & cached - ${this.truncateUrl(url)}`);
+        if (CacheConfig.ENABLE_LOGGING) {
+            console.log(`✅ [${apiName}] GraphQL received & cached - ${this.truncateUrl(url)}`);
+        }
         return data;
     }
 

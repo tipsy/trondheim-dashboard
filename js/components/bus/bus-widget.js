@@ -1,3 +1,6 @@
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
 class BusWidget extends BaseWidget {
     constructor() {
         super();
@@ -171,11 +174,11 @@ class BusWidget extends BaseWidget {
     }
 
     getIcon() {
-        return `<i class="mdi mdi-bus-clock"></i>`;
+        return html`<i class="mdi mdi-bus-clock"></i>`;
     }
 
     getHeaderContent() {
-        return `
+        return html`
             <style>
                 .stop-selector-container {
                     flex: 1;

@@ -1,8 +1,12 @@
 // Weather Today Widget - shows overall weather for the day
 
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
 class WeatherToday extends BaseWidget {
     constructor() {
         super();
+        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
         this.location = null;
     }
 
@@ -32,7 +36,7 @@ class WeatherToday extends BaseWidget {
     }
 
     renderWeather(data, sunData) {
-        const content = this.shadowRoot.getElementById('content');
+        const content = this.getContentElement();
         if (!content) return;
 
         if (!data || !data.properties || !data.properties.timeseries) {
@@ -131,7 +135,7 @@ class WeatherToday extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-calendar-today"></i>';
+        return html`<i class="mdi mdi-calendar-today"></i>`;
     }
 
     getPlaceholderText() {

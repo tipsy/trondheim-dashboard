@@ -8,15 +8,19 @@ class ThemeSelector extends LitElement {
         themeOptions: { type: Array, state: true }
     };
 
-    themeOptions = [
-        { value: 'midnight-blue', label: 'Midnight Blue' },
-        { value: 'peach', label: 'Peach Pink' },
-        { value: 'solarized', label: 'Solarized️' },
-        { value: 'monokai', label: 'Monokai' },
-        { value: 'cat', label: 'Cat' },
-        { value: 'dark', label: 'Dark' },
-        { value: 'light', label: 'Light' },
-    ];
+    constructor() {
+        super();
+        this.selectedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'midnight-blue';
+        this.themeOptions = [
+            { value: 'midnight-blue', label: 'Midnight Blue' },
+            { value: 'peach', label: 'Peach Pink' },
+            { value: 'solarized', label: 'Solarized️' },
+            { value: 'monokai', label: 'Monokai' },
+            { value: 'cat', label: 'Cat' },
+            { value: 'dark', label: 'Dark' },
+            { value: 'light', label: 'Light' },
+        ];
+    }
 
     static styles = [
         sharedStyles,
@@ -50,17 +54,9 @@ class ThemeSelector extends LitElement {
         }
     `];
 
-    constructor() {
-        super();
-        this.selectedTheme = localStorage.getItem('trondheim-dashboard-theme') || 'midnight-blue';
-    }
-
-    connectedCallback() {
-        super.connectedCallback();
-        adoptMDIStyles(this.shadowRoot);
-    }
 
     async firstUpdated() {
+        adoptMDIStyles(this.shadowRoot);
         this.setTheme(this.selectedTheme);
 
         // Attach change listener to the select

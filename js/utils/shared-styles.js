@@ -13,7 +13,7 @@ export const sharedStyles = css`
 `;
 
 // Helper function to inject MDI font stylesheet into shadow root
-// Call this in connectedCallback of components that use MDI icons
+// Call this in firstUpdated() of Lit components that use MDI icons
 export function adoptMDIStyles(shadowRoot) {
     const mdiLink = document.createElement('link');
     mdiLink.rel = 'stylesheet';

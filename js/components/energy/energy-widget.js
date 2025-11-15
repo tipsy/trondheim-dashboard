@@ -1,6 +1,10 @@
+import { BaseWidget } from '../common/base-widget.js';
+import { html } from 'lit';
+
 class EnergyWidget extends BaseWidget {
     constructor() {
         super();
+        this._usesInnerHTML = true; // This widget uses innerHTML for rendering
         this.location = null;
         this.priceArea = 'NO3'; // Default to Trondheim area
     }
@@ -26,7 +30,7 @@ class EnergyWidget extends BaseWidget {
     }
 
     async renderPrices(prices) {
-        const content = this.shadowRoot.getElementById('content');
+        const content = this.getContentElement();
         if (!content) return;
 
         if (!prices || prices.length === 0) {
@@ -188,7 +192,7 @@ class EnergyWidget extends BaseWidget {
     }
 
     getIcon() {
-        return '<i class="mdi mdi-lightning-bolt-outline"></i>';
+        return html`<i class="mdi mdi-lightning-bolt-outline"></i>`;
     }
 
     getPlaceholderText() {

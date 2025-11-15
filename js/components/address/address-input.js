@@ -138,8 +138,6 @@ class AddressInput extends LitElement {
     connectedCallback() {
         super.connectedCallback();
 
-        adoptMDIStyles(this.shadowRoot);
-
         // Delay loading saved address to ensure parent listeners are attached
         setTimeout(() => {
             this.loadSavedAddress();
@@ -157,6 +155,10 @@ class AddressInput extends LitElement {
             }
         };
         document.addEventListener('click', this.clickOutsideHandler);
+    }
+
+    firstUpdated() {
+        adoptMDIStyles(this.shadowRoot);
     }
 
     disconnectedCallback() {
