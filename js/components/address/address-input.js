@@ -7,8 +7,6 @@ class AddressInput extends LitElement {
         addressValue: { type: String, state: true },
         suggestions: { type: Array, state: true },
         showSuggestions: { type: Boolean, state: true },
-        showCurrentLocation: { type: Boolean, state: true },
-        currentLocationText: { type: String, state: true },
         errorMessage: { type: String, state: true },
         isLoading: { type: Boolean, state: true },
         buttonsDisabled: { type: Boolean, state: true },
@@ -106,15 +104,6 @@ class AddressInput extends LitElement {
             }
         }
 
-        .current-location {
-            margin-top: var(--spacing-sm);
-            padding: var(--spacing-sm);
-            background-color: var(--success-bg, #e8f5e9);
-            color: var(--success-color, #2e7d32);
-            border-radius: var(--border-radius);
-            font-size: var(--font-size-sm);
-        }
-
         .suggestions {
             margin-top: var(--spacing-sm);
             border: 1px solid var(--border-color);
@@ -137,8 +126,6 @@ class AddressInput extends LitElement {
         this.addressValue = '';
         this.suggestions = [];
         this.showSuggestions = false;
-        this.showCurrentLocation = false;
-        this.currentLocationText = '';
         this.errorMessage = '';
         this.isLoading = false;
         this.buttonsDisabled = false;
@@ -250,7 +237,6 @@ class AddressInput extends LitElement {
 
         if (trimmedValue.length < 3) {
             this.hideSuggestionsState();
-            this.showCurrentLocation = false;
             this.hideErrorState();
             return;
         }
@@ -353,7 +339,6 @@ class AddressInput extends LitElement {
         this.saveLocation(addressToSave, location.lat, location.lon);
         this.updateLocation(location.lat, location.lon, addressToSave);
         this.hideSuggestionsState();
-        this.showCurrentLocation = false;
     }
 
     showSuggestionsState(locations) {
@@ -385,7 +370,6 @@ class AddressInput extends LitElement {
             this.addressValue = address;
             this.saveLocation(address, location.lat, location.lon);
             this.updateLocation(location.lat, location.lon, address);
-            this.showCurrentLocation = false;
         } catch (error) {
             console.error('Current location error:', error);
             this.showErrorState(error.message || 'Could not get your location. Check browser settings.');
@@ -403,7 +387,6 @@ class AddressInput extends LitElement {
 
     showErrorState(message) {
         this.errorMessage = message;
-        this.showCurrentLocation = false;
     }
 
     hideErrorState() {
@@ -467,11 +450,6 @@ class AddressInput extends LitElement {
                         ></address-suggestion-item>
                     `)}
                 </div>
-                ${this.showCurrentLocation ? html`
-                    <div class="current-location">
-                        ${this.currentLocationText}
-                    </div>
-                ` : ''}
                 ${this.errorMessage ? html`
                     <error-message
                         message=${this.errorMessage}
