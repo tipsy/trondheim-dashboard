@@ -327,6 +327,142 @@ https://trondheim-dashboard.com/?address=Nidarosdomen%2C%20Trondheim&theme=midni
 - Full-width widgets
 - Touch-optimized spacing
 
+## 🎛️ Layout Widget
+
+The Layout Widget allows you to customize the dashboard layout in real-time by reorganizing widgets and adjusting column widths.
+
+### Features
+
+- **Drag-and-drop reorganization** - Reorder widgets between columns by dragging
+- **Swap widgets** - Drag a widget onto another widget to swap their positions
+- **Column width adjustment** - Use sliders to resize columns (percentage-based)
+- **Toggle column visibility** - Disable columns to focus on fewer widgets
+- **Toggle widget visibility** - Hide individual widgets without removing them
+- **Reset layout** - Restore the default dashboard layout
+- **Persistent storage** - All layout changes are automatically saved to localStorage
+
+### How to Use
+
+1. **Open the Layout Editor** - Click the "Layout" widget (usually in the top-right)
+2. **Drag widgets** - Click and drag any widget handle (⋮⋮ symbol) to reorder
+3. **Swap widgets** - Drag a widget onto another widget to exchange their positions
+4. **Adjust column width** - Use the slider beneath each column header to resize (Min 15%, Max 100%)
+5. **Toggle columns** - Click the eye icon in the column header to hide/show the column
+6. **Toggle widgets** - Click the eye icon next to a widget to hide/show it individually
+7. **Reset layout** - Click the "Reset" button to restore the default layout
+8. **Close editor** - Click "Close" to exit the layout editor
+
+### Layout Data Structure
+
+The layout is stored in localStorage under the key `dashboard-layout` and has this structure:
+
+```javascript
+{
+  columns: [
+    {
+      enabled: true,
+      width: 25,           // Percentage of container width
+      previousWidth: null, // Width before disabling
+      widgets: [
+        "weather-right-now",
+        "weather-today"
+      ]
+    },
+    // ... more columns
+  ],
+  hiddenWidgets: {
+    "bus-widget": true,    // Widget ID -> visibility state
+    "events-widget": false
+  }
+}
+```
+
+### Default Layout
+
+The dashboard ships with a 4-column default layout:
+
+| Column 1 | Column 2 | Column 3 | Column 4 |
+|----------|----------|----------|----------|
+| Weather (Now) | Energy Prices | Bus Departures | Police Log |
+| Weather (Today) | News | Trash Collection | Events |
+
+This can be reset at any time using the "Reset" button.
+
+### Technical Details
+
+#### Architecture: Separation of Layout State and DOM
+
+The Layout Widget achieves efficient widget reorganization by **completely separating layout state from Lit rendering**:
+
+1. **Layout Widget (Editor Only)** - `layout-widget.js` manages only the layout configuration UI:
+   - Renders drag-drop interface showing widget names and column settings
+   - Updates layout state in localStorage
+   - Fires `layout-changed` events when layout changes
+   - **Does NOT render actual widgets**
+
+2. **Widgets (Already in DOM)** - All 8 widgets are pre-rendered once in `dashboard.js`:
+   ```javascript
+   <bus-widget id="bus-widget" style="display:none"></bus-widget>
+   <events-widget id="events-widget" style="display:none"></events-widget>
+   // ... etc - all widgets exist in the DOM with display:none
+   ```
+
+3. **Dashboard Orchestrator** - `dashboard.js` handles layout application:
+   - Listens for `layout-changed` events
+   - Calls `applyLayoutToStyles()` to rearrange widgets
+   - Uses native DOM APIs to move widgets between column containers
+
+#### How Widgets Move Without Re-rendering
+
+When you drag a widget in the layout editor, here's what happens:
+
+```
+User drags widget
+         ↓
+Layout widget updates state & fires layout-changed event
+         ↓
+Dashboard.handleLayoutChanged() → applyLayoutToStyles()
+         ↓
+DOM manipulation (NOT Lit re-render):
+  1. Move widget DOM nodes using appendChild()
+  2. Update CSS flex properties on columns
+  3. Toggle display: none/'' for visibility
+         ↓
+Widget remains in place visually, no Lit update, state preserved
+```
+
+**Key code from `dashboard.js`:**
+```javascript
+applyLayoutToStyles() {
+  // Move widget DOM nodes (not Lit rendering!)
+  col.widgets.slice(0, 2).forEach((widgetId) => {
+    const widget = grid.querySelector(`#${widgetId}`);
+    // Native DOM API - no Lit involved
+    container.appendChild(widget);  // Move to new column
+    widget.style.display = '';      // Show/hide
+  });
+}
+```
+
+#### Performance Benefits
+
+- **No re-initialization** - Widgets keep their loaded data, scroll positions, and internal state
+- **Fast DOM moves** - `appendChild()` is a fast native operation (just updates DOM pointers)
+- **No data refetch** - When a widget moves columns, its cached API data remains valid
+- **Instant visual feedback** - Layout changes are visible immediately without widget lifecycle events
+
+#### Constraints
+
+- Each column can hold a maximum of 2 widgets
+- Disabled columns cannot receive drops
+- Column width minimum is 15%, respecting layout constraints
+
+#### Persistence & Events
+
+- Changes automatically sync to localStorage under key `dashboard-layout`
+- Fires `layout-changed` custom event so dashboard can react
+- Uses native HTML5 Drag & Drop API with fallback to instance-level `_dragging` state for cross-target reliability
+
 ## 🛠️ Development
 
 ### Adding a New Widget

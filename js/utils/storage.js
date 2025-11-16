@@ -5,6 +5,7 @@ export const THEME_KEY = 'trondheim-dashboard-theme';
 export const LOCATION_KEY = 'trondheim-dashboard-location';
 export const BUS_STOP_KEY = 'trondheim-dashboard-bus-stop';
 export const CACHE_KEY_PREFIX = 'trondheim-cache-';
+export const LAYOUT_KEY = 'trondheim-dashboard-layout';
 
 function runCatching(fn, fallback = null) {
   try {
@@ -42,6 +43,10 @@ class StorageClient {
 
   saveResponse = (key, data) => this._set(key, { timestamp: Date.now(), data });
   loadResponse = (key) => this._get(key);
+
+  // Layout persistence helpers
+  saveLayout = (layout) => this._set(LAYOUT_KEY, layout);
+  loadLayout = () => this._get(LAYOUT_KEY);
 }
 
 const storage = new StorageClient();

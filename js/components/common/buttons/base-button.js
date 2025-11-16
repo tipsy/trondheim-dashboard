@@ -11,6 +11,7 @@ export class BaseButton extends LitElement {
   static properties = {
     disabled: { type: Boolean },
     loading: { type: Boolean },
+    dense: { type: Boolean },
   };
 
   static styles = [
@@ -37,6 +38,12 @@ export class BaseButton extends LitElement {
         justify-content: center;
         min-height: var(--input-height);
         gap: var(--spacing-xs);
+      }
+
+      :host([dense]) button {
+        padding: 4px 12px;
+        font-size: 0.9rem;
+        min-height: auto;
       }
 
       button:active:not(:disabled) {

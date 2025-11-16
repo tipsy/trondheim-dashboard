@@ -50,6 +50,12 @@ class ThemeSelector extends LitElement {
       heading-2 {
         margin-bottom: var(--spacing-sm);
       }
+
+      .header-actions {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
     `,
   ];
 
@@ -70,6 +76,10 @@ class ThemeSelector extends LitElement {
     }
   }
 
+  handleLayoutClick() {
+    dispatchEvent(this, "layout-editor-toggle", {});
+  }
+
   setTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme);
     storage.saveTheme(theme);
@@ -80,13 +90,22 @@ class ThemeSelector extends LitElement {
     return html`
       <div class="theme-container">
         <heading-2 icon="mdi-palette-outline" title="Config">
-          <icon-button
-            @button-click=${this.handleRefresh}
-            title="Clear cache and refresh"
-            aria-label="Clear cache and refresh"
-          >
-            <i class="mdi mdi-refresh"></i>
-          </icon-button>
+          <div class="header-actions">
+            <icon-button
+              @button-click=${this.handleLayoutClick}
+              title="Toggle layout editor"
+              aria-label="Toggle layout editor"
+            >
+              <i class="mdi mdi-view-dashboard"></i>
+            </icon-button>
+            <icon-button
+              @button-click=${this.handleRefresh}
+              title="Clear cache and refresh"
+              aria-label="Clear cache and refresh"
+            >
+              <i class="mdi mdi-refresh"></i>
+            </icon-button>
+          </div>
         </heading-2>
         <custom-select
           .options=${this.themeOptions}
