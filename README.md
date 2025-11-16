@@ -109,18 +109,20 @@ trondheim-dashboard/
         ├── api-base.js              # Fetch wrapper with caching
         ├── cache-client.js          # localStorage-based cache
         ├── cache-config.js          # Cache TTL configuration
-        ├── bus-api.js               # Entur GraphQL client
-        ├── weather-api.js           # MET Norway client
-        ├── energy-api.js            # Electricity price client
-        ├── trash-api.js             # TRV wasteplan client
-        ├── geocoding-api.js         # Nominatim geocoding client
-        ├── police-api.js            # Politiet API client
-        ├── nrk-rss-api.js          # NRK RSS parser
-        ├── events-api.js            # TrdEvents GraphQL client
         ├── icon-library.js          # Weather icon mapping
         ├── date-formatter.js        # Norwegian date formatting
         ├── shared-styles.js         # Lit shared CSS
-        └── event-helpers.js         # Custom event utilities
+        ├── event-helpers.js         # Custom event utilities
+        └── api/                     # External API clients
+            ├── api-base.js          # Base class for all APIs
+            ├── bus-api.js           # Entur GraphQL client
+            ├── weather-api.js       # MET Norway client
+            ├── energy-api.js        # Electricity price client
+            ├── trash-api.js         # TRV wasteplan client
+            ├── geocoding-api.js     # Nominatim geocoding client
+            ├── police-api.js        # Politiet API client
+            ├── nrk-rss-api.js      # NRK RSS parser
+            └── events-api.js        # TrdEvents GraphQL client
 ```
 
 ## 🏗️ Architecture
@@ -500,7 +502,7 @@ applyLayoutToStyles() {
 
 ### Adding a New API Integration
 
-1. **Create API client** in `js/utils/your-api.js`
+2. **Create API client** in `js/utils/api/your-api.js`
    ```javascript
    import { APIBase } from "./api-base.js";
    

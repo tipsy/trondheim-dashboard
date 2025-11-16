@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { TrashAPI } from "../../utils/trash-api.js";
+import { TrashAPI } from "../../utils/api/trash-api.js";
 import "./trash-row.js";
 import "../common/widget-list.js";
 

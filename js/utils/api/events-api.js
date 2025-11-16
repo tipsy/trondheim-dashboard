@@ -2,7 +2,7 @@
 // Returns upcoming events in Trondheim
 
 import { APIBase } from './api-base.js';
-import { CacheConfig } from './cache-config.js';
+import { CacheConfig } from '../cache-config.js';
 
 export class EventsAPI extends APIBase {
 

@@ -2,7 +2,7 @@
 // Using hvakosterstrommen.no API
 
 import { APIBase } from './api-base.js';
-import { CacheConfig } from './cache-config.js';
+import { CacheConfig } from '../cache-config.js';
 
 export class EnergyAPI extends APIBase {
 

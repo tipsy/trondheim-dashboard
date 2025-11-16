@@ -1,7 +1,7 @@
 import { LitElement, html, css } from "lit";
 import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 import { dispatchEvent } from "../../utils/event-helpers.js";
-import { GeocodingAPI } from "../../utils/geocoding-api.js";
+import { GeocodingAPI } from "../../utils/api/geocoding-api.js";
 import storage from "../../utils/storage.js";
 import "../common/input-field.js";
 import "../common/buttons/icon-button.js";

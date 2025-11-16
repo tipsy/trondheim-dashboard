@@ -2,7 +2,7 @@
 // Using MET Norway Locationforecast API
 
 import { APIBase } from './api-base.js';
-import { CacheConfig } from './cache-config.js';
+import { CacheConfig } from '../cache-config.js';
 
 export class WeatherAPI extends APIBase {
     static async getWeatherForecast(lat, lon) {

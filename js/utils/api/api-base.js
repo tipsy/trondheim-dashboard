@@ -1,8 +1,8 @@
 // API Base Class - Centralized API utilities for Trondheim Dashboard
 // Provides common functionality for all API classes
 
-import { CacheClient } from './cache-client.js';
-import { CacheConfig } from './cache-config.js';
+import { CacheClient } from '../cache-client.js';
+import { CacheConfig } from '../cache-config.js';
 
 export class APIBase {
     // Rate limiting: track last request time

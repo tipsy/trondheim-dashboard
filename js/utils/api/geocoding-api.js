@@ -2,7 +2,7 @@
 // Using Nominatim (OpenStreetMap) for geocoding
 
 import { APIBase } from './api-base.js';
-import { CacheConfig } from './cache-config.js';
+import { CacheConfig } from '../cache-config.js';
 
 export class GeocodingAPI extends APIBase {
 

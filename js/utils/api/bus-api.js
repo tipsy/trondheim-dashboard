@@ -3,7 +3,7 @@
 // Note: We query individual quays (platforms) to separate different directions
 
 import { APIBase } from './api-base.js';
-import { CacheConfig } from './cache-config.js';
+import { CacheConfig } from '../cache-config.js';
 
 export class BusAPI extends APIBase {
     // Track in-flight requests to avoid duplicate concurrent fetches for the same quay

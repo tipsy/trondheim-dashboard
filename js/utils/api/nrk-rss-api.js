@@ -3,8 +3,8 @@
 // Updated: 2025-11-15
 
 import { APIBase } from './api-base.js';
-import { CacheConfig } from './cache-config.js';
-import { CacheClient } from './cache-client.js';
+import { CacheConfig } from '../cache-config.js';
+import { CacheClient } from '../cache-client.js';
 
 export class NrkRssAPI extends APIBase {
     static defaultFeed(region = 'trondelag') {

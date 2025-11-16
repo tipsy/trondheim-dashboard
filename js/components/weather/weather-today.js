@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { WeatherAPI } from "../../utils/weather-api.js";
+import { WeatherAPI } from "../../utils/api/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
 

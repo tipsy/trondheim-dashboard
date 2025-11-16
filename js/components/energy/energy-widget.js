@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { EnergyAPI } from "../../utils/energy-api.js";
+import { EnergyAPI } from "../../utils/api/energy-api.js";
 
 class EnergyWidget extends BaseWidget {
   static properties = {

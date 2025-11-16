@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { EventsAPI } from "../../utils/events-api.js";
+import { EventsAPI } from "../../utils/api/events-api.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
 import "../common/widget-row.js";
 import "../common/widget-list.js";

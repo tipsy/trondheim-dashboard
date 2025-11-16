@@ -2,7 +2,7 @@
 // Returns latest police log messages from Trøndelag
 
 import { APIBase } from './api-base.js';
-import { CacheConfig } from './cache-config.js';
+import { CacheConfig } from '../cache-config.js';
 
 export class PoliceAPI extends APIBase {
     static defaultEndpoint() {

@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { BusAPI } from "../../utils/bus-api.js";
+import { BusAPI } from "../../utils/api/bus-api.js";
 import "./bus-row.js";
 import "../common/widget-list.js";
 import "../common/custom-select.js";
