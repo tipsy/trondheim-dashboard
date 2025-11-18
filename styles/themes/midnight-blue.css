@@ -57,9 +57,4 @@
     /* Scrollbar colors */
     --scrollbar-thumb: rgba(93, 173, 226, 0.3);
     --scrollbar-thumb-hover: rgba(93, 173, 226, 0.5);
-
-    /* Energy price colors */
-    --energy-cheap: #52b788;
-    --energy-neutral: #f4a261;
-    --energy-expensive: #e76f51;
 }

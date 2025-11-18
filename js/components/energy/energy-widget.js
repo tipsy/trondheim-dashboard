@@ -38,18 +38,13 @@ class EnergyWidget extends BaseWidget {
         font-size: 34px;
         font-weight: bold;
         line-height: 1;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
 
-      .current-price-value.cheap {
-        color: var(--energy-cheap);
-      }
-
-      .current-price-value.neutral {
-        color: var(--energy-neutral);
-      }
-
-      .current-price-value.expensive {
-        color: var(--energy-expensive);
+      .price-emoji {
+        font-size: 32px;
       }
 
       .next-hours-chips {
@@ -90,17 +85,6 @@ class EnergyWidget extends BaseWidget {
         color: var(--text-light);
       }
 
-      .price.cheap {
-        color: var(--energy-cheap);
-      }
-
-      .price.neutral {
-        color: var(--energy-neutral);
-      }
-
-      .price.expensive {
-        color: var(--energy-expensive);
-      }
 
       .trend.up {
         color: var(--error-color, #e74c3c);
@@ -187,6 +171,12 @@ class EnergyWidget extends BaseWidget {
     return "expensive";
   }
 
+  getPriceEmoji(priceInKroner) {
+    if (priceInKroner < 0.50) return "😌";
+    if (priceInKroner <= 1.00) return "";
+    return "😬";
+  }
+
   calculateNextHours(nextFourRaw) {
     return nextFourRaw.map((p, idx) => {
       const start = new Date(p.time_start);
@@ -224,14 +214,15 @@ class EnergyWidget extends BaseWidget {
     }
 
     const currentPriceInKroner = this.currentPrice ? this.currentPrice.NOK_per_kWh : null;
-    const currentPriceColor = currentPriceInKroner ? this.getPriceColor(currentPriceInKroner) : "";
+    const currentPriceEmoji = currentPriceInKroner ? this.getPriceEmoji(currentPriceInKroner) : "";
 
     return html`
       ${this.currentPrice
         ? html`
             <div class="current-price">
-              <div class="current-price-value ${currentPriceColor}">
+              <div class="current-price-value">
                 ${currentPriceInKroner.toFixed(2)} kr
+                ${currentPriceEmoji ? html`<span class="price-emoji">${currentPriceEmoji}</span>` : ""}
               </div>
             </div>
           `
@@ -242,7 +233,7 @@ class EnergyWidget extends BaseWidget {
           (h) => html`
             <div class="chip">
               <div class="price-row">
-                <div class="price ${h.priceColor} text-wrap">${h.valueStr} kr</div>
+                <div class="price text-wrap">${h.valueStr}</div>
                 ${h.trend !== "none"
                   ? html`
                       <div class="trend ${h.trend}">
