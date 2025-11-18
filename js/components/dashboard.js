@@ -153,6 +153,7 @@ class TrondheimDashboard extends LitElement {
         .widgets-grid .column > * {
           min-height: 0;
           overflow: hidden;
+          order: var(--widget-order, 0);
         }
 
         /* Energy widget - never grows, stays at natural height */
