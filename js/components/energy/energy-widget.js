@@ -37,8 +37,19 @@ class EnergyWidget extends BaseWidget {
       .current-price-value {
         font-size: 34px;
         font-weight: bold;
-        color: var(--text-color);
         line-height: 1;
+      }
+
+      .current-price-value.cheap {
+        color: var(--energy-cheap);
+      }
+
+      .current-price-value.neutral {
+        color: var(--energy-neutral);
+      }
+
+      .current-price-value.expensive {
+        color: var(--energy-expensive);
       }
 
       .next-hours-chips {
@@ -77,6 +88,18 @@ class EnergyWidget extends BaseWidget {
       .chip .time {
         font-size: 12px;
         color: var(--text-light);
+      }
+
+      .price.cheap {
+        color: var(--energy-cheap);
+      }
+
+      .price.neutral {
+        color: var(--energy-neutral);
+      }
+
+      .price.expensive {
+        color: var(--energy-expensive);
       }
 
       .trend.up {
@@ -158,6 +181,12 @@ class EnergyWidget extends BaseWidget {
     return "flat";
   }
 
+  getPriceColor(priceInKroner) {
+    if (priceInKroner < 0.50) return "cheap";
+    if (priceInKroner <= 1.00) return "neutral";
+    return "expensive";
+  }
+
   calculateNextHours(nextFourRaw) {
     return nextFourRaw.map((p, idx) => {
       const start = new Date(p.time_start);
@@ -165,17 +194,20 @@ class EnergyWidget extends BaseWidget {
         hour: "2-digit",
         minute: "2-digit"
       });
-      const valueNum = Math.round(p.NOK_per_kWh * 100);
+      const priceInKroner = p.NOK_per_kWh;
+      const priceStr = priceInKroner.toFixed(2);
 
       // Get previous value for comparison
       const prevVal = idx === 0
-        ? this.currentPrice ? Math.round(this.currentPrice.NOK_per_kWh * 100) : null
-        : Math.round(nextFourRaw[idx - 1].NOK_per_kWh * 100);
+        ? this.currentPrice ? this.currentPrice.NOK_per_kWh : null
+        : nextFourRaw[idx - 1].NOK_per_kWh;
 
       return {
         label: timeLabel,
-        valueStr: `${valueNum} øre`,
-        trend: this.getTrend(valueNum, prevVal),
+        valueStr: priceStr,
+        valueNum: priceInKroner,
+        priceColor: this.getPriceColor(priceInKroner),
+        trend: this.getTrend(priceInKroner, prevVal),
       };
     });
   }
@@ -191,12 +223,15 @@ class EnergyWidget extends BaseWidget {
       return html`<p class="no-data">No energy price data available</p>`;
     }
 
+    const currentPriceInKroner = this.currentPrice ? this.currentPrice.NOK_per_kWh : null;
+    const currentPriceColor = currentPriceInKroner ? this.getPriceColor(currentPriceInKroner) : "";
+
     return html`
       ${this.currentPrice
         ? html`
             <div class="current-price">
-              <div class="current-price-value">
-                ${Math.round(this.currentPrice.NOK_per_kWh * 100)} øre
+              <div class="current-price-value ${currentPriceColor}">
+                ${currentPriceInKroner.toFixed(2)} kr
               </div>
             </div>
           `
@@ -207,7 +242,7 @@ class EnergyWidget extends BaseWidget {
           (h) => html`
             <div class="chip">
               <div class="price-row">
-                <div class="price text-wrap">${h.valueStr}</div>
+                <div class="price ${h.priceColor} text-wrap">${h.valueStr} kr</div>
                 ${h.trend !== "none"
                   ? html`
                       <div class="trend ${h.trend}">
@@ -230,3 +265,4 @@ class EnergyWidget extends BaseWidget {
 }
 
 customElements.define("energy-widget", EnergyWidget);
+
