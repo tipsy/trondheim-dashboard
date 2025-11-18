@@ -40,9 +40,10 @@ class TrondheimDashboard extends LitElement {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
-        width: 100%;
-        max-width: 100%;
-        box-sizing: border-box;
+        --col-1-width: 25;
+        --col-2-width: 20;
+        --col-3-width: 30;
+        --col-4-width: 25;
       }
 
       .dashboard-content {
@@ -70,6 +71,10 @@ class TrondheimDashboard extends LitElement {
         gap: var(--spacing-md, 16px);
       }
 
+      .address-section.hidden {
+        display: none;
+      }
+
       .address-section address-input {
         width: 100%;
         height: 100%;
@@ -78,6 +83,14 @@ class TrondheimDashboard extends LitElement {
       .address-section theme-selector {
         width: 100%;
         height: 100%;
+      }
+
+      layout-widget {
+        flex-shrink: 0;
+      }
+
+      layout-widget.hidden {
+        display: none;
       }
 
       .widgets-grid {
@@ -106,15 +119,10 @@ class TrondheimDashboard extends LitElement {
         }
 
         .address-section {
-          flex-shrink: 0;
           display: grid;
           grid-template-columns: 2fr 1fr;
           gap: var(--spacing-md, 16px);
           align-items: stretch;
-        }
-
-        layout-widget {
-          flex-shrink: 0;
         }
 
         /* Widgets grid - flexbox with dynamic column widths */
@@ -128,22 +136,23 @@ class TrondheimDashboard extends LitElement {
         }
 
         /* Column containers - each is a flex column */
-        /* Columns use flex-grow values set by JS to proportionally fill width */
         .widgets-grid .column {
           display: flex;
           flex-direction: column;
           gap: var(--spacing-md, 16px);
           min-height: 0;
           overflow: hidden;
-          flex: 1 1 0; /* Default equal width, overridden by JS */
-          min-width: 0; /* Allow columns to shrink below content size */
         }
 
-        /* All widgets use CSS order property for positioning */
+        .widgets-grid .column[data-column="0"] { flex: var(--col-1-width); }
+        .widgets-grid .column[data-column="1"] { flex: var(--col-2-width); }
+        .widgets-grid .column[data-column="2"] { flex: var(--col-3-width); }
+        .widgets-grid .column[data-column="3"] { flex: var(--col-4-width); }
+
+        /* All widgets */
         .widgets-grid .column > * {
           min-height: 0;
           overflow: hidden;
-          order: var(--widget-order, 0);
         }
 
         /* Energy widget - never grows, stays at natural height */
@@ -188,9 +197,8 @@ class TrondheimDashboard extends LitElement {
   }
 
   updated(changed) {
-    if (changed.has('layout')) {
-      this.applyLayoutToStyles();
-    }
+    // Layout changes are handled by handleLayoutChanged() which has smart detection
+    // layoutEditorOpen changes just toggle CSS visibility, no layout updates needed
   }
 
   disconnectedCallback() {
@@ -212,25 +220,23 @@ class TrondheimDashboard extends LitElement {
   render() {
     return html`
       <div class="dashboard-content">
-        ${!this.layoutEditorOpen ? html`
-          <div class="address-section">
-            <address-input
-              id="address-input"
-              @location-updated=${this.handleLocationUpdate}
-            ></address-input>
-            <theme-selector
-              @theme-changed=${this.handleThemeChange}
-              @layout-editor-toggle=${this.handleLayoutEditorToggle}
-            ></theme-selector>
-          </div>
-        ` : ''}
+        <div class="address-section ${this.layoutEditorOpen ? 'hidden' : ''}">
+          <address-input
+            id="address-input"
+            @location-updated=${this.handleLocationUpdate}
+          ></address-input>
+          <theme-selector
+            @theme-changed=${this.handleThemeChange}
+            @layout-editor-toggle=${this.handleLayoutEditorToggle}
+          ></theme-selector>
+        </div>
 
-        ${this.layoutEditorOpen ? html`
-          <layout-widget
-            @layout-changed=${this.handleLayoutChanged}
-            @layout-editor-close=${this.handleLayoutEditorClose}
-          ></layout-widget>
-        ` : ''}
+        <layout-widget
+          class="${this.layoutEditorOpen ? '' : 'hidden'}"
+          .layout=${this.layout}
+          @layout-changed=${this.handleLayoutChanged}
+          @layout-editor-close=${this.handleLayoutEditorClose}
+        ></layout-widget>
 
         <div class="widgets-grid">
           <!-- Column containers for flexbox layout -->
@@ -254,8 +260,32 @@ class TrondheimDashboard extends LitElement {
   }
 
   handleLayoutChanged(e) {
-    this.layout = e.detail.layout;
-    this.applyLayoutToStyles();
+    const oldLayout = this.layout;
+    const newLayout = e.detail.layout;
+
+    // Check if only widths changed (no widget movement or visibility changes)
+    const onlyWidthsChanged = oldLayout &&
+      JSON.stringify(oldLayout.hiddenWidgets) === JSON.stringify(newLayout.hiddenWidgets) &&
+      oldLayout.columns.every((col, i) =>
+        col.enabled === newLayout.columns[i].enabled &&
+        JSON.stringify(col.widgets) === JSON.stringify(newLayout.columns[i].widgets)
+      );
+
+    this.layout = newLayout;
+
+    if (onlyWidthsChanged) {
+      this.updateColumnWidths();
+    } else {
+      this.applyLayoutToStyles();
+    }
+  }
+
+  updateColumnWidths() {
+    // Fast path: only update CSS variables for column widths
+    const cols = this.layout?.columns || [];
+    cols.forEach((col, colIndex) => {
+      this.style.setProperty(`--col-${colIndex + 1}-width`, col.enabled ? col.width : 0);
+    });
   }
 
   handleLayoutEditorToggle() {
@@ -278,21 +308,13 @@ class TrondheimDashboard extends LitElement {
       // Get all column containers
       const columnContainers = Array.from(grid.querySelectorAll('.column'));
 
-      // Set column widths using CSS with flex-grow to ensure 100% width
-      // Use the width values as proportions (flex-grow values)
+      // Set column widths using CSS variables and visibility
       cols.forEach((col, colIndex) => {
         const container = columnContainers[colIndex];
         if (!container) return;
 
-        if (col.enabled) {
-          // Use flex-grow with the width as the proportion
-          // This ensures columns always fill 100% width regardless of total
-          container.style.flex = `${col.width} 1 0`;
-          container.style.display = '';
-        } else {
-          container.style.flex = '0 0 0';
-          container.style.display = 'none';
-        }
+        this.style.setProperty(`--col-${colIndex + 1}-width`, col.enabled ? col.width : 0);
+        container.style.display = col.enabled ? '' : 'none';
       });
 
       // Get all widgets

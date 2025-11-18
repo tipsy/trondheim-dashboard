@@ -5,14 +5,14 @@ import { DEFAULT_LAYOUT, MAX_WIDGETS_PER_COLUMN, STEP, MIN_WIDTH } from '../../u
 
 class LayoutWidget extends BaseWidget {
   static properties = {
-    layout: { type: Object, state: true },
+    layout: { type: Object },
   };
 
   constructor() {
     super();
     this.title = 'Layout';
     this.icon = 'mdi-view-grid';
-    this.layout = storage.loadLayout() || DEFAULT_LAYOUT;
+    this.layout = DEFAULT_LAYOUT;
     this._dragging = null;
   }
 
