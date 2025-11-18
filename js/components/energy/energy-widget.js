@@ -205,6 +205,7 @@ class EnergyWidget extends BaseWidget {
   getTrendIcon(trend) {
     if (trend === "up") return "mdi-arrow-up";
     if (trend === "down") return "mdi-arrow-down";
+    if (trend === "flat") return "mdi-minus";
     return "";
   }
 
@@ -234,7 +235,7 @@ class EnergyWidget extends BaseWidget {
             <div class="chip">
               <div class="price-row">
                 <div class="price text-wrap">${h.valueStr}</div>
-                ${h.trend !== "none"
+                ${this.getTrendIcon(h.trend)
                   ? html`
                       <div class="trend ${h.trend}">
                         <i class="mdi ${this.getTrendIcon(h.trend)}"></i>
