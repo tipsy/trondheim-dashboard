@@ -40,6 +40,9 @@ class TrondheimDashboard extends LitElement {
         display: flex;
         flex-direction: column;
         min-height: 100vh;
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
       }
 
       .dashboard-content {
@@ -48,6 +51,8 @@ class TrondheimDashboard extends LitElement {
         flex: 1;
         padding: var(--spacing-sm, 8px);
         gap: var(--spacing-sm, 8px);
+        width: 100%;
+        box-sizing: border-box;
       }
 
       /* Larger padding on desktop */
@@ -88,6 +93,7 @@ class TrondheimDashboard extends LitElement {
         :host {
           height: 100vh;
           overflow: hidden;
+          width: 100%;
         }
 
         .dashboard-content {
@@ -96,6 +102,7 @@ class TrondheimDashboard extends LitElement {
           flex-direction: column;
           gap: var(--spacing-md, 16px);
           height: 100%;
+          width: 100%;
         }
 
         .address-section {
@@ -117,22 +124,26 @@ class TrondheimDashboard extends LitElement {
           flex-direction: row;
           gap: var(--spacing-md, 16px);
           min-height: 0;
+          width: 100%;
         }
 
         /* Column containers - each is a flex column */
+        /* Columns use flex-grow values set by JS to proportionally fill width */
         .widgets-grid .column {
           display: flex;
           flex-direction: column;
           gap: var(--spacing-md, 16px);
           min-height: 0;
           overflow: hidden;
-          flex: 1; /* Default equal width, overridden by JS */
+          flex: 1 1 0; /* Default equal width, overridden by JS */
+          min-width: 0; /* Allow columns to shrink below content size */
         }
 
-        /* All widgets */
+        /* All widgets use CSS order property for positioning */
         .widgets-grid .column > * {
           min-height: 0;
           overflow: hidden;
+          order: var(--widget-order, 0);
         }
 
         /* Energy widget - never grows, stays at natural height */
@@ -161,13 +172,6 @@ class TrondheimDashboard extends LitElement {
         #police-widget,
         #nrk-widget {
           flex: 1;
-        }
-      }
-
-      /* Tablet layout */
-      @media (min-width: 768px) and (max-width: 1024px) {
-        .widgets-grid {
-          grid-template-columns: 1fr 1fr;
         }
       }
     `,
@@ -235,15 +239,15 @@ class TrondheimDashboard extends LitElement {
           <div class="column" data-column="2"></div>
           <div class="column" data-column="3"></div>
 
-          <!-- Widgets rendered here, will be moved into columns by JS -->
-          <bus-widget id="bus-widget" style="display:none"></bus-widget>
-          <events-widget id="events-widget" style="display:none"></events-widget>
-          <weather-right-now id="weather-right-now" style="display:none"></weather-right-now>
-          <weather-today id="weather-today" style="display:none"></weather-today>
-          <energy-widget id="energy-widget" style="display:none"></energy-widget>
-          <trash-widget id="trash-widget" style="display:none"></trash-widget>
-          <police-widget id="police-widget" style="display:none"></police-widget>
-          <nrk-widget id="nrk-widget" style="display:none"></nrk-widget>
+          <!-- Widgets pool - will be shown/hidden and assigned to columns via classes -->
+          <bus-widget id="bus-widget"></bus-widget>
+          <events-widget id="events-widget"></events-widget>
+          <weather-right-now id="weather-right-now"></weather-right-now>
+          <weather-today id="weather-today"></weather-today>
+          <energy-widget id="energy-widget"></energy-widget>
+          <trash-widget id="trash-widget"></trash-widget>
+          <police-widget id="police-widget"></police-widget>
+          <nrk-widget id="nrk-widget"></nrk-widget>
         </div>
       </div>
     `;
@@ -263,7 +267,8 @@ class TrondheimDashboard extends LitElement {
   }
 
   applyLayoutToStyles() {
-    // Apply layout changes by moving widgets into flexbox columns
+    // Apply layout using flexbox columns with minimal DOM manipulation
+    // Uses CSS order property to reorder widgets within columns without moving them
     try {
       const cols = this.layout?.columns || [];
       const hiddenWidgets = this.layout?.hiddenWidgets || {};
@@ -273,16 +278,19 @@ class TrondheimDashboard extends LitElement {
       // Get all column containers
       const columnContainers = Array.from(grid.querySelectorAll('.column'));
 
-      // Set column widths using flex
+      // Set column widths using CSS with flex-grow to ensure 100% width
+      // Use the width values as proportions (flex-grow values)
       cols.forEach((col, colIndex) => {
         const container = columnContainers[colIndex];
         if (!container) return;
 
         if (col.enabled) {
-          container.style.flex = `${col.width}`;
+          // Use flex-grow with the width as the proportion
+          // This ensures columns always fill 100% width regardless of total
+          container.style.flex = `${col.width} 1 0`;
           container.style.display = '';
         } else {
-          container.style.flex = '0';
+          container.style.flex = '0 0 0';
           container.style.display = 'none';
         }
       });
@@ -293,50 +301,48 @@ class TrondheimDashboard extends LitElement {
         'energy-widget', 'trash-widget', 'police-widget', 'nrk-widget'
       ];
 
-      // First, clear all columns and hide all widgets
-      columnContainers.forEach(container => {
-        // Remove widgets from column but don't destroy them
-        while (container.firstChild) {
-          const child = container.firstChild;
-          grid.appendChild(child);
-          child.style.display = 'none';
-        }
-      });
+      // Build map of widget -> {targetColumn, order, visible}
+      const widgetTargets = new Map();
 
-      // Now place widgets into their columns (max 2 per column)
       cols.forEach((col, colIndex) => {
         if (!col.enabled) return;
 
-        const container = columnContainers[colIndex];
-        if (!container) return;
-
-        // Count visible widgets in this column
-        const visibleWidgets = col.widgets.slice(0, 2).filter(widgetId => !hiddenWidgets[widgetId]);
-        const isOnlyWidget = visibleWidgets.length === 1;
-
-        // Only process the first 2 widgets in each column
-        col.widgets.slice(0, 2).forEach((widgetId) => {
-          const widget = grid.querySelector(`#${widgetId}`);
-          if (!widget) return;
-
+        col.widgets.slice(0, 2).forEach((widgetId, orderIndex) => {
           const isHidden = hiddenWidgets[widgetId];
-
-          if (isHidden) {
-            widget.style.display = 'none';
-          } else {
-            widget.style.display = '';
-
-            // Special case: energy widget grows when it's alone
-            if (widgetId === 'energy-widget' && isOnlyWidget) {
-              widget.style.flex = '1';
-            } else if (widgetId === 'energy-widget') {
-              widget.style.flex = '0 0 auto';
-            }
-
-            container.appendChild(widget);
-          }
+          widgetTargets.set(widgetId, {
+            column: colIndex,
+            order: orderIndex,
+            visible: !isHidden
+          });
         });
       });
+
+      // Process each widget
+      allWidgets.forEach(widgetId => {
+        const widget = grid.querySelector(`#${widgetId}`);
+        if (!widget) return;
+
+        const target = widgetTargets.get(widgetId);
+
+        if (!target || !target.visible) {
+          // Hide this widget
+          widget.style.display = 'none';
+          widget.style.setProperty('--widget-order', '999');
+        } else {
+          // Show and position this widget
+          widget.style.display = '';
+          widget.style.setProperty('--widget-order', `${target.order}`);
+
+          const targetContainer = columnContainers[target.column];
+
+          // Only appendChild if widget is not already in the correct parent
+          // This minimizes DOM manipulation
+          if (widget.parentElement !== targetContainer) {
+            targetContainer.appendChild(widget);
+          }
+        }
+      });
+
     } catch (err) {
       console.warn('applyLayoutToStyles failed', err);
     }
