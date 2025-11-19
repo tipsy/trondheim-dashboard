@@ -51,7 +51,7 @@ class TrondheimDashboard extends LitElement {
         flex-direction: column;
         flex: 1;
         padding: var(--spacing-sm, 8px);
-        gap: var(--spacing-sm, 8px);
+        gap: var(--spacing-md, 16px);
         width: 100%;
         box-sizing: border-box;
       }
@@ -60,7 +60,6 @@ class TrondheimDashboard extends LitElement {
       @media (min-width: 768px) {
         .dashboard-content {
           padding: var(--spacing-md, 16px);
-          gap: var(--spacing-md, 16px);
         }
       }
 
@@ -99,6 +98,13 @@ class TrondheimDashboard extends LitElement {
         gap: var(--spacing-md, 16px);
         flex: 1;
         min-height: 0;
+      }
+
+      /* Mobile: columns stack vertically, widgets within columns need spacing */
+      .widgets-grid .column {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md, 16px);
       }
 
       /* Desktop layout */
