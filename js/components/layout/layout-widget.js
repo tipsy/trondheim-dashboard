@@ -1,5 +1,6 @@
 import { html, css } from 'lit';
 import { BaseWidget } from '../common/base-widget.js';
+import '../common/custom-slider.js';
 import storage from '../../utils/storage.js';
 import { DEFAULT_LAYOUT, MAX_WIDGETS_PER_COLUMN, STEP, MIN_WIDTH } from '../../utils/layout-utils.js';
 
@@ -58,8 +59,9 @@ class LayoutWidget extends BaseWidget {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 2px 8px;
-        background: rgba(0, 0, 0, 0.2);
+        padding: 8px;
+        background: var(--alt-background);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
       }
 
@@ -67,8 +69,9 @@ class LayoutWidget extends BaseWidget {
         margin-left: 6px;
         min-width: 40px;
         text-align: left;
-        color: var(--text);
+        color: var(--text-color);
         font-size: 0.9rem;
+        font-weight: 500;
       }
 
       .slider {
@@ -78,12 +81,19 @@ class LayoutWidget extends BaseWidget {
       .eye-btn {
         background: transparent;
         border: none;
-        color: inherit;
+        color: var(--text-color);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         padding: 6px;
+        border-radius: 4px;
+        transition: background-color 0.2s, color 0.2s;
+      }
+
+      .eye-btn:hover {
+        background: var(--hover-bg);
+        color: var(--primary-color);
       }
 
       .eye-btn i.mdi {
@@ -96,14 +106,21 @@ class LayoutWidget extends BaseWidget {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 2px 8px;
-        background: rgba(0, 0, 0, 0.2);
+        padding: 8px;
+        background: var(--alt-background);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         min-height: 42px;
+        transition: background-color 0.2s, border-color 0.2s;
       }
 
       .slot-item.draggable {
         cursor: grab;
+      }
+
+      .slot-item.draggable:hover {
+        background: var(--hover-bg);
+        border-color: var(--primary-color);
       }
 
       .slot-item.hidden-widget {
@@ -111,7 +128,8 @@ class LayoutWidget extends BaseWidget {
       }
 
       .slot-item.empty {
-        background: rgba(0, 0, 0, 0.1);
+        background: transparent;
+        border: 2px dashed var(--border-color);
         color: var(--text-light);
         font-size: 0.85rem;
         justify-content: center;
@@ -125,6 +143,7 @@ class LayoutWidget extends BaseWidget {
 
       .widget-label {
         flex: 1;
+        color: var(--text-color);
       }
     `,
   ];
@@ -155,16 +174,15 @@ class LayoutWidget extends BaseWidget {
             <!-- Column header: pct | slider | eye -->
             <div class="column-header">
               <div class="pct">${col.enabled ? col.width + '%' : ((col.previousWidth || col.width) + '%')}</div>
-              <input
+              <custom-slider
                 class="slider"
-                type="range"
-                min="${MIN_WIDTH}"
-                max="100"
-                step="${STEP}"
+                .min=${MIN_WIDTH}
+                .max=${100}
+                .step=${STEP}
                 .value=${col.width}
                 ?disabled=${!col.enabled}
                 @input=${(e) => this.onSliderInput(colIndex, e)}
-              />
+              ></custom-slider>
               <button
                 class="eye-btn"
                 @click=${() => this.toggleColumnEnabled(colIndex)}
@@ -268,7 +286,8 @@ class LayoutWidget extends BaseWidget {
   }
 
   onSliderInput(index, e) {
-    const val = parseInt(e.target.value, 10);
+    // Handle both native input events and custom-slider events
+    const val = e.detail ? parseInt(e.detail.value, 10) : parseInt(e.target.value, 10);
     const cols = this.layout.columns.map((c, i) => {
       if (i === index) {
         return { ...c, width: val };
