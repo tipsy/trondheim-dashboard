@@ -1,6 +1,6 @@
 /* Midnight Blue theme - Elegant dark blue */
 :root[data-theme="midnight-blue"] {
-    --background-image: none;
+    --background: none;
     /* Colors */
     --primary-color: #5dade2;
     --secondary-color: #85c1e9;
@@ -57,4 +57,7 @@
     /* Scrollbar colors */
     --scrollbar-thumb: rgba(93, 173, 226, 0.3);
     --scrollbar-thumb-hover: rgba(93, 173, 226, 0.5);
+
+    /* Icon/emoji filter */
+    --icon-filter: none;
 }

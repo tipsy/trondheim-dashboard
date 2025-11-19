@@ -9,8 +9,15 @@ export const sharedStyles = css`
     /* Material Design Icons - make them work in shadow DOM */
     i.mdi {
         line-height: 1;
+        filter: var(--icon-filter, none);
     }
 
+    /* Apply icon filter to all images and emojis */
+    img,
+    .emoji,
+    [role="img"] {
+        filter: var(--icon-filter, none);
+    }
 
     /* Common responsive text overflow patterns */
     .text-wrap {

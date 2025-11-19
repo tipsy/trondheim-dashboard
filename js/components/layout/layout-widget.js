@@ -33,7 +33,6 @@ class LayoutWidget extends BaseWidget {
         gap: 0;
         background: var(--card-background);
         border-radius: 8px;
-        overflow: hidden;
       }
 
       .column {

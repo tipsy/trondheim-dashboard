@@ -45,13 +45,13 @@ class EnergyWidget extends BaseWidget {
 
       .price-emoji {
         font-size: 32px;
+        filter: var(--icon-filter, none);
       }
 
       .next-hours-chips {
         display: flex;
         gap: var(--spacing-sm);
         margin-top: 24px;
-        overflow: hidden;
       }
 
       .chip {

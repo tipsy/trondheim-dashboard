@@ -1,6 +1,6 @@
 /* Cat theme - Playful and cute with cat-inspired colors */
 :root[data-theme="cat"] {
-    --background-image: none;
+    --background: none;
     /* Colors - Inspired by orange tabby cats */
     --primary-color: #ff8c42;
     --secondary-color: #ffa45c;
@@ -57,5 +57,8 @@
     /* Scrollbar colors */
     --scrollbar-thumb: rgba(255, 140, 66, 0.3);
     --scrollbar-thumb-hover: rgba(255, 140, 66, 0.5);
+
+    /* Icon/emoji filter */
+    --icon-filter: none;
 }
 

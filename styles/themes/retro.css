@@ -1,0 +1,76 @@
+/* Retro Mac Classic High Contrast theme */
+:root[data-theme="retro"] {
+    /* Classic Mac checkerboard pattern background - repeating tileable pattern */
+    --background: url("/img/themes/retro/pattern_08_16x16.png") repeat;
+
+    /* High contrast black and white */
+    --primary-color: #000000;
+    --secondary-color: #333333;
+    --heading-color: #000000;
+    --background-color: rgba(255, 255, 255, 0.9);
+    --card-background: #ffffff;
+    --text-color: #000000;
+    --text-alt: #000000;
+    --text-light: #333333;
+    --border-color: #000000;
+    --input-background: #ffffff;
+    --button-text: #ffffff;
+
+    /* Widget border styling - Mac Classic thin border with bevel */
+    --widget-border: 2px solid #000000;
+    --widget-background: #ffffff;
+    --row-border-width: 2px;
+
+    /* Status colors - still high contrast but with subtle tones */
+    --success-color: #000000;
+    --success-hover: #333333;
+    --success-bg: #ffffff;
+    --error-bg: #ffffff;
+    --error-color: #000000;
+    --info-bg: #ffffff;
+    --info-color: #000000;
+
+    /* Alternate backgrounds - subtle patterns */
+    --alt-background: #f5f5f5;
+    --hover-bg: #e0e0e0;
+
+    /* Shadows - Mac Classic beveled 3D effect with both inset and outset */
+    --shadow:
+        1px 1px 0 #ffffff,
+        2px 2px 0 0 #808080;
+    --shadow-hover:
+        1px 1px 0 #ffffff,
+        3px 3px 0 0 #808080;
+
+    /* Spacing - slightly more compact for retro feel */
+    --border-radius: 4px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography - Classic system fonts */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    --font-size-xs: 11px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 48px;
+    --font-size-xxl: 64px;
+
+    /* Trash type colors - all high contrast */
+    --trash-general: #000000;
+    --trash-paper: #000000;
+    --trash-plastic: #000000;
+    --trash-food: #000000;
+    --trash-glass: #000000;
+    --trash-metal: #000000;
+
+    /* Scrollbar colors */
+    --scrollbar-thumb: rgba(0, 0, 0, 0.8);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 1);
+
+    /* Icon/emoji filter for retro black & white theme - grayscale with increased contrast */
+    --icon-filter: grayscale(100%) contrast(1.5);
+}

@@ -45,6 +45,7 @@ class AddressInput extends LitElement {
       .address-container {
         background-color: var(--card-background, #ffffff);
         border-radius: var(--border-radius, 8px);
+        border: var(--widget-border, 1px solid var(--border-color));
         padding: var(--spacing-md, 16px);
         box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
         display: flex;

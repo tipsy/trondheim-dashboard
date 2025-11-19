@@ -1,11 +1,13 @@
 // Cat Paw Prints Animation for Cat Theme
 // Uses canvas and vector math to draw realistic paw prints
 
-class CatPaws {
+import { ThemeEffect, autoInitThemeEffect } from './theme-effect.js';
+
+class CatPaws extends ThemeEffect {
   constructor() {
+    super('cat');
     this.canvas = null;
     this.ctx = null;
-    this.isActive = false;
     this.isWalking = false;
     this.pawPrints = [];
     this.animationFrame = null;
@@ -17,44 +19,15 @@ class CatPaws {
     this.isFollowingWall = false;
   }
 
-  init() {
-    // Check if cat theme is active
-    this.checkTheme();
-
-    // Listen for theme changes
-    this.observeThemeChanges();
-  }
-
-  checkTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-
-    if (currentTheme === 'cat' && !this.isActive) {
-      this.start();
-    } else if (currentTheme !== 'cat' && this.isActive) {
-      this.stop();
-    }
-  }
-
-  observeThemeChanges() {
-    const observer = new MutationObserver(() => {
-      this.checkTheme();
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme']
-    });
-  }
-
   start() {
-    this.isActive = true;
+    super.start();
     this.createCanvas();
     this.animate();
     this.startNextWalk();
   }
 
   stop() {
-    this.isActive = false;
+    super.stop();
     this.isWalking = false;
 
     if (this.animationFrame) {
@@ -332,16 +305,9 @@ class CatPaws {
   }
 }
 
-// Initialize when the page loads
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    const catPaws = new CatPaws();
-    catPaws.init();
-  });
-} else {
-  const catPaws = new CatPaws();
-  catPaws.init();
-}
+// Auto-initialize when the page loads
+const catPaws = new CatPaws();
+autoInitThemeEffect(catPaws);
 
 export { CatPaws };
 

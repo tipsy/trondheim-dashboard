@@ -1,6 +1,6 @@
 /* Monokai theme - Vibrant colorful programmer theme */
 :root[data-theme="monokai"] {
-    --background-image: none;
+    --background: none;
     /* Base Colors - Authentic Monokai palette */
     --primary-color: #66d9ef;
     --secondary-color: #a6e22e;
@@ -57,6 +57,9 @@
     /* Scrollbar colors */
     --scrollbar-thumb: rgba(102, 217, 239, 0.3);
     --scrollbar-thumb-hover: rgba(102, 217, 239, 0.5);
+
+    /* Icon/emoji filter */
+    --icon-filter: none;
 }
 
 /* ============================================

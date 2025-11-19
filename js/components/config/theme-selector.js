@@ -26,6 +26,7 @@ class ThemeSelector extends LitElement {
       { value: "cat", label: "Cat" },
       { value: "dark", label: "Dark" },
       { value: "light", label: "Light" },
+      { value: "retro", label: "High Contrast" },
     ];
   }
 
@@ -40,6 +41,7 @@ class ThemeSelector extends LitElement {
       .theme-container {
         background-color: var(--card-background);
         border-radius: var(--border-radius);
+        border: var(--widget-border, 1px solid var(--border-color));
         padding: var(--spacing-md);
         box-shadow: var(--shadow);
         display: flex;

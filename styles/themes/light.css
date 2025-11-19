@@ -1,6 +1,6 @@
 /* Light theme */
 :root[data-theme="light"] {
-    --background-image: url("/img/example-background.jpg");
+    --background: url("/img/example-background.jpg") center/cover no-repeat;
     /* Colors */
     --primary-color: #0066cc;
     --secondary-color: #004d99;
@@ -57,4 +57,7 @@
     /* Scrollbar colors */
     --scrollbar-thumb: rgba(0, 0, 0, 0.2);
     --scrollbar-thumb-hover: rgba(0, 0, 0, 0.3);
+
+    /* Icon/emoji filter */
+    --icon-filter: none;
 }

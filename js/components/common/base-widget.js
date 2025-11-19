@@ -39,6 +39,7 @@ export class BaseWidget extends LitElement {
       .widget-container {
         background-color: var(--card-background);
         border-radius: var(--border-radius);
+        border: var(--widget-border, 1px solid var(--border-color));
         box-shadow: var(--shadow);
         display: flex;
         flex-direction: column;
@@ -76,8 +77,7 @@ export class BaseWidget extends LitElement {
 
       .widget-header {
         margin-bottom: var(--spacing-sm);
-        padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm)
-          var(--spacing-md);
+        padding: var(--spacing-md);
         flex-shrink: 0;
         border-bottom: 1px solid transparent;
         transition: border-color 0.2s ease;

@@ -141,7 +141,6 @@ class TrondheimDashboard extends LitElement {
           flex-direction: column;
           gap: var(--spacing-md, 16px);
           min-height: 0;
-          overflow: hidden;
         }
 
         .widgets-grid .column[data-column="0"] { flex: var(--col-1-width); }
@@ -152,7 +151,6 @@ class TrondheimDashboard extends LitElement {
         /* All widgets */
         .widgets-grid .column > * {
           min-height: 0;
-          overflow: hidden;
           order: var(--widget-order, 0);
         }
 
