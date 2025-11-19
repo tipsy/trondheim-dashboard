@@ -50,7 +50,16 @@ No build process, no dependencies to install — just serve and go!
 trondheim-dashboard/
 ├── index.html              # Main entry point
 ├── favicon.svg             # Dashboard favicon
+├── manifest.json           # PWA manifest
+├── robots.txt              # Search engine crawler rules
+├── sitemap.xml             # XML sitemap for SEO
 ├── CNAME                   # GitHub Pages custom domain
+├── README.md               # This file
+├── SEO_GUIDE.md            # SEO documentation and guidelines
+├── img/
+│   └── example-background.jpg
+├── og/
+│   └── screenshot.png      # Open Graph / social media preview image
 ├── styles/
 │   ├── main.css            # Global styles and layout
 │   └── themes/             # 7 theme CSS files
@@ -541,6 +550,22 @@ applyLayoutToStyles() {
 ## 📄 License
 
 MIT License - feel free to use, modify, and distribute.
+
+## 🔍 SEO & Discoverability
+
+This project includes comprehensive SEO optimizations to improve search engine visibility and social media sharing:
+
+- **Meta Tags**: Optimized title, description, and keywords in Norwegian for local search
+- **Open Graph**: Rich previews for Facebook, LinkedIn, and other social platforms
+- **Twitter Cards**: Enhanced sharing on Twitter/X with large image cards
+- **Structured Data**: Schema.org JSON-LD markup for better search engine understanding
+- **Semantic HTML**: Proper HTML5 structure with ARIA labels
+- **robots.txt**: Allows all search engine crawlers
+- **sitemap.xml**: XML sitemap for search engines
+- **PWA Manifest**: Progressive Web App support (manifest.json)
+- **Canonical URLs**: Prevents duplicate content issues
+
+For detailed SEO documentation and maintenance guidelines, see [SEO_GUIDE.md](./SEO_GUIDE.md).
 
 ## 🤝 Contributing
 

@@ -3,10 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trondheim Dashboard</title>
+
+    <!-- Primary Meta Tags -->
+    <title>Trondheim Dashboard - Sanntidsinformasjon for Trondheim | Buss, Vær, Søppel & Mer</title>
+    <meta name="title" content="Trondheim Dashboard - Sanntidsinformasjon for Trondheim | Buss, Vær, Søppel & Mer">
+    <meta name="description" content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer - alt på ett sted. Ingen innlogging kreves.">
+    <meta name="keywords" content="Trondheim, dashboard, ATB buss, sanntidsinformasjon, værmelding Trondheim, søppelhenting, strømpris, TRV, politilogg, NRK Trøndelag, arrangementer Trondheim">
+    <meta name="author" content="Trondheim Dashboard">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://trondheim-dashboard.com/">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://trondheim-dashboard.com/">
+    <meta property="og:title" content="Trondheim Dashboard - Sanntidsinformasjon for Trondheim">
+    <meta property="og:description" content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.">
+    <meta property="og:image" content="https://trondheim-dashboard.com/og/screenshot.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Trondheim Dashboard showing bus departures, weather, and other widgets">
+    <meta property="og:locale" content="nb_NO">
+    <meta property="og:site_name" content="Trondheim Dashboard">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://trondheim-dashboard.com/">
+    <meta name="twitter:title" content="Trondheim Dashboard - Sanntidsinformasjon for Trondheim">
+    <meta name="twitter:description" content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.">
+    <meta name="twitter:image" content="https://trondheim-dashboard.com/og/screenshot.png">
+    <meta name="twitter:image:alt" content="Trondheim Dashboard showing bus departures, weather, and other widgets">
+
+    <!-- Favicon & PWA Manifest -->
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Stylesheet -->
     <link rel="stylesheet" href="styles/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+
+    <!-- Structured Data / JSON-LD -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Trondheim Dashboard",
+        "url": "https://trondheim-dashboard.com",
+        "description": "Moderne dashbord for Trondheim-innbyggere med sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Any",
+        "browserRequirements": "Requires JavaScript. Requires HTML5.",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "NOK"
+        },
+        "inLanguage": "no",
+        "provider": {
+            "@type": "Organization",
+            "name": "Trondheim Dashboard"
+        },
+        "featureList": [
+            "Sanntids bussavganger (ATB/Entur)",
+            "Værmelding fra MET Norge",
+            "Søppelhentekalender (TRV)",
+            "Strømpriser",
+            "Politilogg Trøndelag",
+            "Nyheter fra NRK Trøndelag",
+            "Arrangementer i Trondheim",
+            "7 temaer inkludert mørk og lys modus"
+        ],
+        "screenshot": "https://trondheim-dashboard.com/og/screenshot.png"
+    }
+    </script>
+
     <script type="importmap">
         {
             "imports": {
@@ -16,7 +85,12 @@
     </script>
 </head>
 <body>
-    <trondheim-dashboard></trondheim-dashboard>
+    <main role="main" aria-label="Trondheim Dashboard Hovedinnhold">
+        <h1 style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">
+            Trondheim Dashboard - Sanntidsinformasjon for Trondheim innbyggere
+        </h1>
+        <trondheim-dashboard></trondheim-dashboard>
+    </main>
 
     <!-- Main application entry point - imports all other modules -->
     <script type="module" src="js/components/dashboard.js"></script>

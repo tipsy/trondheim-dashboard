@@ -1,0 +1,22 @@
+{
+  "name": "Trondheim Dashboard",
+  "short_name": "TrdDashboard",
+  "description": "Moderne dashbord for Trondheim-innbyggere med sanntidsinformasjon om busser, værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3498db",
+  "orientation": "any",
+  "lang": "no",
+  "dir": "ltr",
+  "categories": ["utilities", "news", "weather", "travel"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
+
