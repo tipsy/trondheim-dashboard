@@ -20,13 +20,13 @@ class ThemeSelector extends LitElement {
   get themeOptions() {
     return [
       { value: "midnight-blue", label: "Midnight Blue" },
-      { value: "peach", label: "Peach Pink" },
+      { value: "retro", label: "High Contrast" },
       { value: "solarized", label: "Solarized️" },
       { value: "monokai", label: "Monokai" },
+      { value: "peach", label: "Peach Pink" },
       { value: "cat", label: "Cat" },
       { value: "dark", label: "Dark" },
       { value: "light", label: "Light" },
-      { value: "retro", label: "High Contrast" },
     ];
   }
 
