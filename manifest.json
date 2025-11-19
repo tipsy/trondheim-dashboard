@@ -12,7 +12,7 @@
   "categories": ["utilities", "news", "weather", "travel"],
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/img/trondheimsrosa.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

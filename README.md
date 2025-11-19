@@ -49,7 +49,6 @@ No build process, no dependencies to install — just serve and go!
 ```
 trondheim-dashboard/
 ├── index.html              # Main entry point
-├── favicon.svg             # Dashboard favicon
 ├── manifest.json           # PWA manifest
 ├── robots.txt              # Search engine crawler rules
 ├── sitemap.xml             # XML sitemap for SEO
@@ -57,6 +56,7 @@ trondheim-dashboard/
 ├── README.md               # This file
 ├── SEO_GUIDE.md            # SEO documentation and guidelines
 ├── img/
+│   ├── trondheimsrosa.svg  # Dashboard favicon (Trondheim rose)
 │   └── example-background.jpg
 ├── og/
 │   └── screenshot.png      # Open Graph / social media preview image
