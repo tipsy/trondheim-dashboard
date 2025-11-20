@@ -32,12 +32,12 @@
   "No events for the selected date": "Ingen arrangementer for valgt dato",
   "Loading events...": "Laster arrangementer...",
   
-  "Weather Now": "Vær nå",
-  "Weather Today": "Vær i dag",
+  "Weather Now": "Været nå",
+  "Weather Today": "Været i dag",
   "Could not load weather data": "Kunne ikke laste værdata",
   "No weather data available": "Ingen værdata tilgjengelig",
   
-  "Electricity": "Strøm",
+  "Electricity": "Strømpris",
   "Could not load energy prices": "Kunne ikke laste strømpriser",
   "No energy price data available": "Ingen strømprisdata tilgjengelig",
   "Enter address to see energy prices": "Skriv inn adresse for å se strømpriser",
