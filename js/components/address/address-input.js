@@ -16,22 +16,24 @@ class AddressInput extends BaseWidget {
     ...BaseWidget.properties,
     addressValue: { type: String, state: true },
     suggestions: { type: Array, state: true },
+    localErrorMessage: { type: String, state: true },
   };
 
   constructor() {
     super();
-    this.title = "Your Address";
+    this.title = "Your Address"; // Will be localized in BaseWidget render
     this.icon = "mdi-map-marker-outline";
     this.compactHeader = true;
     this.addressValue = "";
     this.suggestions = [];
+    this.localErrorMessage = "";
     this.searchTimeout = null;
     this.debounceDelay = 500;
     this.isSearching = false;
   }
 
   get showSuggestions() { // Derived getters for reactive state
-    return this.suggestions.length > 0 && !this.errorMessage;
+    return this.suggestions.length > 0 && !this.localErrorMessage;
   }
 
   static styles = [
@@ -184,7 +186,7 @@ class AddressInput extends BaseWidget {
 
     this.addressValue = address;
     this.isLoading = true;
-    this.errorMessage = "";
+    this.localErrorMessage = "";
 
     try {
       const locations = await GeocodingAPI.geocodeAddress(address);
@@ -192,11 +194,11 @@ class AddressInput extends BaseWidget {
       if (locations && locations.length > 0) {
         this.selectLocation(locations[0]);
       } else {
-        this.errorMessage = "Could not find address from URL. Please search again.";
+        this.localErrorMessage = t("Could not find address from URL. Please search again.");
       }
     } catch (error) {
       console.error("Error loading address from URL:", error);
-      this.errorMessage = error.message || "Could not find address from URL. Please search again.";
+      this.localErrorMessage = error.message || t("Could not find address from URL. Please search again.");
     } finally {
       this.isLoading = false;
     }
@@ -210,14 +212,14 @@ class AddressInput extends BaseWidget {
 
     if (trimmedValue.length < 3) {
       this.suggestions = [];
-      this.errorMessage = "";
+      this.localErrorMessage = "";
       return;
     }
 
-    this.errorMessage = "";
+    this.localErrorMessage = "";
 
     this.searchTimeout = setTimeout(() => {
-      this.handleAddressSearch();
+      this.handleAddressSearch(false); // false = don't show loading spinner
     }, this.debounceDelay);
   }
 
@@ -225,7 +227,7 @@ class AddressInput extends BaseWidget {
     const key = e.detail.key;
     if (key === "Enter") {
       this.cancelDebounce();
-      this.handleAddressSearch();
+      this.handleAddressSearch(true); // true = show loading spinner for explicit search
     } else if (key === "Escape") {
       this.suggestions = [];
       this.cancelDebounce();
@@ -264,7 +266,7 @@ class AddressInput extends BaseWidget {
     }
   }
 
-  async handleAddressSearch() {
+  async handleAddressSearch(showLoading = true) {
     if (this.isSearching) {
       console.log("Search already in progress, skipping...");
       return;
@@ -273,7 +275,7 @@ class AddressInput extends BaseWidget {
     const address = this.addressValue.trim();
 
     if (!address) {
-      this.errorMessage = "Please enter an address";
+      this.localErrorMessage = t("Please enter an address");
       return;
     }
 
@@ -288,8 +290,10 @@ class AddressInput extends BaseWidget {
     }
 
     this.isSearching = true;
-    this.isLoading = true;
-    this.errorMessage = "";
+    if (showLoading) {
+      this.isLoading = true;
+    }
+    this.localErrorMessage = "";
     this.suggestions = [];
 
     try {
@@ -297,9 +301,11 @@ class AddressInput extends BaseWidget {
       this.suggestions = locations;
     } catch (error) {
       console.error("Address search error:", error);
-      this.errorMessage = error.message || "Could not find address. Please try again.";
+      this.localErrorMessage = error.message || t("Could not find address. Please try again.");
     } finally {
-      this.isLoading = false;
+      if (showLoading) {
+        this.isLoading = false;
+      }
       this.isSearching = false;
     }
   }
@@ -320,7 +326,7 @@ class AddressInput extends BaseWidget {
 
     this.isSearching = true;
     this.isLoading = true;
-    this.errorMessage = "";
+    this.localErrorMessage = "";
     this.suggestions = [];
 
     try {
@@ -334,7 +340,7 @@ class AddressInput extends BaseWidget {
       this.updateLocation(location.lat, location.lon, address);
     } catch (error) {
       console.error("Current location error:", error);
-      this.errorMessage = error.message || "Could not get your location. Check browser settings.";
+      this.localErrorMessage = error.message || t("Could not get your location. Check browser settings.");
     } finally {
       this.isLoading = false;
       this.isSearching = false;
@@ -349,18 +355,8 @@ class AddressInput extends BaseWidget {
     this.selectLocation(e.detail.location);
   }
 
-  // Override render to always show the search field, even when there's an error
-  render() {
-    return html`
-      <div class="widget-container">
-        <div class="widget-header ${this.compactHeader ? 'compact' : ''}">
-          <heading-2 icon="${this.icon}" title="${this.title}">
-            ${this.renderHeaderActions()}
-          </heading-2>
-        </div>
-        <div id="content">${this.renderContent()}</div>
-      </div>
-    `;
+  handleSearchButtonClick() {
+    this.handleAddressSearch(true); // Show loading spinner for explicit button click
   }
 
   renderContent() {
@@ -370,7 +366,7 @@ class AddressInput extends BaseWidget {
           <div class="input-wrapper">
             <input-field
               .value=${this.addressValue}
-              placeholder="Start typing an address..."
+              placeholder="${t("Start typing an address...")}"
               @input-change=${(e) => this.handleInputChange(e.detail.value)}
               @input-keydown=${this.handleInputKeydown}
             ></input-field>
@@ -378,8 +374,8 @@ class AddressInput extends BaseWidget {
               class="clear-btn"
               ?hidden=${!this.addressValue.trim()}
               @button-click=${this.handleClear}
-              title="Clear"
-              aria-label="Clear input"
+              title="${t("Clear")}"
+              aria-label="${t("Clear input")}"
             >
               <i class="mdi mdi-close"></i>
             </icon-button>
@@ -389,17 +385,17 @@ class AddressInput extends BaseWidget {
           <primary-button
             ?disabled=${this.isLoading}
             ?loading=${this.isLoading}
-            @button-click=${this.handleAddressSearch}
+            @button-click=${this.handleSearchButtonClick}
           >
-            Search
+            ${t("Search")}
           </primary-button>
           <secondary-button
             ?disabled=${this.isLoading}
-            title="Use my location"
+            title="${t("Use my location")}"
             @button-click=${this.handleCurrentLocation}
           >
             <i class="mdi mdi-crosshairs-gps"></i>
-            <span class="location-text">Use Location</span>
+            <span class="location-text">${t("Use Location")}</span>
           </secondary-button>
         </div>
       </div>
@@ -416,10 +412,10 @@ class AddressInput extends BaseWidget {
           `,
         )}
       </div>
-      ${this.errorMessage
+      ${this.localErrorMessage
         ? html`
             <error-message
-              message=${this.errorMessage}
+              message=${this.localErrorMessage}
               style="margin-top: var(--spacing-sm);"
             ></error-message>
           `
