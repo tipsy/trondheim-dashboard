@@ -50,8 +50,6 @@ class RetroPatternRotator extends ThemeEffect {
     const patternNumber = String(this.currentPattern).padStart(2, '0');
     const patternUrl = `/img/themes/retro/pattern_${patternNumber}_16x16.png`;
     
-    console.log(`🎨 Switching to retro pattern ${patternNumber}`);
-
     // Update the CSS variable
     document.documentElement.style.setProperty(
       '--background',

@@ -17,23 +17,43 @@ class CustomSelect extends LitElement {
     this.options = [];
     this.isOpen = false;
     this.handleDocumentClick = this.handleDocumentClick.bind(this);
+    this.handleScroll = this.handleScroll.bind(this);
+    this.handleResize = this.handleResize.bind(this);
   }
 
   connectedCallback() {
     super.connectedCallback();
     document.addEventListener('click', this.handleDocumentClick);
+    window.addEventListener('scroll', this.handleScroll, true);
+    window.addEventListener('resize', this.handleResize);
     adoptMDIStyles(this.shadowRoot);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     document.removeEventListener('click', this.handleDocumentClick);
+    window.removeEventListener('scroll', this.handleScroll, true);
+    window.removeEventListener('resize', this.handleResize);
   }
 
   handleDocumentClick(e) {
     // Close dropdown if clicking outside
     if (!e.composedPath().includes(this)) {
       this.isOpen = false;
+    }
+  }
+
+  handleScroll() {
+    // Reposition dropdown on scroll
+    if (this.isOpen) {
+      this.requestUpdate();
+    }
+  }
+
+  handleResize() {
+    // Reposition dropdown on resize
+    if (this.isOpen) {
+      this.requestUpdate();
     }
   }
 
@@ -106,10 +126,7 @@ class CustomSelect extends LitElement {
       }
 
       .select-dropdown {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
+        position: fixed;
         background-color: var(--input-background, #ffffff);
         border: 1px solid var(--primary-color, #0066cc);
         border-top: none;
@@ -159,7 +176,21 @@ class CustomSelect extends LitElement {
     return selectedOption ? selectedOption.label : this.placeholder;
   }
 
+  getDropdownPosition() {
+    const trigger = this.shadowRoot.querySelector('.select-trigger');
+    if (!trigger) return { top: 0, left: 0, width: 0 };
+
+    const rect = trigger.getBoundingClientRect();
+    return {
+      top: rect.bottom,
+      left: rect.left,
+      width: rect.width
+    };
+  }
+
   render() {
+    const dropdownPos = this.isOpen ? this.getDropdownPosition() : { top: 0, left: 0, width: 0 };
+
     return html`
       <div class="select-container">
         ${this.label ? html`<label>${this.label}</label>` : ""}
@@ -171,7 +202,10 @@ class CustomSelect extends LitElement {
           <i class="mdi mdi-chevron-down chevron"></i>
         </div>
         ${this.isOpen ? html`
-          <div class="select-dropdown">
+          <div
+            class="select-dropdown"
+            style="top: ${dropdownPos.top}px; left: ${dropdownPos.left}px; width: ${dropdownPos.width}px;"
+          >
             ${this.options?.map(
               (option) => html`
                 <div

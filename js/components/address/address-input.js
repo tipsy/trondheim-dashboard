@@ -1,5 +1,5 @@
-import { LitElement, html, css } from "lit";
-import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
+import { BaseWidget } from "../common/base-widget.js";
+import { html, css } from "lit";
 import { dispatchEvent } from "../../utils/event-helpers.js";
 import { GeocodingAPI } from "../../utils/api/geocoding-api.js";
 import storage from "../../utils/storage.js";
@@ -7,24 +7,21 @@ import "../common/input-field.js";
 import "../common/buttons/icon-button.js";
 import "../common/buttons/primary-button.js";
 import "../common/buttons/secondary-button.js";
-import "../common/error-message.js";
-import "../common/heading-2.js";
 import "./address-suggestion-item.js";
 
-class AddressInput extends LitElement {
+class AddressInput extends BaseWidget {
   static properties = {
+    ...BaseWidget.properties,
     addressValue: { type: String, state: true },
     suggestions: { type: Array, state: true },
-    errorMessage: { type: String, state: true },
-    isLoading: { type: Boolean, state: true },
   };
 
   constructor() {
     super();
+    this.title = "Your Address";
+    this.icon = "mdi-map-marker-outline";
     this.addressValue = "";
     this.suggestions = [];
-    this.errorMessage = "";
-    this.isLoading = false;
     this.searchTimeout = null;
     this.debounceDelay = 500;
     this.isSearching = false;
@@ -35,28 +32,8 @@ class AddressInput extends LitElement {
   }
 
   static styles = [
-    sharedStyles,
+    ...BaseWidget.styles,
     css`
-      :host {
-        display: block;
-        height: 100%;
-      }
-
-      .address-container {
-        background-color: var(--card-background, #ffffff);
-        border-radius: var(--border-radius, 8px);
-        border: var(--widget-border, 1px solid var(--border-color));
-        padding: var(--spacing-md, 16px);
-        box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, 0.1));
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-
-      heading-2 {
-        margin-bottom: var(--spacing-sm);
-      }
-
       .input-group {
         display: flex;
         flex-direction: column;
@@ -165,10 +142,6 @@ class AddressInput extends LitElement {
       }
     };
     document.addEventListener("click", this.clickOutsideHandler);
-  }
-
-  firstUpdated() {
-    adoptMDIStyles(this.shadowRoot);
   }
 
   disconnectedCallback() {
@@ -367,73 +340,67 @@ class AddressInput extends LitElement {
     this.selectLocation(e.detail.location);
   }
 
-  render() {
+  renderContent() {
     return html`
-      <div class="address-container">
-        <heading-2
-          icon="mdi-map-marker-outline"
-          title="Your Address"
-        ></heading-2>
-        <div class="input-group">
-          <div class="input-row">
-            <div class="input-wrapper">
-              <input-field
-                .value=${this.addressValue}
-                placeholder="Start typing an address..."
-                @input-change=${(e) => this.handleInputChange(e.detail.value)}
-                @input-keydown=${this.handleInputKeydown}
-              ></input-field>
-              <icon-button
-                class="clear-btn"
-                ?hidden=${!this.addressValue.trim()}
-                @button-click=${this.handleClear}
-                title="Clear"
-                aria-label="Clear input"
-              >
-                <i class="mdi mdi-close"></i>
-              </icon-button>
-            </div>
-          </div>
-          <div class="button-row">
-            <primary-button
-              ?disabled=${this.isLoading}
-              ?loading=${this.isLoading}
-              @button-click=${this.handleAddressSearch}
+      <div class="input-group">
+        <div class="input-row">
+          <div class="input-wrapper">
+            <input-field
+              .value=${this.addressValue}
+              placeholder="Start typing an address..."
+              @input-change=${(e) => this.handleInputChange(e.detail.value)}
+              @input-keydown=${this.handleInputKeydown}
+            ></input-field>
+            <icon-button
+              class="clear-btn"
+              ?hidden=${!this.addressValue.trim()}
+              @button-click=${this.handleClear}
+              title="Clear"
+              aria-label="Clear input"
             >
-              Search
-            </primary-button>
-            <secondary-button
-              ?disabled=${this.isLoading}
-              title="Use my location"
-              @button-click=${this.handleCurrentLocation}
-            >
-              <i class="mdi mdi-crosshairs-gps"></i>
-              <span class="location-text">Use Location</span>
-            </secondary-button>
+              <i class="mdi mdi-close"></i>
+            </icon-button>
           </div>
         </div>
-        <div
-          class="suggestions"
-          style="display: ${this.showSuggestions ? "block" : "none"}"
-        >
-          ${this.suggestions.map(
-            (loc) => html`
-              <address-suggestion-item
-                .location=${loc}
-                @select=${this.handleSuggestionSelect}
-              ></address-suggestion-item>
-            `,
-          )}
+        <div class="button-row">
+          <primary-button
+            ?disabled=${this.isLoading}
+            ?loading=${this.isLoading}
+            @button-click=${this.handleAddressSearch}
+          >
+            Search
+          </primary-button>
+          <secondary-button
+            ?disabled=${this.isLoading}
+            title="Use my location"
+            @button-click=${this.handleCurrentLocation}
+          >
+            <i class="mdi mdi-crosshairs-gps"></i>
+            <span class="location-text">Use Location</span>
+          </secondary-button>
         </div>
-        ${this.errorMessage
-          ? html`
-              <error-message
-                message=${this.errorMessage}
-                style="margin-top: var(--spacing-sm);"
-              ></error-message>
-            `
-          : ""}
       </div>
+      <div
+        class="suggestions"
+        style="display: ${this.showSuggestions ? "block" : "none"}"
+      >
+        ${this.suggestions.map(
+          (loc) => html`
+            <address-suggestion-item
+              .location=${loc}
+              @select=${this.handleSuggestionSelect}
+            ></address-suggestion-item>
+          `,
+        )}
+      </div>
+      ${this.errorMessage
+        ? html`
+            <error-message
+              message=${this.errorMessage}
+              style="margin-top: var(--spacing-sm);"
+            ></error-message>
+          `
+        : ""}
     `;
   }
 }

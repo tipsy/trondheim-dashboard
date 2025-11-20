@@ -1,18 +1,20 @@
-import { LitElement, html, css } from "lit";
-import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
+import { BaseWidget } from "../common/base-widget.js";
+import { html, css } from "lit";
 import { dispatchEvent } from "../../utils/event-helpers.js";
 import storage from "../../utils/storage.js";
 import "../common/custom-select.js";
 import "../common/buttons/icon-button.js";
-import "../common/heading-2.js";
 
-class ThemeSelector extends LitElement {
+class ThemeSelector extends BaseWidget {
   static properties = {
+    ...BaseWidget.properties,
     selectedTheme: { type: String, state: true },
   };
 
   constructor() {
     super();
+    this.title = "Config";
+    this.icon = "mdi-palette-outline";
     this.selectedTheme = storage.loadTheme();
     this.setTheme(this.selectedTheme);
   }
@@ -31,28 +33,8 @@ class ThemeSelector extends LitElement {
   }
 
   static styles = [
-    sharedStyles,
+    ...BaseWidget.styles,
     css`
-      :host {
-        display: block;
-        height: 100%;
-      }
-
-      .theme-container {
-        background-color: var(--card-background);
-        border-radius: var(--border-radius);
-        border: var(--widget-border, 1px solid var(--border-color));
-        padding: var(--spacing-md);
-        box-shadow: var(--shadow);
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-      }
-
-      heading-2 {
-        margin-bottom: var(--spacing-sm);
-      }
-
       .header-actions {
         display: flex;
         gap: 4px;
@@ -60,11 +42,6 @@ class ThemeSelector extends LitElement {
       }
     `,
   ];
-
-  connectedCallback() {
-    super.connectedCallback();
-    adoptMDIStyles(this.shadowRoot);
-  }
 
   handleThemeChange(e) {
     this.selectedTheme = e.detail.value;
@@ -88,34 +65,35 @@ class ThemeSelector extends LitElement {
     dispatchEvent(this, "theme-changed", { theme });
   }
 
-  render() {
+  renderHeaderActions() {
     return html`
-      <div class="theme-container">
-        <heading-2 icon="mdi-palette-outline" title="Config">
-          <div class="header-actions">
-            <icon-button
-              @button-click=${this.handleLayoutClick}
-              title="Toggle layout editor"
-              aria-label="Toggle layout editor"
-            >
-              <i class="mdi mdi-view-dashboard"></i>
-            </icon-button>
-            <icon-button
-              @button-click=${this.handleRefresh}
-              title="Clear cache and refresh"
-              aria-label="Clear cache and refresh"
-            >
-              <i class="mdi mdi-refresh"></i>
-            </icon-button>
-          </div>
-        </heading-2>
-        <custom-select
-          .options=${this.themeOptions}
-          .selected=${this.selectedTheme}
-          @change=${this.handleThemeChange}
+      <div class="header-actions">
+        <icon-button
+          @button-click=${this.handleLayoutClick}
+          title="Toggle layout editor"
+          aria-label="Toggle layout editor"
         >
-        </custom-select>
+          <i class="mdi mdi-view-dashboard"></i>
+        </icon-button>
+        <icon-button
+          @button-click=${this.handleRefresh}
+          title="Clear cache and refresh"
+          aria-label="Clear cache and refresh"
+        >
+          <i class="mdi mdi-refresh"></i>
+        </icon-button>
       </div>
+    `;
+  }
+
+  renderContent() {
+    return html`
+      <custom-select
+        .options=${this.themeOptions}
+        .selected=${this.selectedTheme}
+        @change=${this.handleThemeChange}
+      >
+      </custom-select>
     `;
   }
 }

@@ -3,7 +3,7 @@
 
 export class CacheConfig {
     // Enable/disable cache logging (set to false to disable console logs for cache hits/misses)
-    static ENABLE_LOGGING = true;
+    static ENABLE_LOGGING = false;
 
     // News / RSS: slightly below dashboard auto-refresh (5 min) so cache expires before refresh
     static NRK_TTL = 4 * 60 * 1000; // 4 minutes
