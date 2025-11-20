@@ -1,0 +1,108 @@
+/* Galaxy theme - Beautiful cosmic deep space theme */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&display=swap');
+
+:root[data-theme="galaxy"] {
+    --background: none;
+    
+    /* Cosmic Colors - Deep space with vibrant nebula accents */
+    --primary-color: #4d1e97;
+    --secondary-color: #5d2ea7;
+    --heading-color: #e9d5ff;
+    --background-color: none;
+    --card-background: rgba(26, 15, 46, 0.85);
+    --text-color: #e9d5ff;
+    --text-alt: #d8b4fe;
+    --text-light: #c4b5fd;
+    --border-color: #4c1d95;
+    --input-background: rgba(42, 31, 62, 0.9);
+    --button-text: #ffffff;
+    --success-color: #a78bfa;
+    --success-hover: #c4b5fd;
+    --success-bg: rgba(76, 29, 149, 0.2);
+    --error-bg: rgba(139, 29, 92, 0.2);
+    --error-color: #f472b6;
+    --info-bg: rgba(59, 130, 246, 0.2);
+    --info-color: #93c5fd;
+
+    /* Alternate backgrounds */
+    --alt-background: rgba(21, 10, 40, 0.95);
+    --hover-bg: rgba(76, 29, 149, 0.3);
+
+    /* Shadows - Cosmic glow effects */
+    --shadow: 0 4px 10px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1);
+    --shadow-hover: none;
+
+    /* Spacing */
+    --border-radius: 4px;
+    --spacing-xs: 4px;
+    --spacing-sm: 8px;
+    --spacing-md: 16px;
+    --spacing-lg: 24px;
+    --spacing-xl: 32px;
+
+    /* Typography */
+    --font-family: 'Orbitron', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-size-xs: 12px;
+    --font-size-sm: 14px;
+    --font-size-md: 16px;
+    --font-size-lg: 18px;
+    --font-size-xl: 48px;
+    --font-size-xxl: 64px;
+
+    /* Trash type colors - Cosmic themed */
+    --trash-general: #a78bfa;
+    --trash-paper: #93c5fd;
+    --trash-plastic: #f472b6;
+    --trash-food: #86efac;
+    --trash-glass: #67e8f9;
+    --trash-metal: #fbbf24;
+
+    /* Scrollbar colors */
+    --scrollbar-thumb: rgba(167, 139, 250, 0.5);
+    --scrollbar-thumb-hover: rgba(167, 139, 250, 0.8);
+
+    /* Spinner colors */
+    --spinner-color: #a78bfa;
+}
+
+/* Add subtle glow to cards in galaxy theme */
+:root[data-theme="galaxy"] .widget {
+    box-shadow: 
+        0 4px 20px rgba(139, 92, 246, 0.2),
+        0 0 40px rgba(139, 92, 246, 0.05),
+        inset 0 1px 0 rgba(233, 213, 255, 0.1);
+}
+
+:root[data-theme="galaxy"] .widget:hover {
+    box-shadow: 
+        0 6px 30px rgba(139, 92, 246, 0.3),
+        0 0 60px rgba(139, 92, 246, 0.1),
+        inset 0 1px 0 rgba(233, 213, 255, 0.15);
+}
+
+/* Cosmic glow for buttons */
+:root[data-theme="galaxy"] button {
+    box-shadow: 0 2px 10px rgba(139, 92, 246, 0.3);
+    transition: all 0.3s ease;
+}
+
+:root[data-theme="galaxy"] button:hover {
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.5);
+    transform: translateY(-1px);
+}
+
+/* Nebula-like gradient overlay for inputs */
+:root[data-theme="galaxy"] input,
+:root[data-theme="galaxy"] select {
+    border: 1px solid rgba(167, 139, 250, 0.3);
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme="galaxy"] input:focus,
+:root[data-theme="galaxy"] select:focus {
+    border-color: rgba(167, 139, 250, 0.6);
+    box-shadow: 
+        inset 0 1px 3px rgba(0, 0, 0, 0.3),
+        0 0 0 3px rgba(167, 139, 250, 0.2);
+}
+

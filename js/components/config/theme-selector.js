@@ -27,6 +27,7 @@ class ThemeSelector extends BaseWidget {
       { value: "solarized", label: "Solarized️" },
       { value: "monokai", label: "Monokai" },
       { value: "peach", label: "Peach Pink" },
+      { value: "galaxy", label: "Galaxy" },
       { value: "cat", label: "Cat" },
       { value: "dark", label: "Dark" },
       { value: "light", label: "Light" },
