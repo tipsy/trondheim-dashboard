@@ -33,9 +33,15 @@
     <meta name="twitter:image" content="https://trondheim-dashboard.com/og/screenshot.png">
     <meta name="twitter:image:alt" content="Trondheim Dashboard showing bus departures, weather, and other widgets">
 
-    <!-- Favicon & PWA Manifest -->
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="img/trondheimsrosa.svg">
-    <link rel="manifest" href="manifest.json">
+
+    <!-- PWA Manifest - only load in production to avoid 404s in local development -->
+    <script>
+        if (!location.hostname.includes('localhost')) {
+            document.head.insertAdjacentHTML('beforeend', '<link rel="manifest" href="/manifest.json">');
+        }
+    </script>
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles/main.css">

@@ -147,12 +147,13 @@ class TrondheimDashboard extends LitElement {
           flex-direction: column;
           gap: var(--spacing-md, 16px);
           min-height: 0;
+          min-width: 0; /* Allow columns to shrink below content width */
         }
 
-        .widgets-grid .column[data-column="0"] { flex: var(--col-1-width); }
-        .widgets-grid .column[data-column="1"] { flex: var(--col-2-width); }
-        .widgets-grid .column[data-column="2"] { flex: var(--col-3-width); }
-        .widgets-grid .column[data-column="3"] { flex: var(--col-4-width); }
+        .widgets-grid .column[data-column="0"] { flex: var(--col-1-width) 1 0; }
+        .widgets-grid .column[data-column="1"] { flex: var(--col-2-width) 1 0; }
+        .widgets-grid .column[data-column="2"] { flex: var(--col-3-width) 1 0; }
+        .widgets-grid .column[data-column="3"] { flex: var(--col-4-width) 1 0; }
 
         /* All widgets */
         .widgets-grid .column > * {
