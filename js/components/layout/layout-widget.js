@@ -178,7 +178,7 @@ class LayoutWidget extends BaseWidget {
                 .min=${MIN_WIDTH}
                 .max=${100}
                 .step=${STEP}
-                .value=${col.width}
+                .value=${col.enabled ? col.width : (col.previousWidth || col.width)}
                 ?disabled=${!col.enabled}
                 @input=${(e) => this.onSliderInput(colIndex, e)}
               ></custom-slider>
@@ -265,7 +265,28 @@ class LayoutWidget extends BaseWidget {
   toggleWidgetHidden(id) {
     const map = Object.assign({}, this.layout.hiddenWidgets || {});
     map[id] = !map[id];
-    this.layout = { ...this.layout, hiddenWidgets: map };
+
+    // Check if all widgets in any column are now hidden/shown, and disable/enable that column accordingly
+    const cols = this.layout.columns.map(c => ({ ...c }));
+    cols.forEach((col, colIndex) => {
+      if (col.widgets.length === 0) return; // Skip empty columns
+
+      const allWidgetsHidden = col.widgets.every(widgetId => map[widgetId]);
+      const anyWidgetVisible = col.widgets.some(widgetId => !map[widgetId]);
+
+      if (allWidgetsHidden && col.enabled) {
+        // All widgets in this column are hidden, disable the column
+        col.previousWidth = col.width;
+        col.enabled = false;
+        col.width = 0;
+      } else if (anyWidgetVisible && !col.enabled) {
+        // At least one widget is visible, enable the column
+        col.enabled = true;
+        col.width = col.previousWidth || Math.floor(100 / cols.filter(c=>c.enabled).length);
+      }
+    });
+
+    this.layout = { ...this.layout, hiddenWidgets: map, columns: cols };
     this.saveAndNotify();
   }
 

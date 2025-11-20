@@ -83,18 +83,15 @@ class CustomSlider extends LitElement {
 
     :host([disabled]) .slider-track {
       background: var(--border-color);
-      opacity: 0.5;
     }
 
     :host([disabled]) .slider-fill {
       background: var(--text-light);
-      opacity: 0.5;
     }
 
     :host([disabled]) .slider-thumb {
       background: var(--text-light);
       cursor: not-allowed;
-      opacity: 0.5;
     }
 
     :host([disabled]) .slider-input {
@@ -136,12 +133,14 @@ class CustomSlider extends LitElement {
 
   render() {
     const percentage = this.percentage;
-    
+    const clampedPercentage = Math.max(0, Math.min(100, percentage));
+    const thumbPosition = `calc(${clampedPercentage}% - 8px)`;
+
     return html`
       <div class="slider-container">
         <div class="slider-track"></div>
-        <div class="slider-fill" style="width: ${percentage}%"></div>
-        <div class="slider-thumb" style="left: calc(${percentage}% - 8px)"></div>
+        <div class="slider-fill" style="width: ${clampedPercentage}%"></div>
+        <div class="slider-thumb" style="left: ${thumbPosition}; transform: translateX(${clampedPercentage === 0 ? '8px' : clampedPercentage === 100 ? '-8px' : '0'})"></div>
         <input
           type="range"
           class="slider-input"
