@@ -84,7 +84,10 @@ class TrashRow extends LitElement {
           transparent
         );
         border-radius: var(--border-radius);
-        animation: ripple 2s ease-out infinite;
+        animation-name: ripple;
+        animation-duration: 2s;
+        animation-timing-function: var(--ripple-timing, ease-out);
+        animation-iteration-count: infinite;
       }
 
       .countdown-days {
@@ -131,11 +134,11 @@ class TrashRow extends LitElement {
           opacity: 0.8;
         }
         75% {
-          transform: scale(1.25);
+          transform: scale(1.2);
           opacity: 0;
         }
         100% {
-          transform: scale(1.25);
+          transform: scale(1.2);
           opacity: 0;
         }
       }

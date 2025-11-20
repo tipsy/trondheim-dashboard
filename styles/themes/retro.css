@@ -77,4 +77,7 @@
 
     /* Icon/emoji filter for retro black & white theme - grayscale with increased contrast */
     --icon-filter: grayscale(100%) contrast(1.5);
+
+    /* Ripple animation timing - choppy retro feel */
+    --ripple-timing: steps(8);
 }
