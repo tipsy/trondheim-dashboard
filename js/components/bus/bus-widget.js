@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { t } from '../../utils/localization.js';
 import { BusAPI } from "../../utils/api/bus-api.js";
 import "./bus-row.js";
 import "../common/widget-list.js";
@@ -29,7 +30,7 @@ class BusWidget extends BaseWidget {
   get stopOptions() {
     return this.availableStops.map((stop) => {
       const parts = [stop.name];
-      if (stop.publicCode) parts.push(`(Platform ${stop.publicCode})`);
+      if (stop.publicCode) parts.push(`(${t("Platform")} ${stop.publicCode})`);
       if (stop.description) parts.push(`- ${stop.description}`);
       parts.push(`- ${Math.round(stop.distance)}m`);
 
@@ -68,7 +69,7 @@ class BusWidget extends BaseWidget {
 
     const quays = await this.fetchData(
       () => BusAPI.getClosestBusStops(this.location.lat, this.location.lon, 1000),
-      "Could not load bus stops"
+      t("Could not load bus stops")
     );
 
     if (quays && quays.length > 0) {
@@ -86,7 +87,7 @@ class BusWidget extends BaseWidget {
       this.setupAutoRefresh(() => this.loadDepartures(), 60000);
     } else if (quays) {
       // fetchData succeeded but returned empty array
-      this.showError("No bus stops found nearby");
+      this.showError(t("No bus stops found nearby"));
     }
   }
 
@@ -134,7 +135,7 @@ class BusWidget extends BaseWidget {
 
   renderContent() {
     if (!this.departures || this.departures.length === 0) {
-      return html`<p class="no-data">No departures found</p>`;
+      return html`<p class="no-data">${t("No departures found")}</p>`;
     }
 
     return html`
@@ -171,7 +172,7 @@ class BusWidget extends BaseWidget {
   }
 
   getPlaceholderText() {
-    return "Enter address to see bus departures";
+    return t("Enter address to see bus departures");
   }
 }
 

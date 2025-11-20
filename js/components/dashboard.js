@@ -2,19 +2,10 @@ import { LitElement, html, css } from "lit";
 import { sharedStyles } from "../utils/shared-styles.js";
 import storage from "../utils/storage.js";
 import { normalizeLayout, DEFAULT_LAYOUT } from "../utils/layout-utils.js";
+import { changeLocale } from "../utils/localization.js";
 
-// Import all components used in the template
-import "./address/address-input.js";
-import "./config/theme-selector.js";
-import "./bus/bus-widget.js";
-import "./events/events-widget.js";
-import "./weather/weather-right-now.js";
-import "./weather/weather-today.js";
-import "./energy/energy-widget.js";
-import "./trash/trash-widget.js";
-import "./police/police-widget.js";
-import "./nrk/nrk-widget.js";
-import "./layout/layout-widget.js";
+// Components will be loaded dynamically after localization is initialized
+// This ensures translations are loaded before widgets render
 
 class TrondheimDashboard extends LitElement {
   static properties = {
@@ -66,8 +57,9 @@ class TrondheimDashboard extends LitElement {
       .address-section {
         flex-shrink: 0;
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         gap: var(--spacing-md, 16px);
+        align-items: stretch;
       }
 
       .address-section.hidden {
@@ -75,13 +67,31 @@ class TrondheimDashboard extends LitElement {
       }
 
       .address-section address-input {
-        width: 100%;
-        height: 100%;
+        flex: 4;
+        min-width: 0;
+      }
+
+      .address-section language-selector {
+        flex: 1;
+        min-width: 0;
       }
 
       .address-section theme-selector {
-        width: 100%;
-        height: 100%;
+        flex: 2;
+        min-width: 0;
+      }
+
+      /* Stack vertically on mobile */
+      @media (max-width: 768px) {
+        .address-section {
+          flex-direction: column;
+        }
+
+        .address-section address-input,
+        .address-section language-selector,
+        .address-section theme-selector {
+          flex: 1 1 auto;
+        }
       }
 
       layout-widget {
@@ -122,13 +132,6 @@ class TrondheimDashboard extends LitElement {
           gap: var(--spacing-md, 16px);
           height: 100%;
           width: 100%;
-        }
-
-        .address-section {
-          display: grid;
-          grid-template-columns: 2fr 1fr;
-          gap: var(--spacing-md, 16px);
-          align-items: stretch;
         }
 
         /* Widgets grid - flexbox with dynamic column widths */
@@ -223,6 +226,14 @@ class TrondheimDashboard extends LitElement {
     this.updateURL({ theme: event.detail.theme });
   }
 
+  async handleLocaleChange(event) {
+    console.log('[Dashboard] handleLocaleChange called with:', event.detail.locale);
+    await changeLocale(event.detail.locale);
+    console.log('[Dashboard] changeLocale complete, reloading page...');
+    // Reload page to apply new locale to all components
+    window.location.reload();
+  }
+
   render() {
     return html`
       <div class="dashboard-content">
@@ -231,6 +242,9 @@ class TrondheimDashboard extends LitElement {
             id="address-input"
             @location-updated=${this.handleLocationUpdate}
           ></address-input>
+          <language-selector
+            @locale-changed=${this.handleLocaleChange}
+          ></language-selector>
           <theme-selector
             @theme-changed=${this.handleThemeChange}
             @layout-editor-toggle=${this.handleLayoutEditorToggle}

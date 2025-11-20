@@ -1,0 +1,72 @@
+{
+  "Your Address": "Your Address",
+  "Start typing an address...": "Start typing an address...",
+  "Clear": "Clear",
+  "Clear input": "Clear input",
+  "Search": "Search",
+  "Use my location": "Use my location",
+  "Use Location": "Use Location",
+  "Could not find address from URL. Please search again.": "Could not find address from URL. Please search again.",
+  "Please enter an address": "Please enter an address",
+  "Could not find address. Please try again.": "Could not find address. Please try again.",
+  "Could not get your location. Check browser settings.": "Could not get your location. Check browser settings.",
+  
+  "Config": "Config",
+  "Toggle layout editor": "Toggle layout editor",
+  "Clear cache and refresh": "Clear cache and refresh",
+  "Clear all cached data and refresh the page?": "Clear all cached data and refresh the page?",
+  
+  "Language": "Language",
+  
+  "Buses": "Buses",
+  "Platform": "Platform",
+  "Could not load bus stops": "Could not load bus stops",
+  "No bus stops found nearby": "No bus stops found nearby",
+  "No departures found": "No departures found",
+  "Enter address to see bus departures": "Enter address to see bus departures",
+  
+  "Events": "Events",
+  "Today": "Today",
+  "Tomorrow": "Tomorrow",
+  "Could not load events": "Could not load events",
+  "No events for the selected date": "No events for the selected date",
+  "Loading events...": "Loading events...",
+  
+  "Weather Now": "Weather Now",
+  "Weather Today": "Weather Today",
+  "Could not load weather data": "Could not load weather data",
+  "No weather data available": "No weather data available",
+  
+  "Electricity": "Electricity",
+  "Could not load energy prices": "Could not load energy prices",
+  "No energy price data available": "No energy price data available",
+  "Enter address to see energy prices": "Enter address to see energy prices",
+  
+  "Trash Schedule": "Trash Schedule",
+  "Address not found in trash collection database. Try entering just the street name and number (e.g., \"Persaunvegen 1C\")": "Address not found in trash collection database. Try entering just the street name and number (e.g., \"Persaunvegen 1C\")",
+  "Could not load trash schedule. Please try again.": "Could not load trash schedule. Please try again.",
+  "No schedule data available": "No schedule data available",
+  "No upcoming collections found": "No upcoming collections found",
+  "Enter address to see trash collection schedule": "Enter address to see trash collection schedule",
+  
+  "Police Log": "Police Log",
+  "Could not load police log": "Could not load police log",
+  "No police log messages available": "No police log messages available",
+  "Loading police log...": "Loading police log...",
+  
+  "News": "News",
+  "Could not load news": "Could not load news",
+  "No news available": "No news available",
+  "Loading news...": "Loading news...",
+  
+  "Layout": "Layout",
+  "Reset": "Reset",
+  "Close": "Close",
+  "Drop here": "Drop here",
+  "Bus Departures": "Bus Departures",
+  "Energy Prices": "Energy Prices",
+  "Trash Collection": "Trash Collection",
+  
+  "Enter address to see information": "Enter address to see information"
+}
+

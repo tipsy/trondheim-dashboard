@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { t } from '../../utils/localization.js';
 import { EnergyAPI } from "../../utils/api/energy-api.js";
 
 class EnergyWidget extends BaseWidget {
@@ -107,7 +108,7 @@ class EnergyWidget extends BaseWidget {
   async loadEnergyPrices() {
     const prices = await this.fetchData(
       () => EnergyAPI.getEnergyPrices(this.priceArea),
-      "Could not load energy prices"
+      t("Could not load energy prices")
     );
 
     if (prices) {
@@ -211,7 +212,7 @@ class EnergyWidget extends BaseWidget {
 
   renderContent() {
     if (!this.currentPrice && !this.nextHours?.length) {
-      return html`<p class="no-data">No energy price data available</p>`;
+      return html`<p class="no-data">${t("No energy price data available")}</p>`;
     }
 
     const currentPriceInKroner = this.currentPrice ? this.currentPrice.NOK_per_kWh : null;
@@ -252,7 +253,7 @@ class EnergyWidget extends BaseWidget {
   }
 
   getPlaceholderText() {
-    return "Enter address to see energy prices";
+    return t("Enter address to see energy prices");
   }
 }
 

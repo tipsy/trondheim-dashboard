@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { t } from '../../utils/localization.js';
 import { WeatherAPI } from "../../utils/api/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import "./weather-hour.js";
@@ -87,7 +88,7 @@ class WeatherRightNow extends BaseWidget {
 
     const weatherData = await this.fetchData(
       () => WeatherAPI.getWeatherForecast(this.location.lat, this.location.lon),
-      "Could not load weather data"
+      t("Could not load weather data")
     );
 
     if (weatherData) {
@@ -123,7 +124,7 @@ class WeatherRightNow extends BaseWidget {
 
   renderContent() {
     if (!this.currentWeather) {
-      return html`<p class="no-data">No weather data available</p>`;
+      return html`<p class="no-data">${t("No weather data available")}</p>`;
     }
 
     const iconClass = IconLibrary.getWeatherIconClass(

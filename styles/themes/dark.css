@@ -58,6 +58,10 @@
     --scrollbar-thumb: rgba(255, 255, 255, 0.2);
     --scrollbar-thumb-hover: rgba(255, 255, 255, 0.3);
 
+    /* Spinner colors */
+    --spinner-ring: #404040;
+    --spinner-segment: #4da6ff;
+
     /* Icon/emoji filter */
     --icon-filter: none;
 }

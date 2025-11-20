@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { t } from '../../utils/localization.js';
 import { TrashAPI } from "../../utils/api/trash-api.js";
 import "./trash-row.js";
 import "../common/widget-list.js";
@@ -92,7 +93,7 @@ class TrashWidget extends BaseWidget {
 
       if (!searchResults || searchResults.length === 0) {
         throw new Error(
-          'Address not found in trash collection database. Try entering just the street name and number (e.g., "Persaunvegen 1C")',
+          t('Address not found in trash collection database. Try entering just the street name and number (e.g., "Persaunvegen 1C")'),
         );
       }
 
@@ -102,7 +103,7 @@ class TrashWidget extends BaseWidget {
 
       // Now get the actual schedule
       return await TrashAPI.getTrashSchedule(this.addressId);
-    }, "Could not load trash schedule. Please try again.");
+    }, t("Could not load trash schedule. Please try again."));
 
     if (result) {
       this.processSchedule(result);
@@ -111,7 +112,7 @@ class TrashWidget extends BaseWidget {
 
   processSchedule(schedule) {
     if (!schedule?.calendar) {
-      this.showError("No schedule data available");
+      this.showError(t("No schedule data available"));
       return;
     }
 
@@ -153,7 +154,7 @@ class TrashWidget extends BaseWidget {
 
   renderContent() {
     if (!this.collections?.length) {
-      return html`<p class="no-data">No upcoming collections found</p>`;
+      return html`<p class="no-data">${t("No upcoming collections found")}</p>`;
     }
 
     return html`
@@ -173,7 +174,7 @@ class TrashWidget extends BaseWidget {
   }
 
   getPlaceholderText() {
-    return "Enter address to see trash collection schedule";
+    return t("Enter address to see trash collection schedule");
   }
 }
 

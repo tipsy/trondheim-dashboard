@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { t } from '../../utils/localization.js';
 import { WeatherAPI } from "../../utils/api/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
@@ -101,7 +102,7 @@ class WeatherToday extends BaseWidget {
         WeatherAPI.getWeatherForecast(this.location.lat, this.location.lon),
         WeatherAPI.getSunriseSunset(this.location.lat, this.location.lon),
       ]);
-    }, "Could not load weather data");
+    }, t("Could not load weather data"));
 
     if (result) {
       const [weatherData, sunData] = result;
@@ -162,7 +163,7 @@ class WeatherToday extends BaseWidget {
 
   renderContent() {
     if (!this.todayData) {
-      return html`<p class="no-data">No weather data available</p>`;
+      return html`<p class="no-data">${t("No weather data available")}</p>`;
     }
 
     const iconClass = IconLibrary.getWeatherIconClass(

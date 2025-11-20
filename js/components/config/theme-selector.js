@@ -15,6 +15,7 @@ class ThemeSelector extends BaseWidget {
     super();
     this.title = "Config";
     this.icon = "mdi-palette-outline";
+    this.compactHeader = true;
     this.selectedTheme = storage.loadTheme();
     this.setTheme(this.selectedTheme);
   }
@@ -39,6 +40,14 @@ class ThemeSelector extends BaseWidget {
         display: flex;
         gap: 4px;
         align-items: center;
+      }
+
+      .header-actions icon-button {
+        --icon-btn-size: 28px;
+      }
+
+      .header-actions icon-button i {
+        font-size: 20px;
       }
     `,
   ];

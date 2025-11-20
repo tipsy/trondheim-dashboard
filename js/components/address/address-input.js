@@ -1,5 +1,6 @@
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
+import { t } from "../../utils/localization.js";
 import { dispatchEvent } from "../../utils/event-helpers.js";
 import { GeocodingAPI } from "../../utils/api/geocoding-api.js";
 import storage from "../../utils/storage.js";
@@ -7,6 +8,7 @@ import "../common/input-field.js";
 import "../common/buttons/icon-button.js";
 import "../common/buttons/primary-button.js";
 import "../common/buttons/secondary-button.js";
+import "../common/heading-2.js";
 import "./address-suggestion-item.js";
 
 class AddressInput extends BaseWidget {
@@ -20,6 +22,7 @@ class AddressInput extends BaseWidget {
     super();
     this.title = "Your Address";
     this.icon = "mdi-map-marker-outline";
+    this.compactHeader = true;
     this.addressValue = "";
     this.suggestions = [];
     this.searchTimeout = null;
@@ -234,6 +237,12 @@ class AddressInput extends BaseWidget {
     this.suggestions = [];
     this.cancelDebounce();
     this.shouldFocusInput = true;
+
+    // Clear location from localStorage
+    storage.clearLocation();
+
+    // Notify dashboard to clear address from URL
+    this.updateLocation(null, null, "");
   }
 
   updated(changedProperties) {
@@ -338,6 +347,20 @@ class AddressInput extends BaseWidget {
 
   handleSuggestionSelect(e) {
     this.selectLocation(e.detail.location);
+  }
+
+  // Override render to always show the search field, even when there's an error
+  render() {
+    return html`
+      <div class="widget-container">
+        <div class="widget-header ${this.compactHeader ? 'compact' : ''}">
+          <heading-2 icon="${this.icon}" title="${this.title}">
+            ${this.renderHeaderActions()}
+          </heading-2>
+        </div>
+        <div id="content">${this.renderContent()}</div>
+      </div>
+    `;
   }
 
   renderContent() {

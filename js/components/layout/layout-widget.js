@@ -1,4 +1,5 @@
 import { html, css } from 'lit';
+import { t } from '../../utils/localization.js';
 import { BaseWidget } from '../common/base-widget.js';
 import '../common/custom-slider.js';
 import storage from '../../utils/storage.js';
@@ -151,8 +152,8 @@ class LayoutWidget extends BaseWidget {
   renderHeaderActions() {
     return html`
       <div style="display:flex;gap:4px;align-items:center">
-        <secondary-button dense @click=${this.resetLayout}>Reset</secondary-button>
-        <secondary-button dense @click=${this.closeEditor}>Close</secondary-button>
+        <secondary-button dense @click=${this.resetLayout}>${t("Reset")}</secondary-button>
+        <secondary-button dense @click=${this.closeEditor}>${t("Close")}</secondary-button>
       </div>
     `;
   }
@@ -203,7 +204,7 @@ class LayoutWidget extends BaseWidget {
                     @dragover=${this.onDragOver}
                     @drop=${this.onDrop}
                   >
-                    Drop here
+                    ${t("Drop here")}
                   </div>
                 `;
               }
@@ -244,14 +245,14 @@ class LayoutWidget extends BaseWidget {
   humanizeWidgetId(id) {
     // friendly label mapping for known widgets
     const map = {
-      'bus-widget': 'Bus Departures',
-      'events-widget': 'Events',
-      'weather-right-now': 'Weather Now',
-      'weather-today': 'Weather Today',
-      'energy-widget': 'Energy Prices',
-      'trash-widget': 'Trash Collection',
-      'police-widget': 'Police Log',
-      'nrk-widget': 'News',
+      'bus-widget': t('Bus Departures'),
+      'events-widget': t('Events'),
+      'weather-right-now': t('Weather Now'),
+      'weather-today': t('Weather Today'),
+      'energy-widget': t('Energy Prices'),
+      'trash-widget': t('Trash Collection'),
+      'police-widget': t('Police Log'),
+      'nrk-widget': t('News'),
     };
     return map[id] || id;
   }

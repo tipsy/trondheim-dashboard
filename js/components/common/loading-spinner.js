@@ -22,8 +22,8 @@ class LoadingSpinner extends LitElement {
 
       .spinner {
         display: inline-block;
-        border: solid var(--border-color, #e0e0e0);
-        border-top-color: var(--primary-color, #0066cc);
+        border: solid var(--spinner-ring, var(--border-color, #e0e0e0));
+        border-top-color: var(--spinner-segment, var(--primary-color, #0066cc));
         border-radius: 50%;
         animation: spin 1s linear infinite;
       }

@@ -2,6 +2,7 @@
 // All dashboard widgets should extend this class
 
 import { LitElement, html, css } from "lit";
+import { t } from '../../utils/localization.js';
 import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 import "./loading-spinner.js";
 import "./error-message.js";
@@ -11,6 +12,7 @@ export class BaseWidget extends LitElement {
   static properties = {
     title: { type: String },
     icon: { type: String },
+    compactHeader: { type: Boolean },
     isLoading: { type: Boolean, state: true },
     errorMessage: { type: String, state: true },
   };
@@ -19,6 +21,7 @@ export class BaseWidget extends LitElement {
     super();
     this.title = "Widget";
     this.icon = "mdi-square-outline";
+    this.compactHeader = false;
     this.isLoading = false;
     this.errorMessage = "";
     this._placeholderTimerId = null;
@@ -81,6 +84,10 @@ export class BaseWidget extends LitElement {
         flex-shrink: 0;
         border-bottom: 1px solid transparent;
         transition: border-color 0.2s ease;
+      }
+
+      .widget-header.compact {
+        padding-bottom: var(--spacing-xs);
       }
 
       .widget-header.scrolled {
@@ -163,7 +170,7 @@ export class BaseWidget extends LitElement {
 
   // Override this method in child classes to customize placeholder text
   getPlaceholderText() {
-    return "Enter address to see information";
+    return t("Enter address to see information");
   }
 
   // Override this for custom content rendering
@@ -186,8 +193,8 @@ export class BaseWidget extends LitElement {
 
     return html`
       <div class="widget-container">
-        <div class="widget-header">
-          <heading-2 icon="${this.icon}" title="${this.title}">
+        <div class="widget-header ${this.compactHeader ? 'compact' : ''}">
+          <heading-2 icon="${this.icon}" title="${t(this.title)}">
             ${this.renderHeaderActions()}
           </heading-2>
         </div>

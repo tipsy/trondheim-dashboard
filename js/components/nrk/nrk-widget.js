@@ -2,6 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html } from "lit";
+import { t } from '../../utils/localization.js';
 import { NrkRssAPI } from "../../utils/api/nrk-rss-api.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
 import "../common/widget-row.js";
@@ -28,7 +29,7 @@ class NRKWidget extends BaseWidget {
   async loadStories() {
     const items = await this.fetchData(
       () => NrkRssAPI.getTopTen("trondelag"),
-      "Could not load news"
+      t("Could not load news")
     );
     if (items) {
       this.stories = items;
@@ -37,7 +38,7 @@ class NRKWidget extends BaseWidget {
 
   renderContent() {
     if (!this.stories?.length) {
-      return html`<p class="no-data">No news available</p>`;
+      return html`<p class="no-data">${t("No news available")}</p>`;
     }
 
     return html`
@@ -57,7 +58,7 @@ class NRKWidget extends BaseWidget {
   }
 
   getPlaceholderText() {
-    return "Loading news...";
+    return t("Loading news...");
   }
 }
 

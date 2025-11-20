@@ -71,6 +71,10 @@
     --scrollbar-thumb: rgba(0, 0, 0, 0.8);
     --scrollbar-thumb-hover: rgba(0, 0, 0, 1);
 
+    /* Spinner colors - need contrast for visibility */
+    --spinner-ring: #cccccc;
+    --spinner-segment: #000000;
+
     /* Icon/emoji filter for retro black & white theme - grayscale with increased contrast */
     --icon-filter: grayscale(100%) contrast(1.5);
 }

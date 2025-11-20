@@ -1,0 +1,72 @@
+{
+  "Your Address": "Din adresse",
+  "Start typing an address...": "Begynn å skrive en adresse...",
+  "Clear": "Tøm",
+  "Clear input": "Tøm felt",
+  "Search": "Søk",
+  "Use my location": "Bruk min posisjon",
+  "Use Location": "Bruk posisjon",
+  "Could not find address from URL. Please search again.": "Kunne ikke finne adresse fra URL. Vennligst søk igjen.",
+  "Please enter an address": "Vennligst skriv inn en adresse",
+  "Could not find address. Please try again.": "Kunne ikke finne adresse. Vennligst prøv igjen.",
+  "Could not get your location. Check browser settings.": "Kunne ikke hente din posisjon. Sjekk nettleserinnstillinger.",
+  
+  "Config": "Innstillinger",
+  "Toggle layout editor": "Vis/skjul layoutredigering",
+  "Clear cache and refresh": "Tøm hurtigbuffer og oppdater",
+  "Clear all cached data and refresh the page?": "Tøm all hurtigbuffer og oppdater siden?",
+  
+  "Language": "Språk",
+  
+  "Buses": "Busser",
+  "Platform": "Plattform",
+  "Could not load bus stops": "Kunne ikke laste bussholdeplasser",
+  "No bus stops found nearby": "Ingen bussholdeplasser funnet i nærheten",
+  "No departures found": "Ingen avganger funnet",
+  "Enter address to see bus departures": "Skriv inn adresse for å se bussavganger",
+  
+  "Events": "Arrangementer",
+  "Today": "I dag",
+  "Tomorrow": "I morgen",
+  "Could not load events": "Kunne ikke laste arrangementer",
+  "No events for the selected date": "Ingen arrangementer for valgt dato",
+  "Loading events...": "Laster arrangementer...",
+  
+  "Weather Now": "Vær nå",
+  "Weather Today": "Vær i dag",
+  "Could not load weather data": "Kunne ikke laste værdata",
+  "No weather data available": "Ingen værdata tilgjengelig",
+  
+  "Electricity": "Strøm",
+  "Could not load energy prices": "Kunne ikke laste strømpriser",
+  "No energy price data available": "Ingen strømprisdata tilgjengelig",
+  "Enter address to see energy prices": "Skriv inn adresse for å se strømpriser",
+  
+  "Trash Schedule": "Søppeltømming",
+  "Address not found in trash collection database. Try entering just the street name and number (e.g., \"Persaunvegen 1C\")": "Adresse ikke funnet i søppeltømmingsdatabasen. Prøv å skrive bare gatenavn og nummer (f.eks. \"Persaunvegen 1C\")",
+  "Could not load trash schedule. Please try again.": "Kunne ikke laste søppeltømmingsplan. Vennligst prøv igjen.",
+  "No schedule data available": "Ingen plandata tilgjengelig",
+  "No upcoming collections found": "Ingen kommende tømminger funnet",
+  "Enter address to see trash collection schedule": "Skriv inn adresse for å se søppeltømmingsplan",
+  
+  "Police Log": "Politiloggen",
+  "Could not load police log": "Kunne ikke laste politilogg",
+  "No police log messages available": "Ingen politiloggmeldinger tilgjengelig",
+  "Loading police log...": "Laster politilogg...",
+  
+  "News": "Nyheter",
+  "Could not load news": "Kunne ikke laste nyheter",
+  "No news available": "Ingen nyheter tilgjengelig",
+  "Loading news...": "Laster nyheter...",
+  
+  "Layout": "Oppsett",
+  "Reset": "Tilbakestill",
+  "Close": "Lukk",
+  "Drop here": "Slipp her",
+  "Bus Departures": "Bussavganger",
+  "Energy Prices": "Strømpriser",
+  "Trash Collection": "Søppeltømming",
+  
+  "Enter address to see information": "Skriv inn adresse for å se informasjon"
+}
+
