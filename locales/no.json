@@ -48,6 +48,9 @@
   "No schedule data available": "Ingen plandata tilgjengelig",
   "No upcoming collections found": "Ingen kommende tømminger funnet",
   "Enter address to see trash collection schedule": "Skriv inn adresse for å se søppeltømmingsplan",
+  "day": "dag",
+  "days": "dager",
+  "Past": "Passert",
   
   "Police Log": "Politiloggen",
   "Could not load police log": "Kunne ikke laste politilogg",

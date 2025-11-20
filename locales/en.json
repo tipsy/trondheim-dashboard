@@ -48,6 +48,9 @@
   "No schedule data available": "No schedule data available",
   "No upcoming collections found": "No upcoming collections found",
   "Enter address to see trash collection schedule": "Enter address to see trash collection schedule",
+  "day": "day",
+  "days": "days",
+  "Past": "Past",
   
   "Police Log": "Police Log",
   "Could not load police log": "Could not load police log",

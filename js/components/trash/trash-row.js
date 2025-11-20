@@ -3,6 +3,7 @@
 import { LitElement, html, css } from "lit";
 import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
+import { t } from "../../utils/localization.js";
 import "../common/widget-row.js";
 
 class TrashRow extends LitElement {
@@ -179,10 +180,10 @@ class TrashRow extends LitElement {
   }
 
   getCountdownText(daysUntil) {
-    if (daysUntil === 0) return "Today";
-    if (daysUntil === 1) return "day";
-    if (daysUntil < 0) return "Past";
-    return "days";
+    if (daysUntil === 0) return t("Today");
+    if (daysUntil === 1) return t("day");
+    if (daysUntil < 0) return t("Past");
+    return t("days");
   }
 
   shouldPulse(daysUntil) {

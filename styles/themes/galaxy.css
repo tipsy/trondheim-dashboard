@@ -62,7 +62,8 @@
     --scrollbar-thumb-hover: rgba(167, 139, 250, 0.8);
 
     /* Spinner colors */
-    --spinner-color: #a78bfa;
+    --spinner-ring: rgba(76, 29, 149, 0.3);
+    --spinner-segment: #a78bfa;
 }
 
 /* Add subtle glow to cards in galaxy theme */
