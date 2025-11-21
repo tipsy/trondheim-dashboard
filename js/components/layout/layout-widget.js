@@ -32,7 +32,6 @@ class LayoutWidget extends BaseWidget {
       .layout-container {
         display: flex;
         gap: 0;
-        background: var(--card-background);
         border-radius: 8px;
       }
 
@@ -59,7 +58,7 @@ class LayoutWidget extends BaseWidget {
         display: flex;
         align-items: center;
         gap: 8px;
-        padding: 8px;
+        padding: 4px 8px;
         background: var(--alt-background);
         border: 1px solid var(--border-color);
         border-radius: 6px;
@@ -106,7 +105,7 @@ class LayoutWidget extends BaseWidget {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 8px;
+        padding: 0px 8px;
         background: var(--alt-background);
         border: 1px solid var(--border-color);
         border-radius: 6px;

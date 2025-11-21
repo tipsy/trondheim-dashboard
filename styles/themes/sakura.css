@@ -1,17 +1,17 @@
-/* Peach-Pink theme (cute) */
-:root[data-theme="peach"] {
-    --background: none;
+/* Sakura theme */
+:root[data-theme="sakura"] {
+    --background: url("/img/themes/sakura/sakura-bg.jpg") center/cover no-repeat;
     /* Colors */
-    --primary-color: #ff9a9e;
-    --secondary-color: #fad0c4;
-    --heading-color: #5a4a4a;
-    --background-color: #fff5f5;
-    --card-background: #ffffff;
-    --text-color: #5a4a4a;
-    --text-alt: #5a4a4a;
-    --text-light: #9a8a8a;
+    --primary-color: #ff666c7d;
+    --secondary-color: #dd666c7d;
+    --heading-color: #4f0028;
+    --background-color: transparent;
+    --card-background: rgba(255, 255, 255, 0.6);
+    --text-color: #4f0028;
+    --text-alt: #4f0028;
+    --text-light: #4f0028;
     --border-color: #ffe0e0;
-    --input-background: #ffffff;
+    --input-background: rgba(255, 255, 255, 0.6);
     --button-text: #ffffff;
     --success-color: #ffa5a5;
     --success-hover: #ff8a8a;
@@ -22,15 +22,15 @@
     --info-color: #ff9a9e;
 
     /* Alternate backgrounds */
-    --alt-background: #fff8f8;
-    --hover-bg: #ffebeb;
+    --alt-background: rgba(255, 255, 255, 0.6);
+    --hover-bg: #ff76761c;
 
     /* Shadows */
     --shadow: 0 2px 12px rgba(255, 154, 158, 0.2);
     --shadow-hover: 0 4px 16px rgba(255, 154, 158, 0.3);
 
     /* Spacing */
-    --border-radius: 16px;
+    --border-radius: 6px;
     --spacing-xs: 4px;
     --spacing-sm: 8px;
     --spacing-md: 16px;
@@ -46,7 +46,7 @@
     --font-size-xl: 48px;
     --font-size-xxl: 64px;
 
-    /* Trash type colors (peach theme) */
+    /* Trash type colors (sakura theme) */
     --trash-general: #ffccd5;
     --trash-paper: #ffd4a3;
     --trash-plastic: #ffe4b5;

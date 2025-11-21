@@ -137,6 +137,7 @@ class CustomSelect extends LitElement {
         overflow-y: auto;
         z-index: 1000;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px);
       }
 
       .select-option {

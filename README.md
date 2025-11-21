@@ -16,7 +16,6 @@ This repository is intentionally lightweight — just static HTML, CSS and JavaS
 - **👮 Police log** - Latest incidents from Politiet (Trøndelag district)
 - **📰 News** - Top stories from NRK Trøndelag
 - **🎭 Events** - Upcoming events in Trondheim with date filtering
-- **🎨 7 themes** - Midnight Blue, Peach Pink, Solarized, Monokai, Cat, Dark, and Light
 - **🔗 URL state** - Shareable links with address and theme parameters
 - **♻️ Auto-refresh** - Dashboard reloads every 5 minutes to get latest data and app updates
 - **📱 Responsive** - Optimized layouts for desktop (grid with scrollable widgets) and mobile/tablet (stacked)
@@ -62,14 +61,7 @@ trondheim-dashboard/
 │   └── screenshot.png      # Open Graph / social media preview image
 ├── styles/
 │   ├── main.css            # Global styles and layout
-│   └── themes/             # 7 theme CSS files
-│       ├── midnight-blue.css
-│       ├── peach.css
-│       ├── solarized.css
-│       ├── monokai.css
-│       ├── cat.css
-│       ├── dark.css
-│       └── light.css
+│   └── themes/             # Themes
 ├── img/
 │   └── example-background.jpg
 └── js/
@@ -301,7 +293,7 @@ The dashboard uses CSS variables for theming. Each theme file defines:
 
 **Available themes:**
 - `midnight-blue` (default) - Deep blue with cyan accents
-- `peach` - Warm peach with salmon highlights
+- `sakura` - Pink peach with cherry blossom highlights
 - `solarized` - Classic Solarized color palette
 - `monokai` - Developer-friendly dark theme
 - `cat` - Playful cat-themed design
