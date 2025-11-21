@@ -2,6 +2,7 @@
 
 import { LitElement, html, css } from "lit";
 import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
+import { t } from "../../utils/localization.js";
 import "../common/widget-row.js";
 
 class BusRow extends LitElement {
@@ -88,7 +89,7 @@ class BusRow extends LitElement {
     const diffMinutes = Math.round((date - now) / 60000);
 
     if (diffMinutes <= 0) {
-      return "Now";
+      return t("Now");
     } else if (diffMinutes <= 10) {
       return `${diffMinutes} min`;
     } else {

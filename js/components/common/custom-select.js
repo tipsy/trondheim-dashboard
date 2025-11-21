@@ -101,6 +101,7 @@ class CustomSelect extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        text-transform: capitalize;
       }
 
       .select-trigger:hover {
@@ -144,6 +145,7 @@ class CustomSelect extends LitElement {
         transition: background-color 0.15s;
         color: var(--text-color, #333333);
         font-size: var(--font-size-md, 16px);
+        text-transform: capitalize;
       }
 
       .select-option:hover {

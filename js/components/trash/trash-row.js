@@ -45,12 +45,14 @@ class TrashRow extends LitElement {
         font-weight: bold;
         color: var(--text-color);
         font-size: var(--font-size-md);
+        text-transform: capitalize;
       }
 
       .trash-date {
         font-size: var(--font-size-sm);
         color: var(--text-light);
         margin-top: 4px;
+        text-transform: capitalize;
       }
 
       .countdown-indicator {

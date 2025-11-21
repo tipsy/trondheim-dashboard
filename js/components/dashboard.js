@@ -455,12 +455,36 @@ class TrondheimDashboard extends LitElement {
     this.shadowRoot.querySelector("#trash-widget")?.updateAddress(address);
   }
 
+  async checkHealth() {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const response = await fetch(window.location.origin + '/index.html', {
+        method: 'HEAD',
+        cache: 'no-cache',
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+      return response.ok;
+    } catch (error) {
+      console.warn('Health check failed:', error.message);
+      return false;
+    }
+  }
+
   startAutoRefresh() {
     // Reload the entire page every 5 minutes to get new app versions
-    this.refreshInterval = setInterval(() => {
-      console.log("Auto-refreshing dashboard to get latest version...");
-      location.reload();
-    }, 300000); // 5 minutes
+    this.refreshInterval = setInterval(async () => {
+      console.log("Auto-refresh: checking health before reload...");
+      const isHealthy = await this.checkHealth();
+
+      if (isHealthy) {
+        console.log("Health check passed, reloading dashboard...");
+        location.reload();
+      } else {
+        console.warn("Health check failed, skipping reload. Will retry in 5 minutes.");
+      }
+    }, 1000 * 60 * 5); // 5 minutes
   }
 }
 

@@ -1,5 +1,7 @@
 // Date Formatter - Centralized date formatting utilities for Trondheim Dashboard
 
+import { getLocale } from './localization.js';
+
 export class DateFormatter {
     static DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     static DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -7,36 +9,48 @@ export class DateFormatter {
     static MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     /**
-     * Format date as "Monday, Jan 15"
+     * Get the locale code for date formatting (en-US or no-NO)
+     * @returns {string} Locale code
+     */
+    static getLocaleCode() {
+        const locale = getLocale();
+        return locale === 'no' ? 'no-NO' : 'en-US';
+    }
+
+    /**
+     * Format date as "Monday, Jan 15" (localized)
      * @param {Date} date - Date to format
      * @returns {string} Formatted date string
      */
     static formatLongDate(date) {
-        const dayName = this.DAYS[date.getDay()];
+        const localeCode = this.getLocaleCode();
+        const dayName = date.toLocaleDateString(localeCode, { weekday: 'long' });
         const day = date.getDate();
-        const month = this.MONTHS_SHORT[date.getMonth()];
+        const month = date.toLocaleDateString(localeCode, { month: 'short' });
         return `${dayName}, ${month} ${day}`;
     }
 
     /**
-     * Format date as "Mon, Jan 15"
+     * Format date as "Mon, Jan 15" (localized)
      * @param {Date} date - Date to format
      * @returns {string} Formatted date string
      */
     static formatMediumDate(date) {
-        const dayName = this.DAYS_SHORT[date.getDay()];
+        const localeCode = this.getLocaleCode();
+        const dayName = date.toLocaleDateString(localeCode, { weekday: 'short' });
         const day = date.getDate();
-        const month = this.MONTHS_SHORT[date.getMonth()];
+        const month = date.toLocaleDateString(localeCode, { month: 'short' });
         return `${dayName}, ${month} ${day}`;
     }
 
     /**
-     * Format date as "Monday 1/15"
+     * Format date as "Monday 1/15" (localized)
      * @param {Date} date - Date to format
      * @returns {string} Formatted date string
      */
     static formatDayWithNumericDate(date) {
-        const dayName = this.DAYS[date.getDay()];
+        const localeCode = this.getLocaleCode();
+        const dayName = date.toLocaleDateString(localeCode, { weekday: 'long' });
         const day = date.getDate();
         const month = date.getMonth() + 1;
         return `${dayName} ${month}/${day}`;
@@ -69,39 +83,43 @@ export class DateFormatter {
     }
 
     /**
-     * Get day name from date
+     * Get day name from date (localized)
      * @param {Date} date - Date
      * @returns {string} Day name
      */
     static getDayName(date) {
-        return this.DAYS[date.getDay()];
+        const localeCode = this.getLocaleCode();
+        return date.toLocaleDateString(localeCode, { weekday: 'long' });
     }
 
     /**
-     * Get short day name from date
+     * Get short day name from date (localized)
      * @param {Date} date - Date
      * @returns {string} Short day name
      */
     static getDayNameShort(date) {
-        return this.DAYS_SHORT[date.getDay()];
+        const localeCode = this.getLocaleCode();
+        return date.toLocaleDateString(localeCode, { weekday: 'short' });
     }
 
     /**
-     * Get month name from date
+     * Get month name from date (localized)
      * @param {Date} date - Date
      * @returns {string} Month name
      */
     static getMonthName(date) {
-        return this.MONTHS[date.getMonth()];
+        const localeCode = this.getLocaleCode();
+        return date.toLocaleDateString(localeCode, { month: 'long' });
     }
 
     /**
-     * Get short month name from date
+     * Get short month name from date (localized)
      * @param {Date} date - Date
      * @returns {string} Short month name
      */
     static getMonthNameShort(date) {
-        return this.MONTHS_SHORT[date.getMonth()];
+        const localeCode = this.getLocaleCode();
+        return date.toLocaleDateString(localeCode, { month: 'short' });
     }
 
     /**
