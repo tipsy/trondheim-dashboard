@@ -29,6 +29,7 @@ class InputField extends LitElement {
         width: 100%;
         height: var(--input-height);
         padding: var(--spacing-sm) var(--spacing-md);
+        padding-right: calc(var(--input-height) + var(--spacing-sm));
         border: 1px solid var(--border-color);
         border-radius: var(--border-radius);
         font-size: var(--font-size-md);

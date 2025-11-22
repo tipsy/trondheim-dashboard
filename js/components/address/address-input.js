@@ -64,7 +64,7 @@ class AddressInput extends BaseWidget {
 
       .clear-btn {
         position: absolute;
-        right: 0;
+        right: 4px;
         top: 0;
         z-index: 10;
         --icon-btn-size: var(--input-height);
@@ -77,17 +77,29 @@ class AddressInput extends BaseWidget {
       }
 
       @media (max-width: 767px) {
+        .input-group {
+          flex-direction: row;
+          gap: var(--spacing-sm);
+        }
+
+        .input-row {
+          flex: 1;
+          min-width: 0;
+        }
+
         .button-row {
-          flex-direction: column;
+          flex: 0 0 auto;
+          gap: var(--spacing-sm);
+          /* Keep row direction */
         }
 
         primary-button,
         secondary-button {
-          width: 100%;
+          flex: 0 0 auto;
         }
 
         .location-text {
-          display: inline;
+          display: none; /* Hide text on mobile to save space */
         }
       }
 
