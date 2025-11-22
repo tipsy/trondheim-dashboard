@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="no">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,8 +8,10 @@
     <!-- Primary Meta Tags -->
     <title>Trondheim Dashboard - Sanntidsinformasjon for Trondheim | Buss, Vær, Søppel & Mer</title>
     <meta name="title" content="Trondheim Dashboard - Sanntidsinformasjon for Trondheim | Buss, Vær, Søppel & Mer">
-    <meta name="description" content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer - alt på ett sted. Ingen innlogging kreves.">
-    <meta name="keywords" content="Trondheim, dashboard, ATB buss, sanntidsinformasjon, værmelding Trondheim, søppelhenting, strømpris, TRV, politilogg, NRK Trøndelag, arrangementer Trondheim">
+    <meta name="description"
+        content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer - alt på ett sted. Ingen innlogging kreves.">
+    <meta name="keywords"
+        content="Trondheim, dashboard, ATB buss, sanntidsinformasjon, værmelding Trondheim, søppelhenting, strømpris, TRV, politilogg, NRK Trøndelag, arrangementer Trondheim">
     <meta name="author" content="Trondheim Dashboard">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://trondheim-dashboard.com/">
@@ -17,7 +20,8 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://trondheim-dashboard.com/">
     <meta property="og:title" content="Trondheim Dashboard - Sanntidsinformasjon for Trondheim">
-    <meta property="og:description" content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.">
+    <meta property="og:description"
+        content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.">
     <meta property="og:image" content="https://trondheim-dashboard.com/og/screenshot.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -29,19 +33,25 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://trondheim-dashboard.com/">
     <meta name="twitter:title" content="Trondheim Dashboard - Sanntidsinformasjon for Trondheim">
-    <meta name="twitter:description" content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.">
+    <meta name="twitter:description"
+        content="Moderne dashbord for Trondheim-innbyggere. Få sanntidsinformasjon om busser (ATB), værmelding, søppelhenting, strømpris, politilogg, nyheter og arrangementer.">
     <meta name="twitter:image" content="https://trondheim-dashboard.com/og/screenshot.png">
     <meta name="twitter:image:alt" content="Trondheim Dashboard showing bus departures, weather, and other widgets">
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="img/trondheimsrosa.svg">
 
-    <!-- PWA Manifest - only load in production to avoid 404s in local development -->
-    <script>
-        if (!location.hostname.includes('localhost')) {
-            document.head.insertAdjacentHTML('beforeend', '<link rel="manifest" href="/manifest.json">');
-        }
-    </script>
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#1e3a5f">
+
+    <!-- iOS PWA Support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Trondheim">
+    <link rel="apple-touch-icon" href="/img/icons/apple-touch-icon.png">
 
     <!-- Stylesheet -->
     <link rel="stylesheet" href="styles/main.css">
@@ -90,6 +100,7 @@
         }
     </script>
 </head>
+
 <body>
     <main role="main" aria-label="Trondheim Dashboard Hovedinnhold">
         <h1 style="position: absolute; left: -10000px; top: auto; width: 1px; height: 1px; overflow: hidden;">
@@ -101,9 +112,25 @@
     <!-- Main application entry point - loads locale first, then dashboard -->
     <script type="module" src="js/init.js"></script>
 
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered successfully:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.error('Service Worker registration failed:', error);
+                    });
+            });
+        }
+    </script>
+
     <!-- Theme effects -->
     <script type="module" src="js/themes/cat-paws.js"></script>
     <script type="module" src="js/themes/retro.js"></script>
     <script type="module" src="js/themes/galaxy.js"></script>
 </body>
+
 </html>
