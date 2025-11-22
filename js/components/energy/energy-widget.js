@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { EnergyAPI } from "../../utils/api/energy-api.js";
 
 class EnergyWidget extends BaseWidget {
@@ -22,7 +22,6 @@ class EnergyWidget extends BaseWidget {
     this.priceArea = "NO3"; // Default to Trondheim area
     this.location = null;
   }
-
 
   static styles = [
     ...BaseWidget.styles,
@@ -56,7 +55,7 @@ class EnergyWidget extends BaseWidget {
       }
 
       .chip {
-        background-color: var(--alt-background);
+        background-color: var(--widget-subpart-background);
         padding: 8px 12px;
         border-radius: calc(var(--border-radius) * 1.2);
         font-size: var(--font-size-sm);
@@ -83,9 +82,8 @@ class EnergyWidget extends BaseWidget {
 
       .chip .time {
         font-size: 12px;
-        color: var(--text-light);
+        color: var(--text-muted);
       }
-
 
       .trend.up {
         color: var(--error-color, #e74c3c);
@@ -94,7 +92,7 @@ class EnergyWidget extends BaseWidget {
         color: var(--success-color, #2ecc71);
       }
       .trend.flat {
-        color: var(--text-light);
+        color: var(--text-muted);
       }
     `,
   ];
@@ -108,7 +106,7 @@ class EnergyWidget extends BaseWidget {
   async loadEnergyPrices() {
     const prices = await this.fetchData(
       () => EnergyAPI.getEnergyPrices(this.priceArea),
-      t("Could not load energy prices")
+      t("Could not load energy prices"),
     );
 
     if (prices) {
@@ -133,8 +131,8 @@ class EnergyWidget extends BaseWidget {
     });
 
     // Get remaining hours for today
-    let remainingPrices = prices.filter((p) =>
-      new Date(p.time_start).getHours() >= currentHour
+    let remainingPrices = prices.filter(
+      (p) => new Date(p.time_start).getHours() >= currentHour,
     );
 
     // If we don't have enough remaining hours, fetch next day's prices
@@ -167,14 +165,14 @@ class EnergyWidget extends BaseWidget {
   }
 
   getPriceColor(priceInKroner) {
-    if (priceInKroner < 0.50) return "cheap";
-    if (priceInKroner <= 1.00) return "neutral";
+    if (priceInKroner < 0.5) return "cheap";
+    if (priceInKroner <= 1.0) return "neutral";
     return "expensive";
   }
 
   getPriceEmoji(priceInKroner) {
-    if (priceInKroner < 0.50) return "😌";
-    if (priceInKroner <= 1.00) return "";
+    if (priceInKroner < 0.5) return "😌";
+    if (priceInKroner <= 1.0) return "";
     return "😬";
   }
 
@@ -183,15 +181,18 @@ class EnergyWidget extends BaseWidget {
       const start = new Date(p.time_start);
       const timeLabel = start.toLocaleTimeString("no-NO", {
         hour: "2-digit",
-        minute: "2-digit"
+        minute: "2-digit",
       });
       const priceInKroner = p.NOK_per_kWh;
       const priceStr = priceInKroner.toFixed(2);
 
       // Get previous value for comparison
-      const prevVal = idx === 0
-        ? this.currentPrice ? this.currentPrice.NOK_per_kWh : null
-        : nextFourRaw[idx - 1].NOK_per_kWh;
+      const prevVal =
+        idx === 0
+          ? this.currentPrice
+            ? this.currentPrice.NOK_per_kWh
+            : null
+          : nextFourRaw[idx - 1].NOK_per_kWh;
 
       return {
         label: timeLabel,
@@ -212,11 +213,17 @@ class EnergyWidget extends BaseWidget {
 
   renderContent() {
     if (!this.currentPrice && !this.nextHours?.length) {
-      return html`<p class="no-data">${t("No energy price data available")}</p>`;
+      return html`<p class="no-data">
+        ${t("No energy price data available")}
+      </p>`;
     }
 
-    const currentPriceInKroner = this.currentPrice ? this.currentPrice.NOK_per_kWh : null;
-    const currentPriceEmoji = currentPriceInKroner ? this.getPriceEmoji(currentPriceInKroner) : "";
+    const currentPriceInKroner = this.currentPrice
+      ? this.currentPrice.NOK_per_kWh
+      : null;
+    const currentPriceEmoji = currentPriceInKroner
+      ? this.getPriceEmoji(currentPriceInKroner)
+      : "";
 
     return html`
       ${this.currentPrice
@@ -224,7 +231,9 @@ class EnergyWidget extends BaseWidget {
             <div class="current-price">
               <div class="current-price-value">
                 ${currentPriceInKroner.toFixed(2)} kr
-                ${currentPriceEmoji ? html`<span class="price-emoji">${currentPriceEmoji}</span>` : ""}
+                ${currentPriceEmoji
+                  ? html`<span class="price-emoji">${currentPriceEmoji}</span>`
+                  : ""}
               </div>
             </div>
           `
@@ -258,4 +267,3 @@ class EnergyWidget extends BaseWidget {
 }
 
 customElements.define("energy-widget", EnergyWidget);
-

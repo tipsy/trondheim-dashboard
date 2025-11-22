@@ -89,9 +89,11 @@ export class BaseButton extends LitElement {
 
   connectedCallback() {
     super.connectedCallback?.();
-    try { // Ensure MDI icon font styles are available inside the button's shadow root
+    try {
+      // Ensure MDI icon font styles are available inside the button's shadow root
       adoptMDIStyles(this.shadowRoot);
-    } catch (e) { // ignore if adoptMDIStyles not available or fails
+    } catch (e) {
+      // ignore if adoptMDIStyles not available or fails
     }
   }
 

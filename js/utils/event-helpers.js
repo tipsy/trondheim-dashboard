@@ -11,11 +11,12 @@
  * @param {Object} options - Additional event options
  */
 export function dispatchEvent(element, eventName, detail = null, options = {}) {
-    element.dispatchEvent(new CustomEvent(eventName, {
-        bubbles: true,
-        composed: true,
-        detail,
-        ...options
-    }));
+  element.dispatchEvent(
+    new CustomEvent(eventName, {
+      bubbles: true,
+      composed: true,
+      detail,
+      ...options,
+    }),
+  );
 }
-

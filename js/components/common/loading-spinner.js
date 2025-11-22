@@ -55,7 +55,7 @@ class LoadingSpinner extends LitElement {
   ];
 
   render() {
-    return html`<div class="spinner ${this.size || 'medium'}"></div>`;
+    return html`<div class="spinner ${this.size || "medium"}"></div>`;
   }
 }
 

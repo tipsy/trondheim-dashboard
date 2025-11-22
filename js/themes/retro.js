@@ -1,11 +1,11 @@
 // Retro Theme Background Pattern Rotator
 // Cycles through all 38 classic Mac patterns
 
-import { ThemeEffect, autoInitThemeEffect } from './theme-effect.js';
+import { ThemeEffect, autoInitThemeEffect } from "./theme-effect.js";
 
 class RetroPatternRotator extends ThemeEffect {
   constructor() {
-    super('retro');
+    super("retro");
     this.currentPattern = 0;
     this.totalPatterns = 38; // pattern_00 through pattern_37
     this.rotationInterval = null;
@@ -34,7 +34,7 @@ class RetroPatternRotator extends ThemeEffect {
     }
 
     // Remove the inline style so the theme CSS can take over
-    document.documentElement.style.removeProperty('--background');
+    document.documentElement.style.removeProperty("--background");
   }
 
   nextPattern() {
@@ -47,13 +47,13 @@ class RetroPatternRotator extends ThemeEffect {
 
   applyPattern() {
     // Format pattern number with leading zeros (00-37)
-    const patternNumber = String(this.currentPattern).padStart(2, '0');
+    const patternNumber = String(this.currentPattern).padStart(2, "0");
     const patternUrl = `/img/themes/retro/pattern_${patternNumber}_16x16.png`;
-    
+
     // Update the CSS variable
     document.documentElement.style.setProperty(
-      '--background',
-      `url("${patternUrl}") repeat`
+      "--background",
+      `url("${patternUrl}") repeat`,
     );
   }
 }
@@ -63,4 +63,3 @@ const retroRotator = new RetroPatternRotator();
 autoInitThemeEffect(retroRotator);
 
 export { RetroPatternRotator };
-

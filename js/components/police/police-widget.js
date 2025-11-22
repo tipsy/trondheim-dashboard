@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { PoliceAPI } from "../../utils/api/police-api.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
 import "../common/widget-row.js";
@@ -29,7 +29,7 @@ class PoliceWidget extends BaseWidget {
   async loadMessages() {
     const messages = await this.fetchData(
       () => PoliceAPI.getLatestMessages(),
-      t("Could not load police log")
+      t("Could not load police log"),
     );
     if (messages) {
       this.messages = messages;
@@ -60,7 +60,9 @@ class PoliceWidget extends BaseWidget {
 
   renderContent() {
     if (!this.messages?.length) {
-      return html`<p class="no-data">${t("No police log messages available")}</p>`;
+      return html`<p class="no-data">
+        ${t("No police log messages available")}
+      </p>`;
     }
 
     return html`

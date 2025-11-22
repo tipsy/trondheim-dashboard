@@ -50,7 +50,7 @@ class TrashRow extends LitElement {
 
       .trash-date {
         font-size: var(--font-size-sm);
-        color: var(--text-light);
+        color: var(--text-muted);
         margin-top: 4px;
         text-transform: capitalize;
       }
@@ -107,7 +107,7 @@ class TrashRow extends LitElement {
 
       .countdown-label {
         font-size: var(--font-size-xs);
-        color: var(--text-light);
+        color: var(--text-muted);
         text-transform: uppercase;
         margin-top: 2px;
         position: relative;
@@ -156,14 +156,23 @@ class TrashRow extends LitElement {
     const typeLower = type?.toLowerCase() || "";
 
     const iconMap = [
-      { patterns: ["matavfall", "mat", "food", "bio"], icon: "mdi-food-apple-outline" },
-      { patterns: ["plast", "plastic", "emballasje"], icon: "mdi-bottle-soda-classic-outline" },
-      { patterns: ["restavfall", "rest", "general"], icon: "mdi-trash-can-outline" },
+      {
+        patterns: ["matavfall", "mat", "food", "bio"],
+        icon: "mdi-food-apple-outline",
+      },
+      {
+        patterns: ["plast", "plastic", "emballasje"],
+        icon: "mdi-bottle-soda-classic-outline",
+      },
+      {
+        patterns: ["restavfall", "rest", "general"],
+        icon: "mdi-trash-can-outline",
+      },
       { patterns: ["papp", "papir", "paper"], icon: "mdi-package-variant" },
     ];
 
     for (const { patterns, icon } of iconMap) {
-      if (patterns.some(pattern => typeLower.includes(pattern))) {
+      if (patterns.some((pattern) => typeLower.includes(pattern))) {
         return icon;
       }
     }

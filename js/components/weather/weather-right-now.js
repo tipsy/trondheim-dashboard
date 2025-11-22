@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { WeatherAPI } from "../../utils/api/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import "./weather-hour.js";
@@ -23,7 +23,6 @@ class WeatherRightNow extends BaseWidget {
     this.location = null;
   }
 
-
   static styles = [
     ...BaseWidget.styles,
     css`
@@ -37,7 +36,7 @@ class WeatherRightNow extends BaseWidget {
       .current-icon {
         display: inline-flex;
         font-size: 80px;
-        color: var(--text-alt, var(--text-color));
+        color: var(--text-color);
       }
 
       .current-temp {
@@ -57,13 +56,13 @@ class WeatherRightNow extends BaseWidget {
         display: flex;
         align-items: center;
         gap: var(--spacing-xs);
-        color: var(--text-light);
+        color: var(--text-muted);
         font-weight: 400;
       }
 
       .detail-item i {
         font-size: 24px;
-        color: var(--text-light);
+        color: var(--text-muted);
       }
 
       .hourly-forecast {
@@ -88,7 +87,7 @@ class WeatherRightNow extends BaseWidget {
 
     const weatherData = await this.fetchData(
       () => WeatherAPI.getWeatherForecast(this.location.lat, this.location.lon),
-      t("Could not load weather data")
+      t("Could not load weather data"),
     );
 
     if (weatherData) {
@@ -109,8 +108,10 @@ class WeatherRightNow extends BaseWidget {
 
     this.currentWeather = {
       temperature: currentData.data.instant.details.air_temperature,
-      symbolCode: currentData.data.next_1_hours?.summary?.symbol_code || "clearsky",
-      precipitation: currentData.data.next_1_hours?.details?.precipitation_amount || 0,
+      symbolCode:
+        currentData.data.next_1_hours?.summary?.symbol_code || "clearsky",
+      precipitation:
+        currentData.data.next_1_hours?.details?.precipitation_amount || 0,
       windSpeed: currentData.data.instant.details.wind_speed,
     };
 
@@ -153,7 +154,7 @@ class WeatherRightNow extends BaseWidget {
       <div class="hourly-forecast">
         <div class="hourly-container">
           ${this.hourlyForecast.map(
-            (hour) => html`
+      (hour) => html`
               <weather-hour
                 time="${hour.time}"
                 temperature="${hour.temperature}"
@@ -161,7 +162,7 @@ class WeatherRightNow extends BaseWidget {
               >
               </weather-hour>
             `,
-          )}
+    )}
         </div>
       </div>
     `;

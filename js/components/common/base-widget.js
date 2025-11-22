@@ -2,7 +2,7 @@
 // All dashboard widgets should extend this class
 
 import { LitElement, html, css } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { sharedStyles, adoptMDIStyles } from "../../utils/shared-styles.js";
 import "./loading-spinner.js";
 import "./error-message.js";
@@ -130,13 +130,13 @@ export class BaseWidget extends LitElement {
 
       .no-data {
         text-align: center;
-        color: var(--text-light);
+        color: var(--text-muted);
         padding: var(--spacing-xl);
       }
 
       .placeholder {
         text-align: center;
-        color: var(--text-light);
+        color: var(--text-muted);
         padding: var(--spacing-xl);
       }
 
@@ -193,7 +193,7 @@ export class BaseWidget extends LitElement {
 
     return html`
       <div class="widget-container">
-        <div class="widget-header ${this.compactHeader ? 'compact' : ''}">
+        <div class="widget-header ${this.compactHeader ? "compact" : ""}">
           <heading-2 icon="${this.icon}" title="${t(this.title)}">
             ${this.renderHeaderActions()}
           </heading-2>
@@ -307,7 +307,8 @@ export class BaseWidget extends LitElement {
     } catch (error) {
       console.error(errorMsg, error);
       // Use the error message if it's more specific than the default
-      const displayMsg = error.message && error.message.length > 10 ? error.message : errorMsg;
+      const displayMsg =
+        error.message && error.message.length > 10 ? error.message : errorMsg;
       this.showError(displayMsg);
       return null;
     } finally {

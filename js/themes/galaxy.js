@@ -1,11 +1,11 @@
 // Galaxy Theme - Animated starfield with twinkling stars and shooting stars
 // Creates a beautiful cosmic background with depth and movement
 
-import { ThemeEffect, autoInitThemeEffect } from './theme-effect.js';
+import { ThemeEffect, autoInitThemeEffect } from "./theme-effect.js";
 
 class GalaxyEffect extends ThemeEffect {
   constructor() {
-    super('galaxy');
+    super("galaxy");
     this.canvas = null;
     this.ctx = null;
     this.stars = [];
@@ -41,23 +41,23 @@ class GalaxyEffect extends ThemeEffect {
   }
 
   createCanvas() {
-    this.canvas = document.createElement('canvas');
-    this.canvas.style.position = 'fixed';
-    this.canvas.style.top = '0';
-    this.canvas.style.left = '0';
-    this.canvas.style.width = '100%';
-    this.canvas.style.height = '100%';
-    this.canvas.style.pointerEvents = 'none';
-    this.canvas.style.zIndex = '-1';
+    this.canvas = document.createElement("canvas");
+    this.canvas.style.position = "fixed";
+    this.canvas.style.top = "0";
+    this.canvas.style.left = "0";
+    this.canvas.style.width = "100%";
+    this.canvas.style.height = "100%";
+    this.canvas.style.pointerEvents = "none";
+    this.canvas.style.zIndex = "-1";
 
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext("2d");
     document.body.appendChild(this.canvas);
 
     // Handle window resize
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       if (this.canvas) {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
@@ -68,7 +68,9 @@ class GalaxyEffect extends ThemeEffect {
 
   initStars() {
     this.stars = [];
-    const starCount = Math.floor((this.canvas.width * this.canvas.height) / 3000); // Density based on screen size
+    const starCount = Math.floor(
+      (this.canvas.width * this.canvas.height) / 3000,
+    ); // Density based on screen size
 
     for (let i = 0; i < starCount; i++) {
       this.stars.push(this.createStar());
@@ -76,7 +78,7 @@ class GalaxyEffect extends ThemeEffect {
   }
 
   createStar() {
-    const shapes = ['+', '✦', '·', '✧'];
+    const shapes = ["+", "✦", "·", "✧"];
     return {
       x: Math.random() * this.canvas.width,
       y: Math.random() * this.canvas.height,
@@ -86,18 +88,18 @@ class GalaxyEffect extends ThemeEffect {
       twinkleDirection: Math.random() > 0.5 ? 1 : -1,
       color: this.getStarColor(),
       layer: Math.random(), // For parallax depth effect
-      shape: shapes[Math.floor(Math.random() * shapes.length)]
+      shape: shapes[Math.floor(Math.random() * shapes.length)],
     };
   }
 
   getStarColor() {
     // Mix of white, blue, purple, and pink stars for cosmic variety
     const colors = [
-      'rgba(255, 255, 255, ', // White
-      'rgba(200, 220, 255, ', // Blue-white
-      'rgba(220, 200, 255, ', // Purple-white
-      'rgba(255, 200, 240, ', // Pink-white
-      'rgba(180, 200, 255, ', // Light blue
+      "rgba(255, 255, 255, ", // White
+      "rgba(200, 220, 255, ", // Blue-white
+      "rgba(220, 200, 255, ", // Purple-white
+      "rgba(255, 200, 240, ", // Pink-white
+      "rgba(180, 200, 255, ", // Light blue
     ];
     return colors[Math.floor(Math.random() * colors.length)];
   }
@@ -111,17 +113,17 @@ class GalaxyEffect extends ThemeEffect {
       y: startFromTop ? 0 : Math.random() * this.canvas.height * 0.5,
       length: Math.random() * 80 + 40, // Trail length
       speed: Math.random() * 4 + 3, // Slower speed
-      angle: Math.random() * Math.PI / 6 + Math.PI / 4, // Angle (roughly diagonal)
+      angle: (Math.random() * Math.PI) / 6 + Math.PI / 4, // Angle (roughly diagonal)
       opacity: 1,
-      thickness: Math.random() * 2 + 1
+      thickness: Math.random() * 2 + 1,
     };
   }
 
   updateStars() {
-    this.stars.forEach(star => {
+    this.stars.forEach((star) => {
       // Twinkle effect
       star.opacity += star.twinkleSpeed * star.twinkleDirection;
-      
+
       if (star.opacity >= 1) {
         star.opacity = 1;
         star.twinkleDirection = -1;
@@ -144,31 +146,33 @@ class GalaxyEffect extends ThemeEffect {
     }
 
     // Update existing shooting stars
-    this.shootingStars = this.shootingStars.filter(star => {
+    this.shootingStars = this.shootingStars.filter((star) => {
       star.x += Math.cos(star.angle) * star.speed;
       star.y += Math.sin(star.angle) * star.speed;
       star.opacity -= 0.008; // Slower fade
 
       // Remove if off screen or faded
-      return star.opacity > 0 &&
-             star.x < this.canvas.width + 100 &&
-             star.y < this.canvas.height + 100;
+      return (
+        star.opacity > 0 &&
+        star.x < this.canvas.width + 100 &&
+        star.y < this.canvas.height + 100
+      );
     });
   }
 
   drawStars() {
-    this.stars.forEach(star => {
+    this.stars.forEach((star) => {
       this.ctx.save();
       this.ctx.font = `${star.size}px Arial`;
-      this.ctx.textAlign = 'center';
-      this.ctx.textBaseline = 'middle';
-      this.ctx.fillStyle = star.color + star.opacity + ')';
+      this.ctx.textAlign = "center";
+      this.ctx.textBaseline = "middle";
+      this.ctx.fillStyle = star.color + star.opacity + ")";
       this.ctx.fillText(star.shape, star.x, star.y);
 
       // Add subtle glow for larger stars
       if (star.size > 12) {
         this.ctx.shadowBlur = 10;
-        this.ctx.shadowColor = star.color + (star.opacity * 0.5) + ')';
+        this.ctx.shadowColor = star.color + star.opacity * 0.5 + ")";
         this.ctx.fillText(star.shape, star.x, star.y);
         this.ctx.shadowBlur = 0;
       }
@@ -177,12 +181,12 @@ class GalaxyEffect extends ThemeEffect {
   }
 
   drawShootingStars() {
-    this.shootingStars.forEach(star => {
+    this.shootingStars.forEach((star) => {
       const gradient = this.ctx.createLinearGradient(
         star.x,
         star.y,
         star.x - Math.cos(star.angle) * star.length,
-        star.y - Math.sin(star.angle) * star.length
+        star.y - Math.sin(star.angle) * star.length,
       );
 
       gradient.addColorStop(0, `rgba(255, 255, 255, ${star.opacity})`);
@@ -191,13 +195,13 @@ class GalaxyEffect extends ThemeEffect {
 
       this.ctx.strokeStyle = gradient;
       this.ctx.lineWidth = star.thickness;
-      this.ctx.lineCap = 'round';
+      this.ctx.lineCap = "round";
 
       this.ctx.beginPath();
       this.ctx.moveTo(star.x, star.y);
       this.ctx.lineTo(
         star.x - Math.cos(star.angle) * star.length,
-        star.y - Math.sin(star.angle) * star.length
+        star.y - Math.sin(star.angle) * star.length,
       );
       this.ctx.stroke();
 
@@ -208,7 +212,7 @@ class GalaxyEffect extends ThemeEffect {
       this.ctx.moveTo(star.x, star.y);
       this.ctx.lineTo(
         star.x - Math.cos(star.angle) * star.length,
-        star.y - Math.sin(star.angle) * star.length
+        star.y - Math.sin(star.angle) * star.length,
       );
       this.ctx.stroke();
     });
@@ -222,10 +226,10 @@ class GalaxyEffect extends ThemeEffect {
       0,
       this.canvas.width * 0.3,
       this.canvas.height * 0.3,
-      this.canvas.width * 0.4
+      this.canvas.width * 0.4,
     );
-    gradient1.addColorStop(0, 'rgba(139, 92, 246, 0.03)');
-    gradient1.addColorStop(1, 'rgba(139, 92, 246, 0)');
+    gradient1.addColorStop(0, "rgba(139, 92, 246, 0.03)");
+    gradient1.addColorStop(1, "rgba(139, 92, 246, 0)");
 
     this.ctx.fillStyle = gradient1;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -236,10 +240,10 @@ class GalaxyEffect extends ThemeEffect {
       0,
       this.canvas.width * 0.7,
       this.canvas.height * 0.6,
-      this.canvas.width * 0.5
+      this.canvas.width * 0.5,
     );
-    gradient2.addColorStop(0, 'rgba(244, 114, 182, 0.02)');
-    gradient2.addColorStop(1, 'rgba(244, 114, 182, 0)');
+    gradient2.addColorStop(0, "rgba(244, 114, 182, 0.02)");
+    gradient2.addColorStop(1, "rgba(244, 114, 182, 0)");
 
     this.ctx.fillStyle = gradient2;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -249,7 +253,7 @@ class GalaxyEffect extends ThemeEffect {
     if (!this.isActive || !this.ctx) return;
 
     // Clear canvas with deep space background
-    this.ctx.fillStyle = '#0a0118';
+    this.ctx.fillStyle = "#0a0118";
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     // Draw nebula clouds
@@ -272,4 +276,3 @@ const galaxyEffect = new GalaxyEffect();
 autoInitThemeEffect(galaxyEffect);
 
 export { GalaxyEffect };
-

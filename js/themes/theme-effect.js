@@ -4,7 +4,7 @@
 class ThemeEffect {
   constructor(themeName) {
     if (!themeName) {
-      throw new Error('ThemeEffect requires a themeName parameter');
+      throw new Error("ThemeEffect requires a themeName parameter");
     }
     this.themeName = themeName;
     this.isActive = false;
@@ -25,7 +25,7 @@ class ThemeEffect {
    * Automatically starts or stops the effect based on theme state
    */
   checkTheme() {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const currentTheme = document.documentElement.getAttribute("data-theme");
 
     if (currentTheme === this.themeName && !this.isActive) {
       this.start();
@@ -45,7 +45,7 @@ class ThemeEffect {
 
     this.observer.observe(document.documentElement, {
       attributes: true,
-      attributeFilter: ['data-theme']
+      attributeFilter: ["data-theme"],
     });
   }
 
@@ -86,11 +86,11 @@ class ThemeEffect {
  */
 export function autoInitThemeEffect(effectInstance) {
   if (!(effectInstance instanceof ThemeEffect)) {
-    throw new Error('autoInitThemeEffect requires a ThemeEffect instance');
+    throw new Error("autoInitThemeEffect requires a ThemeEffect instance");
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => {
       effectInstance.init();
     });
   } else {
@@ -99,4 +99,3 @@ export function autoInitThemeEffect(effectInstance) {
 }
 
 export { ThemeEffect };
-

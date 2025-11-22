@@ -26,7 +26,7 @@ class WeatherDetail extends LitElement {
         align-items: center;
         gap: var(--spacing-xs, 4px);
         font-size: 16px;
-        color: var(--text-light, #666666);
+        color: var(--text-muted, #666666);
         line-height: 1;
       }
 
@@ -65,7 +65,9 @@ class WeatherDetail extends LitElement {
     return html`
       <div class="detail-item">
         <span class="detail-label">
-          ${this.icon ? html`<i class="mdi ${this.getIconClass(this.icon)}"></i>` : ""}
+          ${this.icon
+            ? html`<i class="mdi ${this.getIconClass(this.icon)}"></i>`
+            : ""}
           ${this.label}
         </span>
         <span class="detail-value">${this.value}</span>

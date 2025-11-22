@@ -46,7 +46,7 @@ class WeatherCurrent extends LitElement {
         grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
         gap: var(--spacing-md, 16px);
         padding: var(--spacing-md, 16px);
-        background-color: var(--alt-background, #f9f9f9);
+        background-color: var(--widget-subpart-background, #f9f9f9);
         border-radius: var(--border-radius, 8px);
         margin-bottom: var(--spacing-md, 16px);
       }

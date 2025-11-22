@@ -1,67 +1,78 @@
 /* Sakura theme */
 :root[data-theme="sakura"] {
-    --background: url("/img/themes/sakura/sakura-bg.jpg") center/cover no-repeat;
-    /* Colors */
-    --primary-color: #ff666c7d;
-    --secondary-color: #dd666c7d;
-    --heading-color: #4f0028;
-    --background-color: transparent;
-    --card-background: rgba(255, 255, 255, 0.6);
-    --text-color: #4f0028;
-    --text-alt: #4f0028;
-    --text-light: #4f0028;
-    --border-color: #ffe0e0;
-    --input-background: rgba(255, 255, 255, 0.6);
-    --button-text: #ffffff;
-    --success-color: #ffa5a5;
-    --success-hover: #ff8a8a;
-    --success-bg: #fff0f5;
-    --error-bg: #ffe5e5;
-    --error-color: #ff6b6b;
-    --info-bg: #fff0f5;
-    --info-color: #ff9a9e;
+  /* 1. LAYOUT & BACKGROUNDS */
+  --background: url("/img/themes/sakura/sakura-bg.jpg") center/cover no-repeat;
+  --background-color: transparent;
+  --card-background: rgba(255, 255, 255, 0.6);
+  --widget-subpart-background: rgba(255, 255, 255, 0.6);
+  --hover-bg: #ff76761c;
 
-    /* Alternate backgrounds */
-    --alt-background: rgba(255, 255, 255, 0.6);
-    --hover-bg: #ff76761c;
+  /* 2. BRAND COLORS */
+  --primary-color: #ff666c7d;
+  --secondary-color: #dd666c7d;
 
-    /* Shadows */
-    --shadow: 0 2px 12px rgba(255, 154, 158, 0.2);
-    --shadow-hover: 0 4px 16px rgba(255, 154, 158, 0.3);
+  /* 3. TEXT COLORS */
+  --text-color: #4f0028;
+  --text-muted: #4f0028;
+  --heading-color: #4f0028;
 
-    /* Spacing */
-    --border-radius: 6px;
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
+  /* 4. BORDERS & DIVIDERS */
+  --border-color: #ffe0e0;
+  --border-radius: 6px;
 
-    /* Typography */
-    --font-family: 'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-size-xs: 11px;
-    --font-size-sm: 14px;
-    --font-size-md: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 48px;
-    --font-size-xxl: 64px;
+  /* 5. INTERACTIVE ELEMENTS */
+  --input-background: rgba(255, 255, 255, 0.6);
+  --button-text: #ffffff;
 
-    /* Trash type colors (sakura theme) */
-    --trash-general: #ffccd5;
-    --trash-paper: #ffd4a3;
-    --trash-plastic: #ffe4b5;
-    --trash-food: #ffc9de;
-    --trash-glass: #ffd9e8;
-    --trash-metal: #ffb3ba;
+  /* 6. FEEDBACK COLORS */
+  --success-color: #ffa5a5;
+  --success-hover: #ff8a8a;
+  --success-bg: #fff0f5;
+  --error-color: #ff6b6b;
+  --error-bg: #ffe5e5;
+  --info-color: #ff9a9e;
+  --info-bg: #fff0f5;
 
-    /* Scrollbar colors */
-    --scrollbar-thumb: rgba(255, 154, 158, 0.3);
-    --scrollbar-thumb-hover: rgba(255, 154, 158, 0.5);
+  /* 7. EFFECTS */
+  --shadow: 0 2px 12px rgba(255, 154, 158, 0.2);
+  --shadow-hover: 0 4px 16px rgba(255, 154, 158, 0.3);
 
-    /* Spinner colors */
-    --spinner-ring: #ffe0e0;
-    --spinner-segment: #ff9a9e;
+  /* 8. SPACING */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 
-    /* Icon/emoji filter */
-    --icon-filter: none;
+  /* 9. TYPOGRAPHY */
+  --font-family:
+    "Quicksand", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 48px;
+  --font-size-xxl: 64px;
+
+  /* 10. COMPONENT-SPECIFIC */
+  --trash-general: #ffccd5;
+  --trash-paper: #ffd4a3;
+  --trash-plastic: #ffe4b5;
+  --trash-food: #ffc9de;
+  --trash-glass: #ffd9e8;
+  --trash-metal: #ffb3ba;
+
+  /* 11. UI CHROME */
+  --scrollbar-thumb: rgba(255, 154, 158, 0.3);
+  --scrollbar-thumb-hover: rgba(255, 154, 158, 0.5);
+  --spinner-ring: #ffe0e0;
+  --spinner-segment: #ff9a9e;
+
+  /* 12. FILTERS & EFFECTS */
+  --icon-filter: none;
+
+  /* 13. THEME-SPECIFIC */
+  --widget-border: 1px solid var(--border-color);
+  --row-border-width: 1px;
 }

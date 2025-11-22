@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { EventsAPI } from "../../utils/api/events-api.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
 import "../common/widget-row.js";
@@ -79,7 +79,11 @@ class EventsWidget extends BaseWidget {
 
       // Merge and dedupe by id
       const all = [...(page0 || []), ...(page1 || []), ...(page2 || [])];
-      return [...new Map(all.filter(ev => ev?.id).map(ev => [ev.id, ev])).values()];
+      return [
+        ...new Map(
+          all.filter((ev) => ev?.id).map((ev) => [ev.id, ev]),
+        ).values(),
+      ];
     }, t("Could not load events"));
 
     if (result) {
@@ -120,7 +124,9 @@ class EventsWidget extends BaseWidget {
 
   renderContent() {
     if (!this.events?.length) {
-      return html`<p class="no-data">${t("No events for the selected date")}</p>`;
+      return html`<p class="no-data">
+        ${t("No events for the selected date")}
+      </p>`;
     }
 
     return html`

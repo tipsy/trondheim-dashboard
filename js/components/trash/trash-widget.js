@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { TrashAPI } from "../../utils/api/trash-api.js";
 import "./trash-row.js";
 import "../common/widget-list.js";
@@ -46,7 +46,7 @@ class TrashWidget extends BaseWidget {
 
     // Find the last part containing a number (house number)
     const parts = streetAddress.split(" ");
-    const numberIndex = parts.findLastIndex(part => /\d/.test(part));
+    const numberIndex = parts.findLastIndex((part) => /\d/.test(part));
 
     if (numberIndex === -1) {
       return streetAddress.toUpperCase();
@@ -93,7 +93,9 @@ class TrashWidget extends BaseWidget {
 
       if (!searchResults || searchResults.length === 0) {
         throw new Error(
-          t('Address not found in trash collection database. Try entering just the street name and number (e.g., "Persaunvegen 1C")'),
+          t(
+            'Address not found in trash collection database. Try entering just the street name and number (e.g., "Persaunvegen 1C")',
+          ),
         );
       }
 
@@ -144,7 +146,7 @@ class TrashWidget extends BaseWidget {
     ];
 
     for (const { patterns, class: className } of classMap) {
-      if (patterns.some(pattern => typeLower.includes(pattern))) {
+      if (patterns.some((pattern) => typeLower.includes(pattern))) {
         return className;
       }
     }

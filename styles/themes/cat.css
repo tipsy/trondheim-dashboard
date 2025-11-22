@@ -1,68 +1,78 @@
 /* Cat theme - Playful and cute with cat-inspired colors */
 :root[data-theme="cat"] {
-    --background: none;
-    /* Colors - Inspired by orange tabby cats */
-    --primary-color: #ff8c42;
-    --secondary-color: #ffa45c;
-    --heading-color: #d96c2c;
-    --background-color: #fff9f0;
-    --card-background: #ffffff;
-    --text-color: #4a3728;
-    --text-alt: #d96c2c;
-    --text-light: #8b7355;
-    --border-color: #ffe4cc;
-    --input-background: #ffffff;
-    --button-text: #ffffff;
-    --success-color: #7cb342;
-    --success-hover: #8bc34a;
-    --success-bg: #f1f8e9;
-    --error-bg: #ffebee;
-    --error-color: #e53935;
-    --info-bg: #fff3e0;
-    --info-color: #ff8c42;
+  /* 1. LAYOUT & BACKGROUNDS */
+  --background: none;
+  --background-color: #fff9f0;
+  --card-background: #ffffff;
+  --widget-subpart-background: #fff5e8;
+  --hover-bg: #ffedd9;
 
-    /* Alternate backgrounds */
-    --alt-background: #fff5e8;
-    --hover-bg: #ffedd9;
+  /* 2. BRAND COLORS */
+  --primary-color: #ff8c42;
+  --secondary-color: #ffa45c;
 
-    /* Shadows - softer for a friendly feel */
-    --shadow: 0 2px 12px rgba(255, 140, 66, 0.15);
-    --shadow-hover: 0 4px 16px rgba(255, 140, 66, 0.25);
+  /* 3. TEXT COLORS */
+  --text-color: #4a3728;
+  --text-muted: #8b7355;
+  --heading-color: #d96c2c;
 
-    /* Spacing */
-    --border-radius: 12px;
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
+  /* 4. BORDERS & DIVIDERS */
+  --border-color: #ffe4cc;
+  --border-radius: 12px;
 
-    /* Typography - Using a playful, rounded font */
-    --font-family: 'Quicksand', 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', cursive, sans-serif;
-    --font-size-xs: 11px;
-    --font-size-sm: 14px;
-    --font-size-md: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 48px;
-    --font-size-xxl: 64px;
+  /* 5. INTERACTIVE ELEMENTS */
+  --input-background: #ffffff;
+  --button-text: #ffffff;
 
-    /* Trash type colors (cat theme) */
-    --trash-general: #8b7355;
-    --trash-paper: #42a5f5;
-    --trash-plastic: #66bb6a;
-    --trash-food: #9ccc65;
-    --trash-glass: #26c6da;
-    --trash-metal: #bdbdbd;
+  /* 6. FEEDBACK COLORS */
+  --success-color: #7cb342;
+  --success-hover: #8bc34a;
+  --success-bg: #f1f8e9;
+  --error-color: #e53935;
+  --error-bg: #ffebee;
+  --info-color: #ff8c42;
+  --info-bg: #fff3e0;
 
-    /* Scrollbar colors */
-    --scrollbar-thumb: rgba(255, 140, 66, 0.3);
-    --scrollbar-thumb-hover: rgba(255, 140, 66, 0.5);
+  /* 7. EFFECTS */
+  --shadow: 0 2px 12px rgba(255, 140, 66, 0.15);
+  --shadow-hover: 0 4px 16px rgba(255, 140, 66, 0.25);
 
-    /* Spinner colors */
-    --spinner-ring: #ffe4cc;
-    --spinner-segment: #ff8c42;
+  /* 8. SPACING */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 
-    /* Icon/emoji filter */
-    --icon-filter: none;
+  /* 9. TYPOGRAPHY */
+  --font-family:
+    "Quicksand", "Comic Sans MS", "Chalkboard SE", "Comic Neue", cursive,
+    sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 48px;
+  --font-size-xxl: 64px;
+
+  /* 10. COMPONENT-SPECIFIC */
+  --trash-general: #8b7355;
+  --trash-paper: #42a5f5;
+  --trash-plastic: #66bb6a;
+  --trash-food: #9ccc65;
+  --trash-glass: #26c6da;
+  --trash-metal: #bdbdbd;
+
+  /* 11. UI CHROME */
+  --scrollbar-thumb: rgba(255, 140, 66, 0.3);
+  --scrollbar-thumb-hover: rgba(255, 140, 66, 0.5);
+  --spinner-ring: #ffe4cc;
+  --spinner-segment: #ff8c42;
+
+  /* 12. FILTERS & EFFECTS */
+  --icon-filter: none;
+
+  /* 13. THEME-SPECIFIC */
+  --widget-border: 1px solid var(--border-color);
+  --row-border-width: 1px;
 }
-

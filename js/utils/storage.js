@@ -1,12 +1,12 @@
 // Centralized localStorage helpers for Trondheim Dashboard
 // Provides typed helpers for common values (theme, location, bus stop)
 
-export const THEME_KEY = 'trondheim-dashboard-theme';
-export const LOCATION_KEY = 'trondheim-dashboard-location';
-export const BUS_STOP_KEY = 'trondheim-dashboard-bus-stop';
-export const CACHE_KEY_PREFIX = 'trondheim-cache-';
-export const LAYOUT_KEY = 'trondheim-dashboard-layout';
-export const LOCALE_KEY = 'trondheim-dashboard-locale';
+export const THEME_KEY = "trondheim-dashboard-theme";
+export const LOCATION_KEY = "trondheim-dashboard-location";
+export const BUS_STOP_KEY = "trondheim-dashboard-bus-stop";
+export const CACHE_KEY_PREFIX = "trondheim-cache-";
+export const LAYOUT_KEY = "trondheim-dashboard-layout";
+export const LOCALE_KEY = "trondheim-dashboard-locale";
 
 function runCatching(fn, fallback = null) {
   try {
@@ -17,14 +17,14 @@ function runCatching(fn, fallback = null) {
 }
 
 class StorageClient {
-
-  _set = (key, value) => runCatching(() => {
-    if (typeof value === 'string') {
-      localStorage.setItem(key, value);
-    } else {
-      localStorage.setItem(key, JSON.stringify(value));
-    }
-  });
+  _set = (key, value) =>
+    runCatching(() => {
+      if (typeof value === "string") {
+        localStorage.setItem(key, value);
+      } else {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
+    });
 
   _get = (key) => {
     const raw = runCatching(() => localStorage.getItem(key), null);
@@ -36,7 +36,8 @@ class StorageClient {
   _remove = (key) => runCatching(() => localStorage.removeItem(key));
 
   saveTheme = (theme) => this._set(THEME_KEY, theme);
-  loadTheme = (defaultValue = 'midnight-blue') => this._get(THEME_KEY) ?? defaultValue;
+  loadTheme = (defaultValue = "midnight-blue") =>
+    this._get(THEME_KEY) ?? defaultValue;
 
   saveLocation = (location) => this._set(LOCATION_KEY, location);
   loadLocation = () => this._get(LOCATION_KEY);
@@ -54,7 +55,7 @@ class StorageClient {
 
   // Locale persistence helpers
   saveLocale = (locale) => this._set(LOCALE_KEY, locale);
-  loadLocale = (defaultValue = 'en') => this._get(LOCALE_KEY) ?? defaultValue;
+  loadLocale = (defaultValue = "en") => this._get(LOCALE_KEY) ?? defaultValue;
 }
 
 const storage = new StorageClient();

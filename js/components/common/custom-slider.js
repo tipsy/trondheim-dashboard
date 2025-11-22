@@ -1,4 +1,4 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html, css } from "lit";
 
 class CustomSlider extends LitElement {
   static properties = {
@@ -58,7 +58,9 @@ class CustomSlider extends LitElement {
       border: 2px solid var(--card-background);
       border-radius: 50%;
       cursor: grab;
-      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      transition:
+        transform 0.1s ease,
+        box-shadow 0.1s ease;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
@@ -86,11 +88,11 @@ class CustomSlider extends LitElement {
     }
 
     :host([disabled]) .slider-fill {
-      background: var(--text-light);
+      background: var(--text-muted);
     }
 
     :host([disabled]) .slider-thumb {
-      background: var(--text-light);
+      background: var(--text-muted);
       cursor: not-allowed;
     }
 
@@ -107,28 +109,32 @@ class CustomSlider extends LitElement {
 
   handleInput(e) {
     if (this.disabled) return;
-    
+
     const newValue = parseFloat(e.target.value);
     this.value = newValue;
-    
-    this.dispatchEvent(new CustomEvent('input', {
-      detail: { value: newValue },
-      bubbles: true,
-      composed: true
-    }));
+
+    this.dispatchEvent(
+      new CustomEvent("input", {
+        detail: { value: newValue },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   handleChange(e) {
     if (this.disabled) return;
-    
+
     const newValue = parseFloat(e.target.value);
     this.value = newValue;
-    
-    this.dispatchEvent(new CustomEvent('change', {
-      detail: { value: newValue },
-      bubbles: true,
-      composed: true
-    }));
+
+    this.dispatchEvent(
+      new CustomEvent("change", {
+        detail: { value: newValue },
+        bubbles: true,
+        composed: true,
+      }),
+    );
   }
 
   render() {
@@ -140,7 +146,15 @@ class CustomSlider extends LitElement {
       <div class="slider-container">
         <div class="slider-track"></div>
         <div class="slider-fill" style="width: ${clampedPercentage}%"></div>
-        <div class="slider-thumb" style="left: ${thumbPosition}; transform: translateX(${clampedPercentage === 0 ? '8px' : clampedPercentage === 100 ? '-8px' : '0'})"></div>
+        <div
+          class="slider-thumb"
+          style="left: ${thumbPosition}; transform: translateX(${clampedPercentage ===
+          0
+            ? "8px"
+            : clampedPercentage === 100
+              ? "-8px"
+              : "0"})"
+        ></div>
         <input
           type="range"
           class="slider-input"
@@ -157,5 +171,4 @@ class CustomSlider extends LitElement {
   }
 }
 
-customElements.define('custom-slider', CustomSlider);
-
+customElements.define("custom-slider", CustomSlider);

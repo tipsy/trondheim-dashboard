@@ -23,7 +23,6 @@ class TrondheimDashboard extends LitElement {
     this.layoutEditorOpen = false;
   }
 
-
   static styles = [
     sharedStyles,
     css`
@@ -153,10 +152,18 @@ class TrondheimDashboard extends LitElement {
           min-width: 0; /* Allow columns to shrink below content width */
         }
 
-        .widgets-grid .column[data-column="0"] { flex: var(--col-1-width) 1 0; }
-        .widgets-grid .column[data-column="1"] { flex: var(--col-2-width) 1 0; }
-        .widgets-grid .column[data-column="2"] { flex: var(--col-3-width) 1 0; }
-        .widgets-grid .column[data-column="3"] { flex: var(--col-4-width) 1 0; }
+        .widgets-grid .column[data-column="0"] {
+          flex: var(--col-1-width) 1 0;
+        }
+        .widgets-grid .column[data-column="1"] {
+          flex: var(--col-2-width) 1 0;
+        }
+        .widgets-grid .column[data-column="2"] {
+          flex: var(--col-3-width) 1 0;
+        }
+        .widgets-grid .column[data-column="3"] {
+          flex: var(--col-4-width) 1 0;
+        }
 
         /* All widgets */
         .widgets-grid .column > * {
@@ -227,9 +234,12 @@ class TrondheimDashboard extends LitElement {
   }
 
   async handleLocaleChange(event) {
-    console.log('[Dashboard] handleLocaleChange called with:', event.detail.locale);
+    console.log(
+      "[Dashboard] handleLocaleChange called with:",
+      event.detail.locale,
+    );
     await changeLocale(event.detail.locale);
-    console.log('[Dashboard] changeLocale complete, reloading page...');
+    console.log("[Dashboard] changeLocale complete, reloading page...");
     // Reload page to apply new locale to all components
     window.location.reload();
   }
@@ -237,7 +247,7 @@ class TrondheimDashboard extends LitElement {
   render() {
     return html`
       <div class="dashboard-content">
-        <div class="address-section ${this.layoutEditorOpen ? 'hidden' : ''}">
+        <div class="address-section ${this.layoutEditorOpen ? "hidden" : ""}">
           <address-input
             id="address-input"
             @location-updated=${this.handleLocationUpdate}
@@ -252,7 +262,7 @@ class TrondheimDashboard extends LitElement {
         </div>
 
         <layout-widget
-          class="${this.layoutEditorOpen ? '' : 'hidden'}"
+          class="${this.layoutEditorOpen ? "" : "hidden"}"
           .layout=${this.layout}
           @layout-changed=${this.handleLayoutChanged}
           @layout-editor-close=${this.handleLayoutEditorClose}
@@ -284,11 +294,15 @@ class TrondheimDashboard extends LitElement {
     const newLayout = e.detail.layout;
 
     // Check if only widths changed (no widget movement or visibility changes)
-    const onlyWidthsChanged = oldLayout &&
-      JSON.stringify(oldLayout.hiddenWidgets) === JSON.stringify(newLayout.hiddenWidgets) &&
-      oldLayout.columns.every((col, i) =>
-        col.enabled === newLayout.columns[i].enabled &&
-        JSON.stringify(col.widgets) === JSON.stringify(newLayout.columns[i].widgets)
+    const onlyWidthsChanged =
+      oldLayout &&
+      JSON.stringify(oldLayout.hiddenWidgets) ===
+        JSON.stringify(newLayout.hiddenWidgets) &&
+      oldLayout.columns.every(
+        (col, i) =>
+          col.enabled === newLayout.columns[i].enabled &&
+          JSON.stringify(col.widgets) ===
+            JSON.stringify(newLayout.columns[i].widgets),
       );
 
     this.layout = newLayout;
@@ -304,7 +318,10 @@ class TrondheimDashboard extends LitElement {
     // Fast path: only update CSS variables for column widths
     const cols = this.layout?.columns || [];
     cols.forEach((col, colIndex) => {
-      this.style.setProperty(`--col-${colIndex + 1}-width`, col.enabled ? col.width : 0);
+      this.style.setProperty(
+        `--col-${colIndex + 1}-width`,
+        col.enabled ? col.width : 0,
+      );
     });
   }
 
@@ -322,25 +339,34 @@ class TrondheimDashboard extends LitElement {
     try {
       const cols = this.layout?.columns || [];
       const hiddenWidgets = this.layout?.hiddenWidgets || {};
-      const grid = this.shadowRoot.querySelector('.widgets-grid');
+      const grid = this.shadowRoot.querySelector(".widgets-grid");
       if (!grid) return;
 
       // Get all column containers
-      const columnContainers = Array.from(grid.querySelectorAll('.column'));
+      const columnContainers = Array.from(grid.querySelectorAll(".column"));
 
       // Set column widths using CSS variables and visibility
       cols.forEach((col, colIndex) => {
         const container = columnContainers[colIndex];
         if (!container) return;
 
-        this.style.setProperty(`--col-${colIndex + 1}-width`, col.enabled ? col.width : 0);
-        container.style.display = col.enabled ? '' : 'none';
+        this.style.setProperty(
+          `--col-${colIndex + 1}-width`,
+          col.enabled ? col.width : 0,
+        );
+        container.style.display = col.enabled ? "" : "none";
       });
 
       // Get all widgets
       const allWidgets = [
-        'bus-widget', 'events-widget', 'weather-right-now', 'weather-today',
-        'energy-widget', 'trash-widget', 'police-widget', 'nrk-widget'
+        "bus-widget",
+        "events-widget",
+        "weather-right-now",
+        "weather-today",
+        "energy-widget",
+        "trash-widget",
+        "police-widget",
+        "nrk-widget",
       ];
 
       // Build map of widget -> {targetColumn, order, visible}
@@ -354,13 +380,13 @@ class TrondheimDashboard extends LitElement {
           widgetTargets.set(widgetId, {
             column: colIndex,
             order: orderIndex,
-            visible: !isHidden
+            visible: !isHidden,
           });
         });
       });
 
       // Process each widget
-      allWidgets.forEach(widgetId => {
+      allWidgets.forEach((widgetId) => {
         const widget = grid.querySelector(`#${widgetId}`);
         if (!widget) return;
 
@@ -368,12 +394,12 @@ class TrondheimDashboard extends LitElement {
 
         if (!target || !target.visible) {
           // Hide this widget
-          widget.style.display = 'none';
-          widget.style.setProperty('--widget-order', '999');
+          widget.style.display = "none";
+          widget.style.setProperty("--widget-order", "999");
         } else {
           // Show and position this widget
-          widget.style.display = '';
-          widget.style.setProperty('--widget-order', `${target.order}`);
+          widget.style.display = "";
+          widget.style.setProperty("--widget-order", `${target.order}`);
 
           const targetContainer = columnContainers[target.column];
 
@@ -384,9 +410,8 @@ class TrondheimDashboard extends LitElement {
           }
         }
       });
-
     } catch (err) {
-      console.warn('applyLayoutToStyles failed', err);
+      console.warn("applyLayoutToStyles failed", err);
     }
   }
 
@@ -413,7 +438,6 @@ class TrondheimDashboard extends LitElement {
       }, 200);
     }
   }
-
 
   updateURL(params) {
     const url = new URL(window.location);
@@ -459,32 +483,37 @@ class TrondheimDashboard extends LitElement {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
-      const response = await fetch(window.location.origin + '/index.html', {
-        method: 'HEAD',
-        cache: 'no-cache',
-        signal: controller.signal
+      const response = await fetch(window.location.origin + "/index.html", {
+        method: "HEAD",
+        cache: "no-cache",
+        signal: controller.signal,
       });
       clearTimeout(timeoutId);
       return response.ok;
     } catch (error) {
-      console.warn('Health check failed:', error.message);
+      console.warn("Health check failed:", error.message);
       return false;
     }
   }
 
   startAutoRefresh() {
     // Reload the entire page every 5 minutes to get new app versions
-    this.refreshInterval = setInterval(async () => {
-      console.log("Auto-refresh: checking health before reload...");
-      const isHealthy = await this.checkHealth();
+    this.refreshInterval = setInterval(
+      async () => {
+        console.log("Auto-refresh: checking health before reload...");
+        const isHealthy = await this.checkHealth();
 
-      if (isHealthy) {
-        console.log("Health check passed, reloading dashboard...");
-        location.reload();
-      } else {
-        console.warn("Health check failed, skipping reload. Will retry in 5 minutes.");
-      }
-    }, 1000 * 60 * 5); // 5 minutes
+        if (isHealthy) {
+          console.log("Health check passed, reloading dashboard...");
+          location.reload();
+        } else {
+          console.warn(
+            "Health check failed, skipping reload. Will retry in 5 minutes.",
+          );
+        }
+      },
+      1000 * 60 * 5,
+    ); // 5 minutes
   }
 }
 

@@ -13,7 +13,6 @@ class BusRow extends LitElement {
     expectedTime: { type: String, attribute: "expected-time" },
   };
 
-
   static styles = [
     sharedStyles,
     css`
@@ -64,7 +63,7 @@ class BusRow extends LitElement {
 
       .time-original {
         font-size: var(--font-size-xs);
-        color: var(--text-light);
+        color: var(--text-muted);
         text-decoration: line-through;
       }
     `,
@@ -104,7 +103,9 @@ class BusRow extends LitElement {
   render() {
     const aimedTimeDisplay = this.formatTime(this.aimedTime);
     const expectedTimeDisplay = this.formatTime(this.expectedTime);
-    const hasDelay = this.aimedTime && this.expectedTime &&
+    const hasDelay =
+      this.aimedTime &&
+      this.expectedTime &&
       new Date(this.expectedTime) > new Date(this.aimedTime) &&
       aimedTimeDisplay !== expectedTimeDisplay;
     const isFlybuss = /flybus|airport|værnes/i.test(this.destination);

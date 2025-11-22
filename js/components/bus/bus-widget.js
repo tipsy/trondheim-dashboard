@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { BusAPI } from "../../utils/api/bus-api.js";
 import "./bus-row.js";
 import "../common/widget-list.js";
@@ -58,7 +58,6 @@ class BusWidget extends BaseWidget {
     `,
   ];
 
-
   async updateLocation(lat, lon) {
     this.location = { lat, lon };
     await this.loadBusStops();
@@ -68,8 +67,9 @@ class BusWidget extends BaseWidget {
     if (!this.location) return;
 
     const quays = await this.fetchData(
-      () => BusAPI.getClosestBusStops(this.location.lat, this.location.lon, 1000),
-      t("Could not load bus stops")
+      () =>
+        BusAPI.getClosestBusStops(this.location.lat, this.location.lon, 1000),
+      t("Could not load bus stops"),
     );
 
     if (quays && quays.length > 0) {
@@ -125,7 +125,6 @@ class BusWidget extends BaseWidget {
       };
     });
   }
-
 
   handleStopChange(e) {
     this.selectedStopId = e.detail.value;

@@ -16,7 +16,7 @@ class WidgetRow extends LitElement {
     sharedStyles,
     css`
       .card {
-        background-color: var(--alt-background);
+        background-color: var(--widget-subpart-background);
         border-radius: var(--border-radius);
         padding: var(--spacing-md);
         overflow: hidden;
@@ -57,30 +57,39 @@ class WidgetRow extends LitElement {
 
       .description {
         font-size: var(--font-size-sm);
-        color: var(--text-light);
+        color: var(--text-muted);
         margin-top: 4px;
       }
     `,
   ];
 
   render() {
-    const content = (this.title || this.description)
-      ? html`
-          <div class="content">
-            ${this.title ? html`<div class="title">${this.title}</div>` : ""}
-            ${this.description ? html`<div class="description">${this.description}</div>` : ""}
-          </div>
-        `
-      : html`<slot></slot>`;
+    const content =
+      this.title || this.description
+        ? html`
+            <div class="content">
+              ${this.title ? html`<div class="title">${this.title}</div>` : ""}
+              ${this.description
+                ? html`<div class="description">${this.description}</div>`
+                : ""}
+            </div>
+          `
+        : html`<slot></slot>`;
 
-    const cardClass = `card ${this.borderColor ? 'bordered' : ''}`;
+    const cardClass = `card ${this.borderColor ? "bordered" : ""}`;
 
     if (this.borderColor) {
-      this.style.setProperty('--row-border-color', this.borderColor);
+      this.style.setProperty("--row-border-color", this.borderColor);
     }
 
     return this.href
-      ? html`<a class=${cardClass} href=${this.href} target="_blank" rel="noopener noreferrer">${content}</a>`
+      ? html`<a
+          class=${cardClass}
+          href=${this.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          >${content}</a
+        >`
       : html`<div class=${cardClass}>${content}</div>`;
   }
 }

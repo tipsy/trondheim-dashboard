@@ -10,10 +10,30 @@
 export const DEFAULT_LAYOUT = {
   version: 1,
   columns: [
-    { id: 'col-1', enabled: true, width: 25, widgets: ['bus-widget', 'events-widget'] },
-    { id: 'col-2', enabled: true, width: 20, widgets: ['weather-right-now', 'weather-today'] },
-    { id: 'col-3', enabled: true, width: 30, widgets: ['energy-widget', 'trash-widget'] },
-    { id: 'col-4', enabled: true, width: 25, widgets: ['police-widget', 'nrk-widget'] },
+    {
+      id: "col-1",
+      enabled: true,
+      width: 25,
+      widgets: ["bus-widget", "events-widget"],
+    },
+    {
+      id: "col-2",
+      enabled: true,
+      width: 20,
+      widgets: ["weather-right-now", "weather-today"],
+    },
+    {
+      id: "col-3",
+      enabled: true,
+      width: 30,
+      widgets: ["energy-widget", "trash-widget"],
+    },
+    {
+      id: "col-4",
+      enabled: true,
+      width: 25,
+      widgets: ["police-widget", "nrk-widget"],
+    },
   ],
 };
 
@@ -27,17 +47,19 @@ function clampToStep(value) {
 }
 
 function sumEnabledWidths(columns) {
-  return columns.filter(c => c.enabled).reduce((sum, c) => sum + (c.width || 0), 0);
+  return columns
+    .filter((c) => c.enabled)
+    .reduce((sum, c) => sum + (c.width || 0), 0);
 }
 
 function enabledColumns(columns) {
-  return columns.filter(c => c.enabled);
+  return columns.filter((c) => c.enabled);
 }
 
 // Distribute delta across other enabled columns while respecting min width and step.
 // columns: array copy will be made inside. targetIndex: index of column being changed.
 export function redistributeWidths(columns, targetIndex, desiredWidth) {
-  const cols = columns.map(c => ({ ...c }));
+  const cols = columns.map((c) => ({ ...c }));
   if (targetIndex < 0 || targetIndex >= cols.length) return cols;
 
   const target = cols[targetIndex];
@@ -79,12 +101,18 @@ export function redistributeWidths(columns, targetIndex, desiredWidth) {
     // Apply reductions proportionally to their current widths
     let remaining = actualDiff;
     // Sort others by width descending to reduce larger columns first
-    const sorted = othersIdx.slice().sort((a, b) => cols[b].width - cols[a].width);
+    const sorted = othersIdx
+      .slice()
+      .sort((a, b) => cols[b].width - cols[a].width);
     for (const i of sorted) {
       if (remaining <= 0) break;
       const col = cols[i];
       const maxReduce = col.width - MIN_WIDTH;
-      const take = Math.min(Math.round((col.width / othersTotal) * actualDiff), maxReduce, remaining);
+      const take = Math.min(
+        Math.round((col.width / othersTotal) * actualDiff),
+        maxReduce,
+        remaining,
+      );
       const adjust = clampToStep(take);
       col.width = Math.max(MIN_WIDTH, col.width - adjust);
       remaining -= adjust;
@@ -108,11 +136,15 @@ export function redistributeWidths(columns, targetIndex, desiredWidth) {
     // diff < 0, we free up width to distribute to others
     const freed = Math.abs(diff);
     // Distribute proportionally to current widths
-    const totalForProportion = othersIdx.reduce((s, i) => s + cols[i].width, 0) || 1;
+    const totalForProportion =
+      othersIdx.reduce((s, i) => s + cols[i].width, 0) || 1;
     let remaining = freed;
     for (const i of othersIdx) {
       const col = cols[i];
-      const add = Math.min(clampToStep(Math.round((col.width / totalForProportion) * freed)), 100 - col.width);
+      const add = Math.min(
+        clampToStep(Math.round((col.width / totalForProportion) * freed)),
+        100 - col.width,
+      );
       const adjust = clampToStep(add);
       col.width = Math.min(100, col.width + adjust);
       remaining -= adjust;
@@ -134,25 +166,28 @@ export function redistributeWidths(columns, targetIndex, desiredWidth) {
 
   // After adjustments, ensure all widths are multiples of STEP and enabled sum to 100
   // Fix rounding issues by adjusting the largest enabled column
-  let enabledCols = cols.filter(c => c.enabled);
+  let enabledCols = cols.filter((c) => c.enabled);
   let total = enabledCols.reduce((s, c) => s + (c.width || 0), 0);
   const diffTotal = 100 - total;
   if (diffTotal !== 0) {
     // find largest enabled column and apply remaining diff (clamped to step)
-    const largest = enabledCols.reduce((max, c) => (c.width > max.width ? c : max), enabledCols[0]);
+    const largest = enabledCols.reduce(
+      (max, c) => (c.width > max.width ? c : max),
+      enabledCols[0],
+    );
     largest.width = clampToStep((largest.width || 0) + diffTotal);
   }
 
   // Final normalization: ensure min width respected
-  enabledCols = cols.filter(c => c.enabled);
-  enabledCols.forEach(c => {
+  enabledCols = cols.filter((c) => c.enabled);
+  enabledCols.forEach((c) => {
     if (c.width < MIN_WIDTH) c.width = MIN_WIDTH;
   });
 
   // Re-balance if enforcement above changed totals
-  total = cols.filter(c => c.enabled).reduce((s, c) => s + c.width, 0);
+  total = cols.filter((c) => c.enabled).reduce((s, c) => s + c.width, 0);
   if (total !== 100) {
-    const adjustable = cols.filter(c => c.enabled && c.width > MIN_WIDTH);
+    const adjustable = cols.filter((c) => c.enabled && c.width > MIN_WIDTH);
     let remaining = total - 100;
     if (remaining > 0) {
       // need to decrease some
@@ -182,22 +217,30 @@ export function redistributeWidths(columns, targetIndex, desiredWidth) {
 }
 
 export function normalizeLayout(layout) {
-  if (!layout || !Array.isArray(layout.columns) || layout.columns.length !== MAX_COLUMNS) {
+  if (
+    !layout ||
+    !Array.isArray(layout.columns) ||
+    layout.columns.length !== MAX_COLUMNS
+  ) {
     return DEFAULT_LAYOUT;
   }
 
   const cols = layout.columns.map((c, i) => ({
     id: c.id || `col-${i + 1}`,
-    enabled: typeof c.enabled === 'boolean' ? c.enabled : true,
+    enabled: typeof c.enabled === "boolean" ? c.enabled : true,
     width: clampToStep(c.width || 0),
-    widgets: Array.isArray(c.widgets) ? c.widgets.slice(0, MAX_WIDGETS_PER_COLUMN) : [],
+    widgets: Array.isArray(c.widgets)
+      ? c.widgets.slice(0, MAX_WIDGETS_PER_COLUMN)
+      : [],
   }));
 
   // Disabled columns should have width 0
-  cols.forEach(c => { if (!c.enabled) c.width = 0; });
+  cols.forEach((c) => {
+    if (!c.enabled) c.width = 0;
+  });
 
   // Ensure enabled widths sum to 100; if not, normalize equally
-  const enabled = cols.filter(c => c.enabled);
+  const enabled = cols.filter((c) => c.enabled);
   const total = enabled.reduce((s, c) => s + c.width, 0);
   if (enabled.length === 0) {
     // fall back to defaults
@@ -206,8 +249,11 @@ export function normalizeLayout(layout) {
 
   if (total === 0) {
     // assign equal widths among enabled cols but respect MIN_WIDTH
-    const per = Math.max(MIN_WIDTH, clampToStep(Math.floor(100 / enabled.length / STEP) * STEP));
-    enabled.forEach((c, idx) => c.width = per);
+    const per = Math.max(
+      MIN_WIDTH,
+      clampToStep(Math.floor(100 / enabled.length / STEP) * STEP),
+    );
+    enabled.forEach((c, idx) => (c.width = per));
     // fix remaining due to rounding
     let sum = enabled.reduce((s, c) => s + c.width, 0);
     let i = 0;
@@ -223,7 +269,9 @@ export function normalizeLayout(layout) {
       if (idx === enabled.length - 1) {
         c.width = rem; // assign rest to last to avoid rounding gaps
       } else {
-        const w = clampToStep(Math.max(MIN_WIDTH, Math.round((c.width / total) * 100)));
+        const w = clampToStep(
+          Math.max(MIN_WIDTH, Math.round((c.width / total) * 100)),
+        );
         c.width = w;
         rem -= w;
       }
@@ -232,4 +280,3 @@ export function normalizeLayout(layout) {
 
   return { version: 1, columns: cols };
 }
-

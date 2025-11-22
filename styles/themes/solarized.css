@@ -1,67 +1,78 @@
 /* Solarized Light theme - Warm yellow tones */
 :root[data-theme="solarized"] {
-    --background: none;
-    /* Colors - Based on Solarized Light palette */
-    --primary-color: #268bd2;
-    --secondary-color: #2aa198;
-    --heading-color: #268bd2;
-    --background-color: #fdf6e3;
-    --card-background: #eee8d5;
-    --text-color: #657b83;
-    --text-alt: #657b83;
-    --text-light: #93a1a1;
-    --border-color: #d9d2c2;
-    --input-background: #fdf6e3;
-    --button-text: #fdf6e3;
-    --success-color: #859900;
-    --success-hover: #719e00;
-    --success-bg: #f4f8e8;
-    --error-bg: #fdf0ed;
-    --error-color: #dc322f;
-    --info-bg: #eef5fb;
-    --info-color: #268bd2;
+  /* 1. LAYOUT & BACKGROUNDS */
+  --background: none;
+  --background-color: #fdf6e3;
+  --card-background: #eee8d5;
+  --widget-subpart-background: #f7f0dd;
+  --hover-bg: #e4ddc8;
 
-    /* Alternate backgrounds */
-    --alt-background: #f7f0dd;
-    --hover-bg: #e4ddc8;
+  /* 2. BRAND COLORS */
+  --primary-color: #268bd2;
+  --secondary-color: #2aa198;
 
-    /* Shadows */
-    --shadow: 0 2px 8px rgba(101, 123, 131, 0.15);
-    --shadow-hover: 0 4px 12px rgba(101, 123, 131, 0.2);
+  /* 3. TEXT COLORS */
+  --text-color: #657b83;
+  --text-muted: #93a1a1;
+  --heading-color: #268bd2;
 
-    /* Spacing */
-    --border-radius: 6px;
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
+  /* 4. BORDERS & DIVIDERS */
+  --border-color: #d9d2c2;
+  --border-radius: 6px;
 
-    /* Typography */
-    --font-family: 'Consolas', 'Monaco', 'Courier New', monospace, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    --font-size-xs: 11px;
-    --font-size-sm: 14px;
-    --font-size-md: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 48px;
-    --font-size-xxl: 64px;
+  /* 5. INTERACTIVE ELEMENTS */
+  --input-background: #fdf6e3;
+  --button-text: #fdf6e3;
 
-    /* Trash type colors - Using Solarized accent colors */
-    --trash-general: #93a1a1;
-    --trash-paper: #268bd2;
-    --trash-plastic: #859900;
-    --trash-food: #b58900;
-    --trash-glass: #2aa198;
-    --trash-metal: #6c71c4;
+  /* 6. FEEDBACK COLORS */
+  --success-color: #859900;
+  --success-hover: #719e00;
+  --success-bg: #f4f8e8;
+  --error-color: #dc322f;
+  --error-bg: #fdf0ed;
+  --info-color: #268bd2;
+  --info-bg: #eef5fb;
 
-    /* Scrollbar colors */
-    --scrollbar-thumb: rgba(101, 123, 131, 0.3);
-    --scrollbar-thumb-hover: rgba(101, 123, 131, 0.5);
+  /* 7. EFFECTS */
+  --shadow: 0 2px 8px rgba(101, 123, 131, 0.15);
+  --shadow-hover: 0 4px 12px rgba(101, 123, 131, 0.2);
 
-    /* Spinner colors */
-    --spinner-ring: #d9d2c2;
-    --spinner-segment: #268bd2;
+  /* 8. SPACING */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 
-    /* Icon/emoji filter */
-    --icon-filter: saturate(50%);
+  /* 9. TYPOGRAPHY */
+  --font-family:
+    "Consolas", "Monaco", "Courier New", monospace, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 48px;
+  --font-size-xxl: 64px;
+
+  /* 10. COMPONENT-SPECIFIC */
+  --trash-general: #93a1a1;
+  --trash-paper: #268bd2;
+  --trash-plastic: #859900;
+  --trash-food: #b58900;
+  --trash-glass: #2aa198;
+  --trash-metal: #6c71c4;
+
+  /* 11. UI CHROME */
+  --scrollbar-thumb: rgba(101, 123, 131, 0.3);
+  --scrollbar-thumb-hover: rgba(101, 123, 131, 0.5);
+  --spinner-ring: #d9d2c2;
+  --spinner-segment: #268bd2;
+
+  /* 12. FILTERS & EFFECTS */
+  --icon-filter: saturate(50%);
+
+  /* 13. THEME-SPECIFIC */
+  --widget-border: 1px solid var(--border-color);
+  --row-border-width: 1px;
 }

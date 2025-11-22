@@ -23,17 +23,17 @@ class CustomSelect extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    document.addEventListener('click', this.handleDocumentClick);
-    window.addEventListener('scroll', this.handleScroll, true);
-    window.addEventListener('resize', this.handleResize);
+    document.addEventListener("click", this.handleDocumentClick);
+    window.addEventListener("scroll", this.handleScroll, true);
+    window.addEventListener("resize", this.handleResize);
     adoptMDIStyles(this.shadowRoot);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    document.removeEventListener('click', this.handleDocumentClick);
-    window.removeEventListener('scroll', this.handleScroll, true);
-    window.removeEventListener('resize', this.handleResize);
+    document.removeEventListener("click", this.handleDocumentClick);
+    window.removeEventListener("scroll", this.handleScroll, true);
+    window.removeEventListener("resize", this.handleResize);
   }
 
   handleDocumentClick(e) {
@@ -80,7 +80,8 @@ class CustomSelect extends LitElement {
       .select-trigger {
         width: 100%;
         height: var(--input-height);
-        padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm) var(--spacing-md);
+        padding: var(--spacing-sm) var(--spacing-sm) var(--spacing-sm)
+          var(--spacing-md);
         border: 1px solid var(--border-color, #e0e0e0);
         border-radius: var(--border-radius, 8px);
         font-size: var(--font-size-md, 16px);
@@ -175,52 +176,60 @@ class CustomSelect extends LitElement {
   }
 
   getSelectedLabel() {
-    const selectedOption = this.options.find(opt => opt.value === this.selected);
+    const selectedOption = this.options.find(
+      (opt) => opt.value === this.selected,
+    );
     return selectedOption ? selectedOption.label : this.placeholder;
   }
 
   getDropdownPosition() {
-    const trigger = this.shadowRoot.querySelector('.select-trigger');
+    const trigger = this.shadowRoot.querySelector(".select-trigger");
     if (!trigger) return { top: 0, left: 0, width: 0 };
 
     const rect = trigger.getBoundingClientRect();
     return {
       top: rect.bottom,
       left: rect.left,
-      width: rect.width
+      width: rect.width,
     };
   }
 
   render() {
-    const dropdownPos = this.isOpen ? this.getDropdownPosition() : { top: 0, left: 0, width: 0 };
+    const dropdownPos = this.isOpen
+      ? this.getDropdownPosition()
+      : { top: 0, left: 0, width: 0 };
 
     return html`
       <div class="select-container">
         ${this.label ? html`<label>${this.label}</label>` : ""}
         <div
-          class="select-trigger ${this.isOpen ? 'open' : ''}"
+          class="select-trigger ${this.isOpen ? "open" : ""}"
           @click=${this.toggleDropdown}
         >
           <span class="label">${this.getSelectedLabel()}</span>
           <i class="mdi mdi-chevron-down chevron"></i>
         </div>
-        ${this.isOpen ? html`
-          <div
-            class="select-dropdown"
-            style="top: ${dropdownPos.top}px; left: ${dropdownPos.left}px; width: ${dropdownPos.width}px;"
-          >
-            ${this.options?.map(
-              (option) => html`
-                <div
-                  class="select-option ${option.value === this.selected ? 'selected' : ''}"
-                  @click=${() => this.selectOption(option)}
-                >
-                  ${option.label}
-                </div>
-              `,
-            )}
-          </div>
-        ` : ''}
+        ${this.isOpen
+          ? html`
+              <div
+                class="select-dropdown"
+                style="top: ${dropdownPos.top}px; left: ${dropdownPos.left}px; width: ${dropdownPos.width}px;"
+              >
+                ${this.options?.map(
+                  (option) => html`
+                    <div
+                      class="select-option ${option.value === this.selected
+                        ? "selected"
+                        : ""}"
+                      @click=${() => this.selectOption(option)}
+                    >
+                      ${option.label}
+                    </div>
+                  `,
+                )}
+              </div>
+            `
+          : ""}
       </div>
     `;
   }

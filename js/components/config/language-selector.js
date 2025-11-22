@@ -34,7 +34,7 @@ class LanguageSelector extends BaseWidget {
 
   handleLocaleChange(e) {
     this.selectedLocale = e.detail.value;
-    console.log('[LanguageSelector] Locale changed to:', this.selectedLocale);
+    console.log("[LanguageSelector] Locale changed to:", this.selectedLocale);
     dispatchEvent(this, "locale-changed", { locale: this.selectedLocale });
   }
 
@@ -51,4 +51,3 @@ class LanguageSelector extends BaseWidget {
 }
 
 customElements.define("language-selector", LanguageSelector);
-

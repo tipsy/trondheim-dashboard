@@ -1,11 +1,11 @@
 // Cat Paw Prints Animation for Cat Theme
 // Uses canvas and vector math to draw realistic paw prints
 
-import { ThemeEffect, autoInitThemeEffect } from './theme-effect.js';
+import { ThemeEffect, autoInitThemeEffect } from "./theme-effect.js";
 
 class CatPaws extends ThemeEffect {
   constructor() {
-    super('cat');
+    super("cat");
     this.canvas = null;
     this.ctx = null;
     this.isWalking = false;
@@ -45,23 +45,23 @@ class CatPaws extends ThemeEffect {
   }
 
   createCanvas() {
-    this.canvas = document.createElement('canvas');
-    this.canvas.style.position = 'fixed';
-    this.canvas.style.top = '0';
-    this.canvas.style.left = '0';
-    this.canvas.style.width = '100%';
-    this.canvas.style.height = '100%';
-    this.canvas.style.pointerEvents = 'none';
-    this.canvas.style.zIndex = '1';
+    this.canvas = document.createElement("canvas");
+    this.canvas.style.position = "fixed";
+    this.canvas.style.top = "0";
+    this.canvas.style.left = "0";
+    this.canvas.style.width = "100%";
+    this.canvas.style.height = "100%";
+    this.canvas.style.pointerEvents = "none";
+    this.canvas.style.zIndex = "1";
 
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
 
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext("2d");
     document.body.appendChild(this.canvas);
 
     // Handle window resize
-    window.addEventListener('resize', () => {
+    window.addEventListener("resize", () => {
       if (this.canvas) {
         this.canvas.width = window.innerWidth;
         this.canvas.height = window.innerHeight;
@@ -104,7 +104,7 @@ class CatPaws extends ThemeEffect {
     // Calculate direction vector from current angle
     const direction = {
       x: Math.cos(this.currentAngle),
-      y: Math.sin(this.currentAngle)
+      y: Math.sin(this.currentAngle),
     };
 
     const stepSize = 60;
@@ -174,13 +174,13 @@ class CatPaws extends ThemeEffect {
     // Recalculate direction after potential wall bounce
     const finalDirection = {
       x: Math.cos(this.currentAngle),
-      y: Math.sin(this.currentAngle)
+      y: Math.sin(this.currentAngle),
     };
 
     // Perpendicular vector for left/right offset
     const perpendicular = {
       x: -finalDirection.y,
-      y: finalDirection.x
+      y: finalDirection.x,
     };
 
     // Alternate between left and right paws
@@ -210,7 +210,7 @@ class CatPaws extends ThemeEffect {
       isLeft,
       createdAt: now,
       opacity: 0,
-      maxOpacity: 0.5
+      maxOpacity: 0.5,
     });
   }
 
@@ -256,7 +256,6 @@ class CatPaws extends ThemeEffect {
     this.ctx.arc(0, 5, padRadius, 0, Math.PI * 2);
     this.ctx.fill();
 
-
     this.ctx.restore();
   }
 
@@ -272,7 +271,7 @@ class CatPaws extends ThemeEffect {
     const maxAge = 5000; // Paw prints last 5 seconds (keeps around 10 prints at 600ms steps)
 
     // Update and draw all paw prints
-    this.pawPrints = this.pawPrints.filter(paw => {
+    this.pawPrints = this.pawPrints.filter((paw) => {
       const age = now - paw.createdAt;
 
       if (age > maxAge + fadeOutDuration) {
@@ -283,11 +282,11 @@ class CatPaws extends ThemeEffect {
       let opacity;
       if (age < fadeInDuration) {
         // Fade in
-        opacity = (age / fadeInDuration);
+        opacity = age / fadeInDuration;
       } else if (age > maxAge) {
         // Fade out
         const fadeAge = age - maxAge;
-        opacity = 1 - (fadeAge / fadeOutDuration);
+        opacity = 1 - fadeAge / fadeOutDuration;
       } else {
         // Full opacity
         opacity = 1;
@@ -310,4 +309,3 @@ const catPaws = new CatPaws();
 autoInitThemeEffect(catPaws);
 
 export { CatPaws };
-

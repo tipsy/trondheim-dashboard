@@ -32,7 +32,8 @@ class AddressInput extends BaseWidget {
     this.isSearching = false;
   }
 
-  get showSuggestions() { // Derived getters for reactive state
+  get showSuggestions() {
+    // Derived getters for reactive state
     return this.suggestions.length > 0 && !this.localErrorMessage;
   }
 
@@ -67,7 +68,7 @@ class AddressInput extends BaseWidget {
         top: 0;
         z-index: 10;
         --icon-btn-size: var(--input-height);
-        --icon-btn-color: var(--text-light, #999);
+        --icon-btn-color: var(--text-muted, #999);
         --icon-btn-radius: 50%;
       }
 
@@ -194,11 +195,15 @@ class AddressInput extends BaseWidget {
       if (locations && locations.length > 0) {
         this.selectLocation(locations[0]);
       } else {
-        this.localErrorMessage = t("Could not find address from URL. Please search again.");
+        this.localErrorMessage = t(
+          "Could not find address from URL. Please search again.",
+        );
       }
     } catch (error) {
       console.error("Error loading address from URL:", error);
-      this.localErrorMessage = error.message || t("Could not find address from URL. Please search again.");
+      this.localErrorMessage =
+        error.message ||
+        t("Could not find address from URL. Please search again.");
     } finally {
       this.isLoading = false;
     }
@@ -301,7 +306,8 @@ class AddressInput extends BaseWidget {
       this.suggestions = locations;
     } catch (error) {
       console.error("Address search error:", error);
-      this.localErrorMessage = error.message || t("Could not find address. Please try again.");
+      this.localErrorMessage =
+        error.message || t("Could not find address. Please try again.");
     } finally {
       if (showLoading) {
         this.isLoading = false;
@@ -340,7 +346,9 @@ class AddressInput extends BaseWidget {
       this.updateLocation(location.lat, location.lon, address);
     } catch (error) {
       console.error("Current location error:", error);
-      this.localErrorMessage = error.message || t("Could not get your location. Check browser settings.");
+      this.localErrorMessage =
+        error.message ||
+        t("Could not get your location. Check browser settings.");
     } finally {
       this.isLoading = false;
       this.isSearching = false;

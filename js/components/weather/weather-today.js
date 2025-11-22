@@ -2,7 +2,7 @@
 
 import { BaseWidget } from "../common/base-widget.js";
 import { html, css } from "lit";
-import { t } from '../../utils/localization.js';
+import { t } from "../../utils/localization.js";
 import { WeatherAPI } from "../../utils/api/weather-api.js";
 import { IconLibrary } from "../../utils/icon-library.js";
 import { DateFormatter } from "../../utils/date-formatter.js";
@@ -23,7 +23,6 @@ class WeatherToday extends BaseWidget {
     this.location = null;
   }
 
-
   static styles = [
     ...BaseWidget.styles,
     css`
@@ -37,7 +36,7 @@ class WeatherToday extends BaseWidget {
       .today-icon {
         display: inline-flex;
         font-size: 80px;
-        color: var(--text-alt, var(--text-color));
+        color: var(--text-color);
       }
 
       .today-temps {
@@ -55,7 +54,7 @@ class WeatherToday extends BaseWidget {
       .temp-low {
         font-size: 32px;
         font-weight: 400;
-        color: var(--text-light);
+        color: var(--text-muted);
       }
 
       .today-details {
@@ -75,16 +74,16 @@ class WeatherToday extends BaseWidget {
 
       .detail-row i {
         font-size: 24px;
-        color: var(--text-light);
+        color: var(--text-muted);
       }
 
       .detail-label {
-        color: var(--text-light);
+        color: var(--text-muted);
       }
 
       .detail-value {
         font-weight: 400;
-        color: var(--text-light);
+        color: var(--text-muted);
       }
     `,
   ];
@@ -123,21 +122,28 @@ class WeatherToday extends BaseWidget {
     const next24Hours = timeseries.slice(0, 24);
 
     // Calculate min/max from hourly data
-    const temps = next24Hours.map((h) => h.data.instant.details.air_temperature);
+    const temps = next24Hours.map(
+      (h) => h.data.instant.details.air_temperature,
+    );
     const minTemp = Math.min(...temps);
     const maxTemp = Math.max(...temps);
 
     // Get the most common weather symbol for the day
     const symbols = next24Hours
-      .map((h) => h.data.next_1_hours?.summary?.symbol_code || h.data.next_6_hours?.summary?.symbol_code)
+      .map(
+        (h) =>
+          h.data.next_1_hours?.summary?.symbol_code ||
+          h.data.next_6_hours?.summary?.symbol_code,
+      )
       .filter(Boolean);
 
     const symbolCode = this.getMostCommonSymbol(symbols) || "clearsky";
 
     // Sum precipitation for the day
     const totalPrecipitation = next24Hours.reduce(
-      (sum, h) => sum + (h.data.next_1_hours?.details?.precipitation_amount || 0),
-      0
+      (sum, h) =>
+        sum + (h.data.next_1_hours?.details?.precipitation_amount || 0),
+      0,
     );
 
     this.todayData = {
@@ -158,7 +164,9 @@ class WeatherToday extends BaseWidget {
       return acc;
     }, {});
 
-    return Object.keys(counts).reduce((a, b) => (counts[a] > counts[b] ? a : b));
+    return Object.keys(counts).reduce((a, b) =>
+      counts[a] > counts[b] ? a : b,
+    );
   }
 
   renderContent() {
@@ -194,10 +202,12 @@ class WeatherToday extends BaseWidget {
         <div class="detail-row">
           <i class="mdi mdi-weather-rainy"></i>
           <span class="detail-label">Precipitation</span>
-          <span class="detail-value">${this.todayData.totalPrecipitation.toFixed(1)} mm</span>
+          <span class="detail-value"
+            >${this.todayData.totalPrecipitation.toFixed(1)} mm</span
+          >
         </div>
         ${this.sunData
-          ? html`
+        ? html`
               <div class="detail-row">
                 <i class="mdi mdi-weather-sunset-up"></i>
                 <span class="detail-label">Sunrise</span>
@@ -209,16 +219,16 @@ class WeatherToday extends BaseWidget {
                 <span class="detail-value">${sunsetTime}</span>
               </div>
             `
-          : ""}
+        : ""}
         ${daylightHours
-          ? html`
+        ? html`
               <div class="detail-row">
                 <i class="mdi mdi-white-balance-sunny"></i>
                 <span class="detail-label">Daylight</span>
                 <span class="detail-value">${daylightHours}</span>
               </div>
             `
-          : ""}
+        : ""}
       </div>
     `;
   }

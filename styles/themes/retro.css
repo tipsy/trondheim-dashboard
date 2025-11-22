@@ -1,83 +1,85 @@
 /* Retro Mac Classic High Contrast theme */
 :root[data-theme="retro"] {
-    /* Classic Mac checkerboard pattern background - repeating tileable pattern */
-    --background: url("/img/themes/retro/pattern_08_16x16.png") repeat;
+  /* 1. LAYOUT & BACKGROUNDS */
+  /* Classic Mac checkerboard pattern background - repeating tileable pattern */
+  --background: url("/img/themes/retro/pattern_08_16x16.png") repeat;
+  --background-color: rgba(255, 255, 255, 0.9);
+  --card-background: #ffffff;
+  --widget-subpart-background: #f5f5f5;
+  --hover-bg: #e0e0e0;
 
-    /* High contrast black and white */
-    --primary-color: #000000;
-    --secondary-color: #333333;
-    --heading-color: #000000;
-    --background-color: rgba(255, 255, 255, 0.9);
-    --card-background: #ffffff;
-    --text-color: #000000;
-    --text-alt: #000000;
-    --text-light: #333333;
-    --border-color: #000000;
-    --input-background: #ffffff;
-    --button-text: #ffffff;
+  /* 2. BRAND COLORS */
+  --primary-color: #000000;
+  --secondary-color: #333333;
 
-    /* Widget border styling - Mac Classic thin border with bevel */
-    --widget-border: 2px solid #000000;
-    --widget-background: #ffffff;
-    --row-border-width: 2px;
+  /* 3. TEXT COLORS */
+  --text-color: #000000;
+  --text-muted: #333333;
+  --heading-color: #000000;
 
-    /* Status colors - still high contrast but with subtle tones */
-    --success-color: #000000;
-    --success-hover: #333333;
-    --success-bg: #ffffff;
-    --error-bg: #ffffff;
-    --error-color: #000000;
-    --info-bg: #ffffff;
-    --info-color: #000000;
+  /* 4. BORDERS & DIVIDERS */
+  --border-color: #000000;
+  --border-radius: 4px;
 
-    /* Alternate backgrounds - subtle patterns */
-    --alt-background: #f5f5f5;
-    --hover-bg: #e0e0e0;
+  /* 5. INTERACTIVE ELEMENTS */
+  --input-background: #ffffff;
+  --button-text: #ffffff;
 
-    /* Shadows - Mac Classic beveled 3D effect with both inset and outset */
-    --shadow:
-        1px 1px 0 #ffffff,
-        2px 2px 0 0 #808080;
-    --shadow-hover:
-        1px 1px 0 #ffffff,
-        3px 3px 0 0 #808080;
+  /* 6. FEEDBACK COLORS */
+  --success-color: #000000;
+  --success-hover: #333333;
+  --success-bg: #ffffff;
+  --error-color: #000000;
+  --error-bg: #ffffff;
+  --info-color: #000000;
+  --info-bg: #ffffff;
 
-    /* Spacing - slightly more compact for retro feel */
-    --border-radius: 4px;
-    --spacing-xs: 4px;
-    --spacing-sm: 8px;
-    --spacing-md: 16px;
-    --spacing-lg: 24px;
-    --spacing-xl: 32px;
+  /* 7. EFFECTS */
+  /* Mac Classic beveled 3D effect with both inset and outset */
+  --shadow: 1px 1px 0 #ffffff, 2px 2px 0 0 #808080;
+  --shadow-hover: 1px 1px 0 #ffffff, 3px 3px 0 0 #808080;
 
-    /* Typography - Classic system fonts */
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    --font-size-xs: 11px;
-    --font-size-sm: 14px;
-    --font-size-md: 16px;
-    --font-size-lg: 18px;
-    --font-size-xl: 48px;
-    --font-size-xxl: 64px;
+  /* 8. SPACING */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
 
-    /* Trash type colors - all high contrast */
-    --trash-general: #000000;
-    --trash-paper: #000000;
-    --trash-plastic: #000000;
-    --trash-food: #000000;
-    --trash-glass: #000000;
-    --trash-metal: #000000;
+  /* 9. TYPOGRAPHY */
+  --font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, sans-serif;
+  --font-size-xs: 11px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 48px;
+  --font-size-xxl: 64px;
 
-    /* Scrollbar colors */
-    --scrollbar-thumb: rgba(0, 0, 0, 0.8);
-    --scrollbar-thumb-hover: rgba(0, 0, 0, 1);
+  /* 10. COMPONENT-SPECIFIC */
+  --trash-general: #000000;
+  --trash-paper: #000000;
+  --trash-plastic: #000000;
+  --trash-food: #000000;
+  --trash-glass: #000000;
+  --trash-metal: #000000;
 
-    /* Spinner colors - need contrast for visibility */
-    --spinner-ring: #cccccc;
-    --spinner-segment: #000000;
+  /* 11. UI CHROME */
+  --scrollbar-thumb: rgba(0, 0, 0, 0.8);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 1);
+  --spinner-ring: #cccccc;
+  --spinner-segment: #000000;
 
-    /* Icon/emoji filter for retro black & white theme - grayscale with increased contrast */
-    --icon-filter: grayscale(100%) contrast(1.5);
+  /* 12. FILTERS & EFFECTS */
+  /* Icon/emoji filter for retro black & white theme - grayscale with increased contrast */
+  --icon-filter: grayscale(100%) contrast(1.5);
 
-    /* Ripple animation timing - choppy retro feel */
-    --ripple-timing: steps(8);
+  /* 13. THEME-SPECIFIC */
+  /* Mac Classic thin border with bevel */
+  --widget-border: 2px solid #000000;
+  --widget-background: #ffffff;
+  --row-border-width: 2px;
+  /* Ripple animation timing - choppy retro feel */
+  --ripple-timing: steps(8);
 }

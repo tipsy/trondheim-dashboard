@@ -24,13 +24,13 @@ class WeatherHour extends LitElement {
         align-items: center;
         gap: var(--spacing-xs);
         padding: var(--spacing-sm);
-        background-color: var(--alt-background);
+        background-color: var(--widget-subpart-background);
         border-radius: var(--border-radius);
       }
 
       .hour-time {
         font-size: var(--font-size-sm);
-        color: var(--text-light);
+        color: var(--text-muted);
       }
 
       .hour-icon {
@@ -41,7 +41,7 @@ class WeatherHour extends LitElement {
       .hour-temp {
         font-size: var(--font-size-lg);
         font-weight: bold;
-        color: var(--text-alt, var(--text-color));
+        color: var(--text-color);
       }
     `,
   ];
