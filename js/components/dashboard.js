@@ -432,10 +432,18 @@ class TrondheimDashboard extends LitElement {
     // Handle address parameter
     const address = urlParams.get("address");
     if (address) {
-      setTimeout(() => {
+      customElements.whenDefined("address-input").then(() => {
         const addressInput = this.shadowRoot.querySelector("#address-input");
-        addressInput?.loadFromURL(decodeURIComponent(address));
-      }, 200);
+        if (addressInput && typeof addressInput.loadFromURL === "function") {
+          addressInput.loadFromURL(decodeURIComponent(address));
+        } else {
+          // Fallback if upgrade is delayed
+          setTimeout(() => {
+            const input = this.shadowRoot.querySelector("#address-input");
+            input?.loadFromURL?.(decodeURIComponent(address));
+          }, 500);
+        }
+      });
     }
   }
 
@@ -472,11 +480,22 @@ class TrondheimDashboard extends LitElement {
     ];
 
     locationWidgets.forEach((selector) => {
-      this.shadowRoot.querySelector(selector)?.updateLocation(lat, lon);
+      const widgetName = selector.replace("#", "");
+      customElements.whenDefined(widgetName).then(() => {
+        const widget = this.shadowRoot.querySelector(selector);
+        if (widget && typeof widget.updateLocation === "function") {
+          widget.updateLocation(lat, lon);
+        }
+      });
     });
 
     // Trash widget needs the address string
-    this.shadowRoot.querySelector("#trash-widget")?.updateAddress(address);
+    customElements.whenDefined("trash-widget").then(() => {
+      const trashWidget = this.shadowRoot.querySelector("#trash-widget");
+      if (trashWidget && typeof trashWidget.updateAddress === "function") {
+        trashWidget.updateAddress(address);
+      }
+    });
   }
 
   async checkHealth() {
