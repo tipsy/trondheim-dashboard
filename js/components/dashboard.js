@@ -80,16 +80,20 @@ class TrondheimDashboard extends LitElement {
         min-width: 0;
       }
 
-      /* Stack vertically on mobile */
+      /* Stack vertically on mobile, but keep language and config side-by-side */
       @media (max-width: 768px) {
         .address-section {
-          flex-direction: column;
+          flex-direction: row;
+          flex-wrap: wrap;
         }
 
-        .address-section address-input,
+        .address-section address-input {
+          flex: 1 1 100%;
+        }
+
         .address-section language-selector,
         .address-section theme-selector {
-          flex: 1 1 auto;
+          flex: 1 1 calc(50% - var(--spacing-md) / 2);
         }
       }
 
