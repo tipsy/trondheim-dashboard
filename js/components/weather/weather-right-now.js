@@ -18,6 +18,7 @@ class WeatherRightNow extends BaseWidget {
     super();
     this.title = "Weather Now";
     this.icon = "mdi-weather-partly-cloudy";
+    this.collapsible = true;
     this.currentWeather = null;
     this.hourlyForecast = [];
     this.location = null;

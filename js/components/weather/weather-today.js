@@ -18,6 +18,7 @@ class WeatherToday extends BaseWidget {
     super();
     this.title = "Weather Today";
     this.icon = "mdi-calendar-today";
+    this.collapsible = true;
     this.todayData = null;
     this.sunData = null;
     this.location = null;

@@ -13,8 +13,10 @@ export class BaseWidget extends LitElement {
     title: { type: String },
     icon: { type: String },
     compactHeader: { type: Boolean },
+    collapsible: { type: Boolean },
     isLoading: { type: Boolean, state: true },
     errorMessage: { type: String, state: true },
+    collapsed: { type: Boolean, state: true },
   };
 
   constructor() {
@@ -22,8 +24,10 @@ export class BaseWidget extends LitElement {
     this.title = "Widget";
     this.icon = "mdi-square-outline";
     this.compactHeader = false;
+    this.collapsible = false;
     this.isLoading = false;
     this.errorMessage = "";
+    this.collapsed = true;
     this._placeholderTimerId = null;
     this._showPlaceholder = false;
   }
@@ -71,6 +75,14 @@ export class BaseWidget extends LitElement {
           overflow-y: visible;
           overflow-x: visible;
           min-height: auto;
+        }
+
+        #content.collapsed {
+          display: none;
+        }
+
+        .widget-header.collapsed {
+          margin-bottom: 0;
         }
 
         .widget-header.scrolled {
@@ -191,16 +203,28 @@ export class BaseWidget extends LitElement {
           ? html` <p class="placeholder">${this.getPlaceholderText()}</p> `
           : this.renderContent();
 
+    const isCollapsed = this.collapsible && this.collapsed;
+
     return html`
       <div class="widget-container">
-        <div class="widget-header ${this.compactHeader ? "compact" : ""}">
-          <heading-2 icon="${this.icon}" title="${t(this.title)}">
+        <div class="widget-header ${this.compactHeader ? "compact" : ""} ${isCollapsed ? "collapsed" : ""}">
+          <heading-2 
+            icon="${this.icon}" 
+            title="${t(this.title)}"
+            ?collapsible=${this.collapsible}
+            ?collapsed=${this.collapsed}
+            @collapse-toggle=${this.handleCollapseToggle}
+          >
             ${this.renderHeaderActions()}
           </heading-2>
         </div>
-        <div id="content">${contentTemplate}</div>
+        <div id="content" class="${isCollapsed ? "collapsed" : ""}">${contentTemplate}</div>
       </div>
     `;
+  }
+
+  handleCollapseToggle() {
+    this.collapsed = !this.collapsed;
   }
 
   // Set up scroll listener to add border to header when scrolled

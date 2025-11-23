@@ -18,6 +18,7 @@ class NRKWidget extends BaseWidget {
     super();
     this.title = "News";
     this.icon = "mdi-newspaper-variant-outline";
+    this.collapsible = true;
     this.stories = [];
   }
 

@@ -18,6 +18,7 @@ class TrashWidget extends BaseWidget {
     super();
     this.title = "Trash Schedule";
     this.icon = "mdi-trash-can-outline";
+    this.collapsible = true;
     this.collections = [];
     this.address = null;
     this.addressId = null;

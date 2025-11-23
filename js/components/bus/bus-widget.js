@@ -21,6 +21,7 @@ class BusWidget extends BaseWidget {
     super();
     this.title = "Buses";
     this.icon = "mdi-bus-clock";
+    this.collapsible = true;
     this.departures = [];
     this.availableStops = [];
     this.selectedStopId = null;

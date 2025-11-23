@@ -18,6 +18,7 @@ class PoliceWidget extends BaseWidget {
     super();
     this.title = "Police Log";
     this.icon = "mdi-car-emergency";
+    this.collapsible = true;
     this.messages = [];
   }
 

@@ -17,6 +17,7 @@ class EnergyWidget extends BaseWidget {
     super();
     this.title = "Electricity";
     this.icon = "mdi-lightning-bolt-outline";
+    this.collapsible = true;
     this.currentPrice = null;
     this.nextHours = [];
     this.priceArea = "NO3"; // Default to Trondheim area

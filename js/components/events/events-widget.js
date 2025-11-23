@@ -20,6 +20,7 @@ class EventsWidget extends BaseWidget {
     super();
     this.title = "Events";
     this.icon = "mdi-calendar-star";
+    this.collapsible = true;
     this.events = [];
     this.selectedDate = this.formatDate(new Date());
   }
