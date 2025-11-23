@@ -36,7 +36,7 @@ class StorageClient {
   _remove = (key) => runCatching(() => localStorage.removeItem(key));
 
   saveTheme = (theme) => this._set(THEME_KEY, theme);
-  loadTheme = (defaultValue = "midnight-blue") =>
+  loadTheme = (defaultValue = "retro") =>
     this._get(THEME_KEY) ?? defaultValue;
 
   saveLocation = (location) => this._set(LOCATION_KEY, location);

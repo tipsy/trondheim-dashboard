@@ -80,22 +80,7 @@ class TrondheimDashboard extends LitElement {
         min-width: 0;
       }
 
-      /* Stack vertically on mobile, but keep language and config side-by-side */
-      @media (max-width: 768px) {
-        .address-section {
-          flex-direction: row;
-          flex-wrap: wrap;
-        }
 
-        .address-section address-input {
-          flex: 1 1 100%;
-        }
-
-        .address-section language-selector,
-        .address-section theme-selector {
-          flex: 1 1 calc(50% - var(--spacing-md) / 2);
-        }
-      }
 
       layout-widget {
         flex-shrink: 0;
@@ -201,6 +186,36 @@ class TrondheimDashboard extends LitElement {
         #police-widget,
         #nrk-widget {
           flex: 1;
+        }
+      }
+
+      /* Stack vertically on mobile, but keep language and config side-by-side */
+      @media (max-width: 768px) {
+        .dashboard-content {
+          gap: var(--spacing-sm, 8px);
+        }
+
+        .widgets-grid {
+          gap: var(--spacing-sm, 8px);
+        }
+
+        .widgets-grid .column {
+          gap: var(--spacing-sm, 8px);
+        }
+
+        .address-section {
+          flex-direction: row;
+          flex-wrap: wrap;
+          gap: var(--spacing-sm, 8px);
+        }
+
+        .address-section address-input {
+          flex: 1 1 100%;
+        }
+
+        .address-section language-selector,
+        .address-section theme-selector {
+          flex: 1 1 calc(50% - var(--spacing-sm, 8px) / 2);
         }
       }
     `,

@@ -50,6 +50,12 @@ class ThemeSelector extends BaseWidget {
       .header-actions icon-button i {
         font-size: 20px;
       }
+
+      @media (max-width: 768px) {
+        .header-actions icon-button[title="Toggle layout editor"] {
+          display: none;
+        }
+      }
     `,
   ];
 

@@ -46,6 +46,12 @@ class Heading2 extends LitElement {
         text-overflow: ellipsis;
       }
 
+      @media (max-width: 768px) {
+        h2 {
+          font-size: 16px;
+        }
+      }
+
       .title-section i {
         font-size: 28px;
         flex-shrink: 0;
