@@ -117,7 +117,7 @@ class Heading2 extends LitElement {
     const isInteractive = path.some(el => {
       if (el instanceof HTMLElement) {
         const tagName = el.tagName.toLowerCase();
-        return ['button', 'a', 'input', 'select', 'textarea', 'label'].includes(tagName) ||
+        return ['button', 'a', 'input', 'select', 'textarea', 'label', 'custom-select', 'icon-button'].includes(tagName) ||
           el.hasAttribute('onclick') ||
           el.role === 'button';
       }
