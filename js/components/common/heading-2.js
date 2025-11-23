@@ -30,6 +30,7 @@ class Heading2 extends LitElement {
         align-items: center;
         justify-content: space-between;
         gap: var(--spacing-md);
+        -webkit-tap-highlight-color: transparent;
       }
 
       .title-section {

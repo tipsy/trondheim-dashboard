@@ -20,6 +20,7 @@ class WidgetRow extends LitElement {
         border-radius: var(--border-radius);
         padding: var(--spacing-md);
         overflow: hidden;
+        -webkit-tap-highlight-color: transparent;
       }
 
       .card.bordered {
