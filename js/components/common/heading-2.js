@@ -14,6 +14,12 @@ class Heading2 extends LitElement {
   connectedCallback() {
     super.connectedCallback();
     adoptMDIStyles(this.shadowRoot);
+    this.addEventListener('click', this.handleHostClick);
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('click', this.handleHostClick);
   }
 
   static styles = [
@@ -59,7 +65,6 @@ class Heading2 extends LitElement {
 
       .chevron {
         font-size: 24px;
-        cursor: pointer;
         transition: transform 0.2s ease;
         flex-shrink: 0;
         color: var(--text-muted);
@@ -84,11 +89,13 @@ class Heading2 extends LitElement {
       @media (max-width: 1024px) {
         :host(.collapsible) {
           flex-wrap: wrap;
+          cursor: pointer;
         }
 
         :host(.collapsible) .actions-slot {
           flex-basis: 100%;
           width: 100%;
+          cursor: default;
         }
 
         :host(.collapsible.collapsed) .actions-slot {
@@ -98,8 +105,25 @@ class Heading2 extends LitElement {
     `,
   ];
 
-  handleChevronClick() {
-    if (this.collapsible) {
+  handleHostClick(e) {
+    if (!this.collapsible) return;
+
+    // Check if we're on mobile (consistent with CSS media query)
+    if (window.matchMedia("(min-width: 1025px)").matches) return;
+
+    // Check if the clicked element is an interactive element or inside one
+    const path = e.composedPath();
+    const isInteractive = path.some(el => {
+      if (el instanceof HTMLElement) {
+        const tagName = el.tagName.toLowerCase();
+        return ['button', 'a', 'input', 'select', 'textarea', 'label'].includes(tagName) ||
+          el.hasAttribute('onclick') ||
+          el.role === 'button';
+      }
+      return false;
+    });
+
+    if (!isInteractive) {
       this.dispatchEvent(new CustomEvent('collapse-toggle', { bubbles: true, composed: true }));
     }
   }
@@ -134,7 +158,6 @@ class Heading2 extends LitElement {
         ? html`
             <i 
               class="mdi mdi-chevron-down chevron ${this.collapsed ? 'collapsed' : ''}"
-              @click=${this.handleChevronClick}
             ></i>
           `
         : ""}
