@@ -90,12 +90,17 @@ class WeatherToday extends BaseWidget {
   ];
 
   async updateLocation(lat, lon) {
+    if (!lat || !lon) {
+      this.location = null;
+      this.todayData = null;
+      return;
+    }
     this.location = { lat, lon };
     await this.loadWeather();
   }
 
   async loadWeather() {
-    if (!this.location) return;
+    if (!this.location?.lat || !this.location?.lon) return;
 
     const result = await this.fetchData(async () => {
       return await Promise.all([
@@ -171,6 +176,11 @@ class WeatherToday extends BaseWidget {
   }
 
   renderContent() {
+    // If no location, return null to trigger BaseWidget placeholder
+    if (!this.location?.lat || !this.location?.lon) {
+      return null;
+    }
+
     if (!this.todayData) {
       return html`<p class="no-data">${t("No weather data available")}</p>`;
     }
@@ -235,7 +245,7 @@ class WeatherToday extends BaseWidget {
   }
 
   getPlaceholderText() {
-    return "Enter address to see today's weather";
+    return t("Enter address to see today's weather");
   }
 }
 

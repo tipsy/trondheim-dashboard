@@ -10,14 +10,11 @@
   "Please enter an address": "Vennligst skriv inn en adresse",
   "Could not find address. Please try again.": "Kunne ikke finne adresse. Vennligst prøv igjen.",
   "Could not get your location. Check browser settings.": "Kunne ikke hente din posisjon. Sjekk nettleserinnstillinger.",
-  
   "Config": "Innstillinger",
   "Toggle layout editor": "Vis/skjul layoutredigering",
   "Clear cache and refresh": "Tøm hurtigbuffer og oppdater",
   "Clear all cached data and refresh the page?": "Tøm all hurtigbuffer og oppdater siden?",
-  
   "Language": "Språk",
-  
   "Buses": "Busser",
   "Platform": "Plattform",
   "Now": "Nå",
@@ -25,24 +22,22 @@
   "No bus stops found nearby": "Ingen bussholdeplasser funnet i nærheten",
   "No departures found": "Ingen avganger funnet",
   "Enter address to see bus departures": "Skriv inn adresse for å se bussavganger",
-  
   "Events": "Arrangementer",
   "Today": "I dag",
   "Tomorrow": "I morgen",
   "Could not load events": "Kunne ikke laste arrangementer",
   "No events for the selected date": "Ingen arrangementer for valgt dato",
   "Loading events...": "Laster arrangementer...",
-  
   "Weather Now": "Været nå",
   "Weather Today": "Været i dag",
   "Could not load weather data": "Kunne ikke laste værdata",
   "No weather data available": "Ingen værdata tilgjengelig",
-  
+  "Enter address to see today's weather": "Skriv inn adresse for å se været i dag",
+  "Enter address to see current weather": "Skriv inn adresse for å se været nå",
   "Electricity": "Strømpris",
   "Could not load energy prices": "Kunne ikke laste strømpriser",
   "No energy price data available": "Ingen strømprisdata tilgjengelig",
   "Enter address to see energy prices": "Skriv inn adresse for å se strømpriser",
-  
   "Trash Schedule": "Søppeltømming",
   "Address not found in trash collection database. Try entering just the street name and number (e.g., \"Persaunvegen 1C\")": "Adresse ikke funnet i søppeltømmingsdatabasen. Prøv å skrive bare gatenavn og nummer (f.eks. \"Persaunvegen 1C\")",
   "Could not load trash schedule. Please try again.": "Kunne ikke laste søppeltømmingsplan. Vennligst prøv igjen.",
@@ -52,17 +47,14 @@
   "day": "dag",
   "days": "dager",
   "Past": "Passert",
-  
   "Police Log": "Politiloggen",
   "Could not load police log": "Kunne ikke laste politilogg",
   "No police log messages available": "Ingen politiloggmeldinger tilgjengelig",
   "Loading police log...": "Laster politilogg...",
-  
   "News": "Nyheter",
   "Could not load news": "Kunne ikke laste nyheter",
   "No news available": "Ingen nyheter tilgjengelig",
   "Loading news...": "Laster nyheter...",
-  
   "Layout": "Oppsett",
   "Reset": "Tilbakestill",
   "Close": "Lukk",
@@ -70,7 +62,5 @@
   "Bus Departures": "Bussavganger",
   "Energy Prices": "Strømpriser",
   "Trash Collection": "Søppeltømming",
-  
   "Enter address to see information": "Skriv inn adresse for å se informasjon"
 }
-

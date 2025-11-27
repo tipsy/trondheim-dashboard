@@ -28,6 +28,8 @@ class TrashWidget extends BaseWidget {
 
   async updateAddress(address) {
     if (!address) {
+      this.address = null;
+      this.collections = [];
       return;
     }
 
@@ -156,6 +158,10 @@ class TrashWidget extends BaseWidget {
   }
 
   renderContent() {
+    if (!this.address) {
+      return null;
+    }
+
     if (!this.collections?.length) {
       return html`<p class="no-data">${t("No upcoming collections found")}</p>`;
     }

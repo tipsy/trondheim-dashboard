@@ -99,6 +99,12 @@ class EnergyWidget extends BaseWidget {
   ];
 
   async updateLocation(lat, lon) {
+    if (!lat || !lon) {
+      this.location = null;
+      this.currentPrice = null;
+      this.nextHours = [];
+      return;
+    }
     this.location = { lat, lon };
     this.priceArea = EnergyAPI.getPriceAreaFromLocation(lat, lon);
     await this.loadEnergyPrices();
@@ -213,6 +219,10 @@ class EnergyWidget extends BaseWidget {
   }
 
   renderContent() {
+    if (!this.location) {
+      return null;
+    }
+
     if (!this.currentPrice && !this.nextHours?.length) {
       return html`<p class="no-data">
         ${t("No energy price data available")}

@@ -28,13 +28,9 @@ export class BaseWidget extends LitElement {
     this.isLoading = false;
     this.errorMessage = "";
     this.collapsed = true;
-    this._placeholderTimerId = null;
-    this._showPlaceholder = false;
   }
 
-  get showPlaceholder() {
-    return this._showPlaceholder && !this.isLoading && !this.errorMessage;
-  }
+
 
   static styles = [
     sharedStyles,
@@ -172,7 +168,6 @@ export class BaseWidget extends LitElement {
 
   firstUpdated() {
     this.setupScrollListener();
-    this.startPlaceholderTimer();
   }
 
   // Override this method in child classes to provide header actions (like refresh buttons)
@@ -187,10 +182,13 @@ export class BaseWidget extends LitElement {
 
   // Override this for custom content rendering
   renderContent() {
-    return html``;
+    return null;
   }
 
   render() {
+    const renderedContent = this.renderContent();
+    const showPlaceholder = renderedContent === null && !this.isLoading && !this.errorMessage;
+
     const contentTemplate = this.isLoading
       ? html`
           <div class="loading-container">
@@ -199,9 +197,9 @@ export class BaseWidget extends LitElement {
         `
       : this.errorMessage
         ? html` <error-message message="${this.errorMessage}"></error-message> `
-        : this.showPlaceholder
+        : showPlaceholder
           ? html` <p class="placeholder">${this.getPlaceholderText()}</p> `
-          : this.renderContent();
+          : renderedContent;
 
     const isCollapsed = this.collapsible && this.collapsed;
 
@@ -266,41 +264,15 @@ export class BaseWidget extends LitElement {
     }
   }
 
-  // Start a delayed placeholder that will appear after 1s if no content/activity occurs
-  startPlaceholderTimer() {
-    this.cancelPlaceholderTimer();
-    this._placeholderTimerId = setTimeout(() => {
-      // Only show placeholder if still connected and content is empty
-      if (!this.isConnected) return;
-      const content = this.shadowRoot.getElementById("content");
-      if (content && content.children.length === 0) {
-        this._showPlaceholder = true;
-        this.requestUpdate();
-      }
-    }, 1000);
-  }
-
-  cancelPlaceholderTimer() {
-    if (this._placeholderTimerId) {
-      clearTimeout(this._placeholderTimerId);
-      this._placeholderTimerId = null;
-    }
-  }
 
   // Utility methods for common widget operations
   showLoading(loading = true) {
-    this.cancelPlaceholderTimer();
     this.isLoading = loading;
     this.errorMessage = "";
     this._showPlaceholder = false;
-
-    if (!loading) {
-      this.startPlaceholderTimer();
-    }
   }
 
   showError(message) {
-    this.cancelPlaceholderTimer();
     this.isLoading = false;
     this.errorMessage = message;
     this._showPlaceholder = false;
@@ -348,6 +320,5 @@ export class BaseWidget extends LitElement {
   disconnectedCallback() {
     super.disconnectedCallback();
     this.clearAutoRefresh();
-    this.cancelPlaceholderTimer();
   }
 }

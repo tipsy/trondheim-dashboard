@@ -60,13 +60,19 @@ class BusWidget extends BaseWidget {
   ];
 
   async updateLocation(lat, lon, address = null) {
+    if (!lat || !lon) {
+      this.location = null;
+      this.currentAddress = null;
+      this.departures = [];
+      return;
+    }
     this.location = { lat, lon };
     this.currentAddress = address;
     await this.loadBusStops();
   }
 
   async loadBusStops() {
-    if (!this.location) return;
+    if (!this.location?.lat || !this.location?.lon) return;
 
     const quays = await this.fetchData(
       () =>
@@ -135,6 +141,11 @@ class BusWidget extends BaseWidget {
   }
 
   renderContent() {
+    // If no location, return null to trigger BaseWidget placeholder
+    if (!this.location?.lat || !this.location?.lon) {
+      return null;
+    }
+
     if (!this.departures || this.departures.length === 0) {
       return html`<p class="no-data">${t("No departures found")}</p>`;
     }
