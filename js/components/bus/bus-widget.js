@@ -59,8 +59,9 @@ class BusWidget extends BaseWidget {
     `,
   ];
 
-  async updateLocation(lat, lon) {
+  async updateLocation(lat, lon, address = null) {
     this.location = { lat, lon };
+    this.currentAddress = address;
     await this.loadBusStops();
   }
 
@@ -76,8 +77,8 @@ class BusWidget extends BaseWidget {
     if (quays && quays.length > 0) {
       this.availableStops = quays;
 
-      // Try to restore saved quay, otherwise use first one
-      const savedQuayId = storage.loadBusStop();
+      // Try to restore saved quay for this address, otherwise use first one
+      const savedQuayId = storage.loadBusStop(this.currentAddress);
       if (savedQuayId && quays.find((q) => q.id === savedQuayId)) {
         this.selectedStopId = savedQuayId;
       } else {
@@ -129,7 +130,7 @@ class BusWidget extends BaseWidget {
 
   handleStopChange(e) {
     this.selectedStopId = e.detail.value;
-    storage.saveBusStop(this.selectedStopId);
+    storage.saveBusStop(this.currentAddress, this.selectedStopId);
     this.loadDepartures();
   }
 

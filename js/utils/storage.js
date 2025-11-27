@@ -43,8 +43,8 @@ class StorageClient {
   loadLocation = () => this._get(LOCATION_KEY);
   clearLocation = () => this._remove(LOCATION_KEY);
 
-  saveBusStop = (id) => this._set(BUS_STOP_KEY, id);
-  loadBusStop = () => this._get(BUS_STOP_KEY);
+  saveBusStop = (address, id) => this._set(`${BUS_STOP_KEY}:${address}`, id);
+  loadBusStop = (address) => this._get(`${BUS_STOP_KEY}:${address}`);
 
   saveResponse = (key, data) => this._set(key, { timestamp: Date.now(), data });
   loadResponse = (key) => this._get(key);

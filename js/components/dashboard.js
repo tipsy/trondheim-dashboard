@@ -503,7 +503,8 @@ class TrondheimDashboard extends LitElement {
       customElements.whenDefined(widgetName).then(() => {
         const widget = this.shadowRoot.querySelector(selector);
         if (widget && typeof widget.updateLocation === "function") {
-          widget.updateLocation(lat, lon);
+          // Pass address as third parameter for widgets that support it (like bus-widget)
+          widget.updateLocation(lat, lon, address);
         }
       });
     });
