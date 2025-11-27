@@ -22,6 +22,7 @@ class EventsWidget extends BaseWidget {
     this.icon = "mdi-calendar-star";
     this.collapsible = true;
     this.events = [];
+    this.placeholderText = t("Loading events...");
     this.selectedDate = this.formatDate(new Date());
   }
 
@@ -163,9 +164,7 @@ class EventsWidget extends BaseWidget {
     this.loadEventsForDate(this.selectedDate);
   }
 
-  getPlaceholderText() {
-    return t("Loading events...");
-  }
+
 }
 
 customElements.define("events-widget", EventsWidget);

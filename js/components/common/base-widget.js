@@ -175,11 +175,6 @@ export class BaseWidget extends LitElement {
     return html``;
   }
 
-  // Override this method in child classes to customize placeholder text
-  getPlaceholderText() {
-    return t("Enter address to see information");
-  }
-
   // Override this for custom content rendering
   renderContent() {
     return null;
@@ -198,7 +193,7 @@ export class BaseWidget extends LitElement {
       : this.errorMessage
         ? html` <error-message message="${this.errorMessage}"></error-message> `
         : showPlaceholder
-          ? html` <p class="placeholder">${this.getPlaceholderText()}</p> `
+          ? html` <p class="placeholder">${this.placeholderText}</p> `
           : renderedContent;
 
     const isCollapsed = this.collapsible && this.collapsed;
@@ -269,13 +264,11 @@ export class BaseWidget extends LitElement {
   showLoading(loading = true) {
     this.isLoading = loading;
     this.errorMessage = "";
-    this._showPlaceholder = false;
   }
 
   showError(message) {
     this.isLoading = false;
     this.errorMessage = message;
-    this._showPlaceholder = false;
   }
 
   // Utility method for managing auto-refresh intervals

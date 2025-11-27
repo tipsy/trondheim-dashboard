@@ -26,6 +26,7 @@ class BusWidget extends BaseWidget {
     this.availableStops = [];
     this.selectedStopId = null;
     this.location = null;
+    this.placeholderText = t("Enter address to see bus departures");
   }
 
   get stopOptions() {
@@ -183,9 +184,7 @@ class BusWidget extends BaseWidget {
     `;
   }
 
-  getPlaceholderText() {
-    return t("Enter address to see bus departures");
-  }
+
 }
 
 customElements.define("bus-widget", BusWidget);

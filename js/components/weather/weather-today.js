@@ -22,6 +22,7 @@ class WeatherToday extends BaseWidget {
     this.todayData = null;
     this.sunData = null;
     this.location = null;
+    this.placeholderText = t("Enter address to see today's weather");
   }
 
   static styles = [
@@ -244,9 +245,7 @@ class WeatherToday extends BaseWidget {
     `;
   }
 
-  getPlaceholderText() {
-    return t("Enter address to see today's weather");
-  }
+
 }
 
 customElements.define("weather-today", WeatherToday);

@@ -22,6 +22,7 @@ class WeatherRightNow extends BaseWidget {
     this.currentWeather = null;
     this.hourlyForecast = [];
     this.location = null;
+    this.placeholderText = t("Enter address to see current weather");
   }
 
   static styles = [
@@ -179,9 +180,7 @@ class WeatherRightNow extends BaseWidget {
     `;
   }
 
-  getPlaceholderText() {
-    return t("Enter address to see current weather");
-  }
+
 }
 
 customElements.define("weather-right-now", WeatherRightNow);

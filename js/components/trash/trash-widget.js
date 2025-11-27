@@ -22,6 +22,7 @@ class TrashWidget extends BaseWidget {
     this.collections = [];
     this.address = null;
     this.addressId = null;
+    this.placeholderText = t("Enter address to see trash collection schedule");
   }
 
   static styles = [...BaseWidget.styles];
@@ -182,9 +183,7 @@ class TrashWidget extends BaseWidget {
     `;
   }
 
-  getPlaceholderText() {
-    return t("Enter address to see trash collection schedule");
-  }
+
 }
 
 customElements.define("trash-widget", TrashWidget);

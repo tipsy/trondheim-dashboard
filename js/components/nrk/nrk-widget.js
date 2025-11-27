@@ -20,6 +20,7 @@ class NRKWidget extends BaseWidget {
     this.icon = "mdi-newspaper-variant-outline";
     this.collapsible = true;
     this.stories = [];
+    this.placeholderText = t("Loading news...");
   }
 
   async connectedCallback() {
@@ -58,9 +59,7 @@ class NRKWidget extends BaseWidget {
     `;
   }
 
-  getPlaceholderText() {
-    return t("Loading news...");
-  }
+
 }
 
 customElements.define("nrk-widget", NRKWidget);

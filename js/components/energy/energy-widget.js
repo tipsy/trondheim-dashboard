@@ -22,6 +22,7 @@ class EnergyWidget extends BaseWidget {
     this.nextHours = [];
     this.priceArea = "NO3"; // Default to Trondheim area
     this.location = null;
+    this.placeholderText = t("Enter address to see energy prices");
   }
 
   static styles = [
@@ -272,9 +273,7 @@ class EnergyWidget extends BaseWidget {
     `;
   }
 
-  getPlaceholderText() {
-    return t("Enter address to see energy prices");
-  }
+
 }
 
 customElements.define("energy-widget", EnergyWidget);

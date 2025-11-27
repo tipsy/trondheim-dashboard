@@ -20,6 +20,7 @@ class PoliceWidget extends BaseWidget {
     this.icon = "mdi-car-emergency";
     this.collapsible = true;
     this.messages = [];
+    this.placeholderText = t("Loading police log...");
   }
 
   async connectedCallback() {
@@ -82,9 +83,7 @@ class PoliceWidget extends BaseWidget {
     `;
   }
 
-  getPlaceholderText() {
-    return t("Loading police log...");
-  }
+
 }
 
 customElements.define("police-widget", PoliceWidget);
