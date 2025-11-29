@@ -81,9 +81,20 @@ class ThemeSelector extends BaseWidget {
     dispatchEvent(this, "theme-changed", { theme });
   }
 
+  handleCollapseClick() {
+    dispatchEvent(this, "config-collapse", {});
+  }
+
   renderHeaderActions() {
     return html`
       <div class="header-actions">
+        <icon-button
+          @button-click=${this.handleCollapseClick}
+          title="Collapse configuration"
+          aria-label="Collapse configuration"
+        >
+          <i class="mdi mdi-chevron-up"></i>
+        </icon-button>
         <icon-button
           @button-click=${this.handleLayoutClick}
           title="Toggle layout editor"

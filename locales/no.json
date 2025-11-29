@@ -62,5 +62,8 @@
   "Bus Departures": "Bussavganger",
   "Energy Prices": "Strømpriser",
   "Trash Collection": "Søppeltømming",
-  "Enter address to see information": "Skriv inn adresse for å se informasjon"
+  "Enter address to see information": "Skriv inn adresse for å se informasjon",
+  "Address": "Adresse",
+  "Theme": "Stil",
+  "Not set": "Ikke angitt"
 }

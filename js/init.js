@@ -11,6 +11,7 @@ await Promise.all([
   import("./components/address/address-input.js"),
   import("./components/config/theme-selector.js"),
   import("./components/config/language-selector.js"),
+  import("./components/config/config-collapsed-bar.js"),
   import("./components/bus/bus-widget.js"),
   import("./components/events/events-widget.js"),
   import("./components/weather/weather-right-now.js"),

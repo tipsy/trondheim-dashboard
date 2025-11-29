@@ -12,6 +12,7 @@ class TrondheimDashboard extends LitElement {
     currentLocation: { type: Object, state: true },
     layout: { type: Object, state: true },
     layoutEditorOpen: { type: Boolean, state: true },
+    configCollapsed: { type: Boolean, state: true },
   };
 
   constructor() {
@@ -21,6 +22,7 @@ class TrondheimDashboard extends LitElement {
     const saved = storage.loadLayout();
     this.layout = normalizeLayout(saved || DEFAULT_LAYOUT);
     this.layoutEditorOpen = false;
+    this.configCollapsed = false;
   }
 
   static styles = [
@@ -87,6 +89,14 @@ class TrondheimDashboard extends LitElement {
       }
 
       layout-widget.hidden {
+        display: none;
+      }
+
+      config-collapsed-bar {
+        flex-shrink: 0;
+      }
+
+      config-collapsed-bar.hidden {
         display: none;
       }
 
@@ -266,7 +276,7 @@ class TrondheimDashboard extends LitElement {
   render() {
     return html`
       <div class="dashboard-content">
-        <div class="address-section ${this.layoutEditorOpen ? "hidden" : ""}">
+        <div class="address-section ${this.layoutEditorOpen || this.configCollapsed ? "hidden" : ""}">
           <address-input
             id="address-input"
             @location-updated=${this.handleLocationUpdate}
@@ -277,8 +287,15 @@ class TrondheimDashboard extends LitElement {
           <theme-selector
             @theme-changed=${this.handleThemeChange}
             @layout-editor-toggle=${this.handleLayoutEditorToggle}
+            @config-collapse=${this.handleConfigCollapse}
           ></theme-selector>
         </div>
+
+        <config-collapsed-bar
+          class="${this.configCollapsed && !this.layoutEditorOpen ? "" : "hidden"}"
+          .address=${this.currentLocation?.address || ""}
+          @config-expand=${this.handleConfigExpand}
+        ></config-collapsed-bar>
 
         <layout-widget
           class="${this.layoutEditorOpen ? "" : "hidden"}"
@@ -350,6 +367,14 @@ class TrondheimDashboard extends LitElement {
 
   handleLayoutEditorClose() {
     this.layoutEditorOpen = false;
+  }
+
+  handleConfigCollapse() {
+    this.configCollapsed = true;
+  }
+
+  handleConfigExpand() {
+    this.configCollapsed = false;
   }
 
   applyLayoutToStyles() {

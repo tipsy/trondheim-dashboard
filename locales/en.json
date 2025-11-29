@@ -62,5 +62,8 @@
   "Bus Departures": "Bus Departures",
   "Energy Prices": "Energy Prices",
   "Trash Collection": "Trash Collection",
-  "Enter address to see information": "Enter address to see information"
+  "Enter address to see information": "Enter address to see information",
+  "Address": "Address",
+  "Theme": "Theme",
+  "Not set": "Not set"
 }
