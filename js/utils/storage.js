@@ -56,6 +56,10 @@ class StorageClient {
   // Locale persistence helpers
   saveLocale = (locale) => this._set(LOCALE_KEY, locale);
   loadLocale = (defaultValue = "en") => this._get(LOCALE_KEY) ?? defaultValue;
+
+  // Config collapsed state persistence
+  saveConfigCollapsed = (collapsed) => this._set("trondheim-config-collapsed", collapsed);
+  loadConfigCollapsed = () => this._get("trondheim-config-collapsed") ?? false;
 }
 
 const storage = new StorageClient();

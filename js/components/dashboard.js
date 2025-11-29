@@ -22,7 +22,7 @@ class TrondheimDashboard extends LitElement {
     const saved = storage.loadLayout();
     this.layout = normalizeLayout(saved || DEFAULT_LAYOUT);
     this.layoutEditorOpen = false;
-    this.configCollapsed = false;
+    this.configCollapsed = storage.loadConfigCollapsed();
   }
 
   static styles = [
@@ -371,10 +371,12 @@ class TrondheimDashboard extends LitElement {
 
   handleConfigCollapse() {
     this.configCollapsed = true;
+    storage.saveConfigCollapsed(true);
   }
 
   handleConfigExpand() {
     this.configCollapsed = false;
+    storage.saveConfigCollapsed(false);
   }
 
   applyLayoutToStyles() {

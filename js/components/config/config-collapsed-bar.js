@@ -71,13 +71,19 @@ class ConfigCollapsedBar extends LitElement {
 
       .info-item {
         display: flex;
-        gap: 4px;
+        align-items: center;
+        gap: 2px;
         min-width: 0;
+        line-height: 1;
       }
 
       .info-label {
         color: var(--text-muted);
         flex-shrink: 0;
+        font-size: var(--font-size-xs);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
 
       .info-value {
@@ -85,6 +91,10 @@ class ConfigCollapsedBar extends LitElement {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        background: var(--hover-background, rgba(255, 255, 255, 0.05));
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
       }
 
       .expand-icon {
