@@ -170,7 +170,7 @@ export class APIBase {
     // Apply CORS proxy if requested
     let url = originalUrl;
     if (useCorsProxy) {
-      const corsProxy = "https://corsproxy.io/?";
+      const corsProxy = "https://api.allorigins.win/raw?url=";
       url = `${corsProxy}${encodeURIComponent(originalUrl)}`;
     }
 
