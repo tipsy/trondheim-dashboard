@@ -170,7 +170,7 @@ export class APIBase {
     // Apply CORS proxy if requested
     let url = originalUrl;
     if (useCorsProxy) {
-      const corsProxy = "https://corsproxy.org/?";
+      const corsProxy = "https://thingproxy.freeboard.io/fetch/";
       url = `${corsProxy}${encodeURIComponent(originalUrl)}`;
     }
 
