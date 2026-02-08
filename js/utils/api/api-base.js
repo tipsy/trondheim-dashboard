@@ -170,8 +170,8 @@ export class APIBase {
     // Apply CORS proxy if requested
     let url = originalUrl;
     if (useCorsProxy) {
-      const corsProxy = "https://thingproxy.freeboard.io/fetch/";
-      url = `${corsProxy}${encodeURIComponent(originalUrl)}`;
+      // Use cors.eu.org - format: https://cors.eu.org/https://example.com
+      url = `https://cors.eu.org/${originalUrl}`;
     }
 
     // If caching is explicitly disabled (cacheTTL === 0), fetch directly and don't cache
